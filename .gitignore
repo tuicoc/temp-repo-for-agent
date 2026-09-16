@@ -1,0 +1,11 @@
+# Secrets. .env.example is committed, .env is not.
+.env
+
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+
+# Editors and OS
+.idea/
+.DS_Store

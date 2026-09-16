@@ -1,0 +1,5 @@
+# Store every text file with LF line endings, in the repository and on checkout.
+# Without this, a clone on Windows can rewrite a whole file and turn it into a
+# diff of invisible characters. Git detects binary files by itself and leaves
+# them alone, so nothing else needs declaring.
+* text=auto eol=lf
