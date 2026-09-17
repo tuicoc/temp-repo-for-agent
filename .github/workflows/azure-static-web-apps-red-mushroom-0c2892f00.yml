@@ -40,6 +40,19 @@ jobs:
       - name: Build And Deploy
         id: builddeploy
         uses: Azure/static-web-apps-deploy@v1
+        env:
+          # Vite inlines VITE_* variables into the bundle at build time, and the
+          # build happens here. Static Web Apps' own Application settings are
+          # runtime settings for its Functions API, so setting it there does
+          # nothing — the files are already built by then.
+          #
+          # Not a secret: anything inlined into the bundle is readable by anyone
+          # who opens the page. It is kept in the workflow so the value is
+          # visible and versioned rather than hidden in a settings panel.
+          #
+          # This must match CORS_ORIGINS on the App Service, from the other
+          # direction: the page names the API here, the API names the page there.
+          VITE_API_BASE_URL: https://sudo-code-eybfa8cubpazf9hc.japaneast-01.azurewebsites.net
         with:
           azure_static_web_apps_api_token: ${{ secrets.AZURE_STATIC_WEB_APPS_API_TOKEN_RED_MUSHROOM_0C2892F00 }}
           action: "upload"
