@@ -23,3 +23,8 @@ httpx==0.28.1
 
 # Tracing. Optional at runtime: with no keys set the handler is never built.
 langfuse==4.15.4
+
+# Tests. Kept in this file rather than a second one: at this size a separate
+# dev file is more to remember than it saves. A deployment does not need these.
+pytest==9.1.1
+pytest-asyncio==1.4.0

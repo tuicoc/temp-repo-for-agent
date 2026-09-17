@@ -34,26 +34,34 @@ see [CONTRIBUTING.md](CONTRIBUTING.md#changing-the-specification).
 
 ```
 config/                       Configuration, no secrets
-  models.yaml                 Providers, models, rate limits
+  models.yaml                 Providers, models, rate limits, agent routing
   probe_prompts.yaml          Trial prompts for the provider comparison
 src/
-  config/
-    config_manager.py         Loads .env once, parses the YAML, fails fast
+  config/config_manager.py    Loads .env once, parses the YAML, fails fast
   llm/
     factory.py                LLMFactory: builds a chat model from a config block
     rate_limiter.py           Sliding-window request and token limiting
     callback_handler.py       Token accounting, rate-limit backoff
     token_ledger.py           Per-agent token totals for one run
     tracing.py                Langfuse, optional, with PII masking
-  report.py                   Writes run reports as JSON and Markdown
+  agents/
+    base.py                   Compiles a ReAct graph from a prompt and tools
+    advisor.py                Talks to the customer, drafts the reply
 examples/
   probe_providers.py          Compare providers: list, run, limits
+reports/
+  writer.py                   Turns a run into JSON and Markdown with charts
+  provider-probe/             Newest run, with older ones under archive/
 tests/                        Unit tests
 docs/                         The specification
-reports/                      Output of each comparison run
 setup.py                      Preflight check, run this first
 requirements.txt              Direct dependencies, pinned
 ```
+
+Each agent declares its prompt, its tools and its output schema, and the base
+compiles those into a LangGraph ReAct loop. Schemas live in the file that uses
+them: a field description is part of the prompt, so it belongs next to the
+prompt it serves rather than in a shared module.
 
 ## Getting started
 
@@ -126,7 +134,6 @@ variable.
 ## Development
 
 ```sh
-pip install -r requirements.txt -r requirements-dev.txt
 python -m pytest
 ```
 

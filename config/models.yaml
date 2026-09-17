@@ -23,6 +23,17 @@
 #
 #     python examples/probe_providers.py limits --provider groq --model <name>
 
+# Agent -> model. An agent names a provider and a model here rather than
+# hard-coding one, so swapping the model an agent uses is a line of config.
+# The values come from the provider comparison in reports/provider-probe/.
+agents:
+  # The advisor is on the hot path, where a customer is waiting, so it is
+  # chosen on time to first token rather than throughput. See the
+  # recommendation in reports/provider-probe/.
+  advisor:
+    provider: google_genai
+    model: gemini-3.5-flash-lite
+
 providers:
   google_genai:
     label: Google AI Studio

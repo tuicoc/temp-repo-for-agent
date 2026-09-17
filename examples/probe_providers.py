@@ -25,6 +25,7 @@ from typing import Any
 
 import httpx
 from langchain_core.messages import HumanMessage, SystemMessage
+from pydantic import BaseModel, Field
 
 # Run directly from the repository root: the project is not installed, so the
 # root has to be importable before `src` can be.
@@ -36,8 +37,7 @@ from src.config.config_manager import (  # noqa: E402
     get_prompts,
     require_api_key,
 )
-from src import report  # noqa: E402
-from src.schemas import get_schema  # noqa: E402
+from reports import writer  # noqa: E402
 from src.llm import token_ledger, tracing  # noqa: E402
 from src.llm.callback_handler import extract_usage, text_of  # noqa: E402
 from src.llm.factory import (  # noqa: E402
@@ -48,6 +48,73 @@ from src.llm.factory import (  # noqa: E402
 )
 
 TIMEOUT = 60.0
+
+
+# --------------------------------------------------------------------------- #
+#  Schemas for the scored prompts                                              #
+# --------------------------------------------------------------------------- #
+#
+# These live here rather than in a shared module because the probe is their
+# only consumer, and because a field description is only meaningful next to the
+# prompt it serves. The descriptions are part of the prompt, not documentation:
+# a first attempt with a bare JSON schema and no descriptions had two of four
+# models return the wrong extraction or nothing at all.
+
+
+class DiscountJudgement(BaseModel):
+    """Verdict on a compound-discount claim."""
+
+    khach_noi_dung: bool = Field(
+        description=(
+            "true nếu khách nói đúng, false nếu khách nói sai. "
+            "Hai lần giảm liên tiếp không cộng dồn trực tiếp."
+        )
+    )
+    muc_giam_thuc_te_phan_tram: float = Field(
+        description=(
+            "Tổng mức giảm thực tế so với giá gốc, tính bằng phần trăm. "
+            "Chỉ điền con số, ví dụ 28 nghĩa là giảm 28%."
+        )
+    )
+    giai_thich: str = Field(
+        description="Giải thích ngắn gọn bằng tiếng Việt, tối đa 2 câu."
+    )
+
+
+class OrderExtraction(BaseModel):
+    """Order details pulled out of one sentence of Vietnamese."""
+
+    ten_khach: str = Field(
+        description=(
+            "Chỉ tên riêng của khách, không kèm xưng hô. "
+            'Với "Chị Lan" thì điền "Lan".'
+        )
+    )
+    thanh_pho: str = Field(description="Tên thành phố, viết có dấu tiếng Việt.")
+    so_luong: int = Field(description="Số lượng sản phẩm khách đặt.")
+    size: str = Field(description='Size sản phẩm, ví dụ "S", "M", "L".')
+    mau: str = Field(description="Màu sản phẩm, viết bằng tiếng Việt.")
+    tong_tien_vnd: int = Field(
+        description=(
+            "Tổng tiền quy về đơn vị đồng, không phải nghìn đồng. "
+            '"350 nghìn" là 350000; "4 triệu 8" là 4800000.'
+        )
+    )
+
+
+# Names config/probe_prompts.yaml may refer to.
+SCHEMAS: dict[str, type[BaseModel]] = {
+    "DiscountJudgement": DiscountJudgement,
+    "OrderExtraction": OrderExtraction,
+}
+
+
+def get_schema(name: str) -> type[BaseModel]:
+    try:
+        return SCHEMAS[name]
+    except KeyError:
+        known = ", ".join(sorted(SCHEMAS))
+        raise KeyError(f"Unknown schema {name!r}. Known: {known}") from None
 
 
 def num(value: float | int | None, places: int = 2) -> str:
@@ -261,7 +328,7 @@ def cmd_run(
         return 1
 
     prompts = get_prompts()
-    session = f"probe-{report.run_id()}"
+    session = f"probe-{writer.run_id()}"
     traced, trace_message = tracing.auth_check()
     print(f"  tracing: {trace_message}", file=sys.stderr)
 
@@ -333,11 +400,15 @@ def cmd_run(
     notes = (
         f"Langfuse session `{session}`." if traced else "Tracing was not enabled."
     )
-    json_path, md_path = report.write(
-        results, prompts, identifier=session.removeprefix("probe-"), notes=notes
+    json_path, md_path = writer.write(
+        results,
+        prompts,
+        kind="provider-probe",
+        identifier=session.removeprefix("probe-"),
+        notes=notes,
     )
-    print(f"\nSaved {md_path.relative_to(report.ROOT)} and "
-          f"{json_path.relative_to(report.ROOT)}")
+    print(f"\nSaved {md_path.relative_to(writer.ROOT)} and "
+          f"{json_path.relative_to(writer.ROOT)}")
     return 1 if errors else 0
 
 

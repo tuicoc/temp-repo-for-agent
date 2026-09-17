@@ -1,6 +1,7 @@
 {
+  "kind": "provider-probe",
   "run_id": "20260917-045301",
-  "generated_at": "2026-09-17T04:54:17.156432+00:00",
+  "generated_at": "2026-09-17T05:22:17.318949+00:00",
   "notes": "Langfuse session `probe-20260917-045301`.",
   "results": [
     {

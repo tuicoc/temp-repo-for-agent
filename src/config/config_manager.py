@@ -91,10 +91,30 @@ class ProviderConfig(BaseModel):
     max_tokens: int = 512
 
 
+class AgentModel(BaseModel):
+    """Which model one agent uses."""
+
+    provider: str
+    model: str
+
+
 class ModelsConfig(BaseModel):
     """All of ``config/models.yaml``."""
 
     providers: dict[str, ProviderConfig]
+    agents: dict[str, AgentModel] = Field(default_factory=dict)
+
+    def agent_llm_config(self, agent: str) -> dict[str, Any]:
+        """The config block for *agent*, ready for ``LLMFactory.create_llm``."""
+        try:
+            routing = self.agents[agent]
+        except KeyError:
+            known = ", ".join(sorted(self.agents)) or "none"
+            raise KeyError(
+                f"No model configured for agent {agent!r} in {MODELS_YAML}. "
+                f"Configured agents: {known}"
+            ) from None
+        return self.llm_config(routing.provider, routing.model)
 
     def provider(self, name: str) -> ProviderConfig:
         try:
