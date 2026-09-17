@@ -2,24 +2,46 @@
 @tailwind components;
 @tailwind utilities;
 
-html,
-body,
-#root {
-  height: 100%;
+/* Base, ported from the reference project so the two look like one product. */
+@layer base {
+  *, *::before, *::after { box-sizing: border-box; }
+
+  html, body, #root {
+    height: 100%;
+    overflow: hidden;
+  }
+
+  body {
+    background-color: #FFFFFF;
+    color: #1A1A1A;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;
+    font-size: 0.875rem;
+    line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  /* Barely there. A conversation is read for minutes; the scrollbar should not
+     be part of the reading. */
+  ::-webkit-scrollbar       { width: 4px; height: 4px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: #C5C5C5; border-radius: 99px; }
+  ::-webkit-scrollbar-thumb:hover { background: #999999; }
+
+  textarea { resize: none; }
 }
 
-body {
-  @apply bg-app-bg text-app-dark font-sans antialiased;
+/* A message arrives rather than appears. Short enough not to delay reading. */
+@keyframes msgIn {
+  from { opacity: 0; transform: translateY(6px); }
+  to   { opacity: 1; transform: translateY(0); }
 }
+.msg-enter { animation: msgIn 0.18s cubic-bezier(0.16, 1, 0.3, 1) both; }
 
-/* The scrollbar is visible for most of a long conversation, so it is toned
-   down to match the page rather than left as the browser default. */
-::-webkit-scrollbar {
-  width: 10px;
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(10px); }
+  to   { opacity: 1; transform: translateY(0); }
 }
-::-webkit-scrollbar-thumb {
-  @apply rounded-full bg-app-border;
-}
-::-webkit-scrollbar-track {
-  background: transparent;
-}
+.chip-1 { animation: fadeUp 0.28s 0.04s cubic-bezier(0.16,1,0.3,1) both; }
+.chip-2 { animation: fadeUp 0.28s 0.10s cubic-bezier(0.16,1,0.3,1) both; }
+.chip-3 { animation: fadeUp 0.28s 0.16s cubic-bezier(0.16,1,0.3,1) both; }

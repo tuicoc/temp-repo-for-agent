@@ -12,7 +12,7 @@ export default function App() {
   if (restoring) {
     return (
       <div className="flex h-full items-center justify-center">
-        <div className="h-6 w-6 animate-spin rounded-full border-2 border-app-border border-t-app-accent" />
+        <div className="h-6 w-6 animate-spin rounded-full border-2 border-line border-t-accent" />
       </div>
     )
   }

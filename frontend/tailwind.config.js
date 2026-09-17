@@ -4,22 +4,25 @@ export default {
   theme: {
     extend: {
       colors: {
-        // Warm, low-contrast palette. Long telesales conversations are read
-        // for minutes at a time, and a stark white page is tiring.
-        app: {
-          bg: '#F7F3EA',
-          sidebar: '#EFE8DC',
-          surface: '#FFFDF8',
-          border: '#E2D6C5',
-          accent: '#B86F50',
-          'accent-dim': '#F4DED1',
-          dark: '#211914',
-          body: '#4A4038',
-          muted: '#776B60',
-        },
+        // Taken from the reference project rather than invented. The page is
+        // white, not the warm parchment its tailwind config also defines — the
+        // components use these values, and matching the config instead of the
+        // components produced a different-looking app.
+        ink: '#1A1A1A',
+        muted: '#6B6B6B',
+        faint: '#9A9A9A',
+        line: '#E5E5E5',
+        'line-2': '#DEDEDE',
+        surface: '#FFFFFF',
+        sidebar: '#F3F3F3',
+        hover: '#F7F7F7',
+        bubble: '#EFEFEF',
+        accent: '#B86F50',
+        'accent-tint': '#F4DED1',
       },
       fontFamily: {
         sans: ['-apple-system', 'BlinkMacSystemFont', '"Segoe UI"', 'system-ui', 'sans-serif'],
+        mono: ['"Fira Code"', '"Cascadia Code"', 'Menlo', 'Monaco', 'Consolas', 'monospace'],
       },
       boxShadow: {
         input: '0 0 0 3px rgba(184,111,80,0.12)',

@@ -52,8 +52,9 @@ export function ChatInput({ models, model, onModelChange, onSend, busy }) {
   const selected = models.find((m) => m.id === model)
 
   return (
-    <div className="mx-auto w-full max-w-3xl px-4 pb-6">
-      <div className="rounded-2xl border border-app-border bg-app-surface shadow-sm">
+    <div className="flex-shrink-0 px-4 pb-5 pt-2">
+      <div className="mx-auto max-w-[720px] rounded-2xl border border-line bg-surface
+                      shadow-[0_1px_3px_rgba(0,0,0,0.05)]">
         <textarea
           ref={textarea}
           rows={1}
@@ -62,7 +63,7 @@ export function ChatInput({ models, model, onModelChange, onSend, busy }) {
           onKeyDown={onKeyDown}
           placeholder="Ask about a product, a price, or an order…"
           className="w-full resize-none bg-transparent px-4 pt-3.5 text-[14px] leading-6
-                     text-app-dark outline-none placeholder:text-app-muted/70"
+                     text-ink outline-none placeholder:text-faint"
         />
 
         <div className="flex items-center justify-between gap-2 px-3 pb-3 pt-1">
@@ -71,8 +72,8 @@ export function ChatInput({ models, model, onModelChange, onSend, busy }) {
               type="button"
               onClick={() => setPickerOpen((open) => !open)}
               aria-expanded={pickerOpen}
-              className="flex items-center gap-1.5 rounded-full border border-app-border bg-white
-                         px-3 py-1.5 text-[12px] text-app-body transition hover:bg-app-bg"
+              className="flex items-center gap-1.5 rounded-full border border-line bg-surface
+                         px-3 py-1.5 text-[12px] text-muted transition-colors hover:bg-hover"
             >
               <span className="max-w-[220px] truncate">{selected?.label ?? 'Select a model'}</span>
               <ChevronDown size={13} />
@@ -82,7 +83,7 @@ export function ChatInput({ models, model, onModelChange, onSend, busy }) {
               <div
                 role="listbox"
                 className="absolute bottom-full left-0 z-10 mb-2 max-h-64 w-[320px] overflow-y-auto
-                           rounded-xl border border-app-border bg-app-surface p-1 shadow-lg"
+                           rounded-xl border border-line bg-surface p-1 shadow-lg"
               >
                 {models.map((option) => (
                   <button
@@ -94,9 +95,9 @@ export function ChatInput({ models, model, onModelChange, onSend, busy }) {
                       onModelChange(option)
                       setPickerOpen(false)
                     }}
-                    className={`block w-full truncate rounded-lg px-3 py-2 text-left text-[12px] transition
-                                hover:bg-app-bg ${
-                                  option.id === model ? 'bg-app-accent-dim text-app-dark' : 'text-app-body'
+                    className={`block w-full truncate rounded-lg px-3 py-2 text-left text-[12px] transition-colors
+                                hover:bg-hover ${
+                                  option.id === model ? 'bg-accent-tint text-ink' : 'text-muted'
                                 }`}
                   >
                     {option.label}
@@ -112,7 +113,7 @@ export function ChatInput({ models, model, onModelChange, onSend, busy }) {
               disabled
               title="Voice is not available yet"
               aria-label="Voice input, not available yet"
-              className="flex h-8 w-8 items-center justify-center rounded-full text-app-muted/50
+              className="flex h-8 w-8 items-center justify-center rounded-full text-faint/60
                          transition disabled:cursor-not-allowed"
             >
               <Mic size={16} />
@@ -123,8 +124,8 @@ export function ChatInput({ models, model, onModelChange, onSend, busy }) {
               onClick={submit}
               disabled={busy || !text.trim()}
               aria-label="Send"
-              className="flex h-8 w-8 items-center justify-center rounded-full bg-app-accent text-white
-                         transition hover:brightness-95 disabled:opacity-40"
+              className="flex h-8 w-8 items-center justify-center rounded-full bg-accent text-white
+                         transition hover:brightness-95 disabled:opacity-30"
             >
               <ArrowUp size={16} />
             </button>
@@ -132,7 +133,7 @@ export function ChatInput({ models, model, onModelChange, onSend, busy }) {
         </div>
       </div>
 
-      <p className="mt-2 text-center text-[11px] text-app-muted">
+      <p className="mx-auto mt-2 max-w-[720px] text-center text-[11px] text-faint">
         Replies come from an automated assistant and may be wrong. Prices are only
         valid when quoted from the catalogue.
       </p>

@@ -8,9 +8,9 @@ import { useState } from 'react'
 import { useAuth } from '../context/AuthContext'
 
 const inputClass =
-  'w-full rounded-xl border border-app-border bg-white px-3.5 py-2.5 text-[14px] ' +
-  'text-app-dark placeholder:text-app-muted/70 outline-none transition ' +
-  'focus:border-app-accent focus:shadow-input'
+  'w-full rounded-xl border border-line bg-white px-3.5 py-2.5 text-[14px] ' +
+  'text-ink placeholder:text-faint outline-none transition ' +
+  'focus:border-accent focus:shadow-input'
 
 export function LoginPage() {
   const [email, setEmail] = useState('')
@@ -35,20 +35,23 @@ export function LoginPage() {
   }
 
   return (
-    <div className="flex min-h-full items-center justify-center px-4">
+    <div className="flex h-full items-center justify-center bg-surface px-4">
       <div className="w-full max-w-[380px]">
         <div className="mb-8 flex flex-col items-center">
-          <div className="mb-4 flex h-11 w-11 items-center justify-center rounded-2xl bg-app-accent shadow-sm">
+          <div
+            className="mb-4 flex h-11 w-11 items-center justify-center rounded-2xl shadow-sm"
+            style={{ background: 'linear-gradient(135deg, #E07840 0%, #C04898 100%)' }}
+          >
             <span className="text-lg font-semibold text-white">A</span>
           </div>
-          <h1 className="text-[22px] font-semibold text-app-dark">Welcome back</h1>
-          <p className="mt-1 text-[13px] text-app-muted">Sign in to continue</p>
+          <h1 className="text-[22px] font-semibold text-ink">Welcome back</h1>
+          <p className="mt-1 text-[13px] text-muted">Sign in to continue</p>
         </div>
 
-        <div className="rounded-2xl border border-app-border bg-app-surface p-6 shadow-sm">
+        <div className="rounded-2xl border border-line bg-surface p-6 shadow-sm">
           <form onSubmit={handleSubmit} className="space-y-4">
             <div>
-              <label htmlFor="email" className="mb-1.5 block text-[12px] font-medium text-app-body">
+              <label htmlFor="email" className="mb-1.5 block text-[12px] font-medium text-muted">
                 Email address
               </label>
               <input
@@ -64,7 +67,7 @@ export function LoginPage() {
             </div>
 
             <div>
-              <label htmlFor="password" className="mb-1.5 block text-[12px] font-medium text-app-body">
+              <label htmlFor="password" className="mb-1.5 block text-[12px] font-medium text-muted">
                 Password
               </label>
               <input
@@ -87,7 +90,7 @@ export function LoginPage() {
             <button
               type="submit"
               disabled={busy}
-              className="flex w-full items-center justify-center rounded-xl bg-app-accent py-2.5 text-[14px]
+              className="flex w-full items-center justify-center rounded-xl bg-accent py-2.5 text-[14px]
                          font-medium text-white transition hover:brightness-95 disabled:opacity-60"
             >
               {busy ? (

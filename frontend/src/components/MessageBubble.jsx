@@ -1,37 +1,56 @@
 // One turn in the conversation.
 //
-// The assistant's confidence is shown when it is low. docs/flow.md section 10
-// treats a low-confidence reply as the late signal that a question fell
-// outside what the agent knows, so surfacing it is the difference between a
-// customer being misled and a customer being told to ask someone else.
+// Shaped after the reference project: the customer gets a grey bubble on the
+// right with its lower corner squared off, and the assistant gets no bubble at
+// all — just text, left-aligned under its name. That asymmetry is deliberate.
+// A bubble reads as a remark; unbounded text reads as an answer, which is what
+// a long reply with a price in it should look like.
+
+const AVATAR = 'linear-gradient(135deg, #E07840 0%, #C04898 100%)'
 
 export function MessageBubble({ message }) {
   const isUser = message.role === 'user'
 
   return (
-    <div className={`flex ${isUser ? 'justify-end' : 'justify-start'}`}>
-      <div className={`max-w-[80%] ${isUser ? 'text-right' : 'text-left'}`}>
+    <div className={`msg-enter flex gap-3 ${isUser ? 'justify-end' : 'justify-start'}`}>
+      {!isUser && (
         <div
-          className={`inline-block whitespace-pre-wrap rounded-2xl px-4 py-2.5 text-[14px] leading-6 ${
-            isUser
-              ? 'bg-app-accent text-white'
-              : 'border border-app-border bg-app-surface text-app-dark'
-          }`}
+          className="mt-0.5 flex h-7 w-7 flex-shrink-0 items-center justify-center rounded-full shadow-sm"
+          style={{ background: AVATAR }}
         >
-          {message.content}
+          <span className="text-[10px] font-semibold text-white">A</span>
         </div>
+      )}
 
-        {!isUser && (message.model || message.confidence === 'low') && (
-          <div className="mt-1 flex items-center gap-2 px-1 text-[11px] text-app-muted">
-            {message.model && <span>{message.model}</span>}
+      <div className={`flex flex-col gap-2 ${isUser ? 'max-w-[75%] items-end' : 'max-w-[85%] items-start'}`}>
+        {!isUser && (
+          <div className="mt-0.5 flex flex-wrap items-baseline gap-x-1.5 text-[11px] font-medium leading-snug text-muted">
+            <span>Assistant</span>
+            {message.model && <span className="font-normal text-faint">· {message.model}</span>}
             {message.confidence === 'low' && (
-              <span className="rounded-full bg-amber-100 px-2 py-0.5 text-amber-800">
+              <span className="rounded-full bg-amber-50 px-1.5 py-px font-normal text-amber-700">
                 low confidence
               </span>
             )}
           </div>
         )}
+
+        <div
+          className={`text-[14px] leading-[1.65] ${
+            isUser
+              ? 'rounded-[18px] rounded-br-[4px] bg-bubble px-4 py-2.5 text-ink'
+              : 'px-0 py-0 text-ink'
+          }`}
+        >
+          <p className="whitespace-pre-wrap">{message.content}</p>
+        </div>
       </div>
+
+      {isUser && (
+        <div className="mt-0.5 flex h-7 w-7 flex-shrink-0 items-center justify-center rounded-full bg-muted shadow-sm">
+          <span className="text-[10px] font-semibold text-white">U</span>
+        </div>
+      )}
     </div>
   )
 }

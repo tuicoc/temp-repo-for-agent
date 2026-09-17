@@ -122,13 +122,13 @@ export function ChatPage() {
         onLogout={logout}
       />
 
-      <main className="flex min-w-0 flex-1 flex-col">
+      <main className="flex min-w-0 flex-1 flex-col bg-surface">
         <div className="flex-1 overflow-y-auto">
-          <div className="mx-auto w-full max-w-3xl space-y-4 px-4 py-6">
+          <div className="mx-auto w-full max-w-[720px] space-y-6 px-4 py-8">
             {messages.length === 0 && !pending && (
               <div className="pt-24 text-center">
-                <h2 className="text-[20px] font-semibold text-app-dark">How can we help?</h2>
-                <p className="mt-2 text-[13px] text-app-muted">
+                <h2 className="text-[22px] font-semibold tracking-[-0.01em] text-ink">How can we help?</h2>
+                <p className="mt-2 text-[13.5px] text-muted">
                   Ask about a product and the assistant will answer in Vietnamese.
                 </p>
               </div>
@@ -139,9 +139,14 @@ export function ChatPage() {
             ))}
 
             {pending && (
-              <div className="flex justify-start">
-                <div className="inline-flex items-center gap-2 rounded-2xl border border-app-border
-                                bg-app-surface px-4 py-2.5 text-[14px] text-app-muted">
+              <div className="msg-enter flex justify-start gap-3">
+                <div
+                  className="mt-0.5 flex h-7 w-7 flex-shrink-0 items-center justify-center rounded-full shadow-sm"
+                  style={{ background: 'linear-gradient(135deg, #E07840 0%, #C04898 100%)' }}
+                >
+                  <span className="text-[10px] font-semibold text-white">A</span>
+                </div>
+                <div className="inline-flex items-center gap-2 pt-1 text-[14px] text-muted">
                   <span className="flex gap-1">
                     <Dot delay="0ms" />
                     <Dot delay="150ms" />
@@ -153,7 +158,7 @@ export function ChatPage() {
             )}
 
             {error && (
-              <p role="alert" className="rounded-lg bg-red-50 px-3 py-2 text-[12px] text-red-700">
+              <p role="alert" className="rounded-lg border border-red-100 bg-red-50 px-3 py-2 text-[12px] text-red-700">
                 {error}
               </p>
             )}
@@ -177,7 +182,7 @@ export function ChatPage() {
 function Dot({ delay }) {
   return (
     <span
-      className="h-1.5 w-1.5 animate-bounce rounded-full bg-app-muted/60"
+      className="h-1.5 w-1.5 animate-bounce rounded-full bg-faint"
       style={{ animationDelay: delay }}
     />
   )
