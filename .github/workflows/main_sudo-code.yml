@@ -67,6 +67,12 @@ jobs:
   deploy:
     runs-on: ubuntu-latest
     needs: build
+    # Declaring an environment is what puts Deployments in the repository
+    # sidebar and records where each commit went. Azure's generated template
+    # leaves it out, so nothing on GitHub showed the deploy had happened.
+    environment:
+      name: production-api
+      url: ${{ steps.deploy-to-webapp.outputs.webapp-url }}
     permissions:
       id-token: write #This is required for requesting the JWT
       contents: read #This is required for actions/checkout
