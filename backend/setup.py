@@ -33,6 +33,11 @@ REQUIREMENTS = os.path.join(ROOT, "requirements.txt")
 
 # Import name -> the line in requirements.txt that provides it.
 PACKAGES = [
+    ("fastapi", "fastapi"),
+    ("uvicorn", "uvicorn"),
+    ("jwt", "PyJWT"),
+    ("bcrypt", "bcrypt"),
+    ("psycopg", "psycopg"),
     ("langchain", "langchain"),
     ("langchain_google_genai", "langchain-google-genai"),
     ("langchain_groq", "langchain-groq"),
@@ -49,6 +54,16 @@ KEYS = [
     ("GOOGLE_API_KEY", "Google AI Studio", "https://aistudio.google.com/apikey"),
     ("GROQ_API_KEY", "Groq", "https://console.groq.com/keys"),
     ("NVIDIA_API_KEY", "NVIDIA NIM", "https://build.nvidia.com"),
+]
+
+# The web service needs these as well. Without them it starts and then fails on
+# the first request, which is a worse place to find out.
+WEB_KEYS = [
+    ("JWT_SECRET", 'python -c "import secrets; print(secrets.token_urlsafe(48))"'),
+    ("SEED_USER_EMAIL", "the one account that can sign in"),
+    ("SEED_USER_PASSWORD", "its password"),
+    ("DATABASE_URL", "postgresql://...?sslmode=require"),
+    ("CORS_ORIGINS", "exact origins the browser app is served from"),
 ]
 
 # Tracing is optional: without it everything still runs, you just cannot see
@@ -175,6 +190,20 @@ def check_keys():
             lines.append("       " + name + "   " + url)
         note("\n".join(lines))
 
+    missing_web = [
+        name for name, _ in WEB_KEYS
+        if not (os.environ.get(name) or from_file.get(name))
+    ]
+    if missing_web:
+        print(BAD + "web service not configured: " + ", ".join(missing_web))
+        lines = ["Set these in .env before running the API:"]
+        for name, hint in WEB_KEYS:
+            if name in missing_web:
+                lines.append("       " + name + "   " + hint)
+        note("\n".join(lines))
+    else:
+        print(OK + "web service configured")
+
     missing_optional = [
         name for name, _, _ in OPTIONAL_KEYS
         if not (os.environ.get(name) or from_file.get(name))
@@ -189,7 +218,7 @@ def check_keys():
     else:
         print(OK + "Langfuse tracing configured")
 
-    return not absent
+    return not absent and not missing_web
 
 
 def check_models():

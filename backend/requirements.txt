@@ -24,6 +24,19 @@ httpx==0.28.1
 # Tracing. Optional at runtime: with no keys set the handler is never built.
 langfuse==4.15.4
 
+# Web service. FastAPI serves both the API and the built single-page app, so
+# one Azure App Service instance runs the whole thing. gunicorn supervises
+# uvicorn workers because App Service expects a process that survives a worker
+# dying.
+fastapi==0.141.1
+uvicorn[standard]==0.53.0
+gunicorn==26.2.0
+
+# Auth and storage.
+PyJWT==2.14.0
+bcrypt==5.0.0
+psycopg[binary,pool]==3.3.5
+
 # Tests. Kept in this file rather than a second one: at this size a separate
 # dev file is more to remember than it saves. A deployment does not need these.
 pytest==9.1.1

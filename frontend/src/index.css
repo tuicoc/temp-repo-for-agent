@@ -1,0 +1,25 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+html,
+body,
+#root {
+  height: 100%;
+}
+
+body {
+  @apply bg-app-bg text-app-dark font-sans antialiased;
+}
+
+/* The scrollbar is visible for most of a long conversation, so it is toned
+   down to match the page rather than left as the browser default. */
+::-webkit-scrollbar {
+  width: 10px;
+}
+::-webkit-scrollbar-thumb {
+  @apply rounded-full bg-app-border;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}

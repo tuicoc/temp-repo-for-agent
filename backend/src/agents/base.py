@@ -60,10 +60,26 @@ class BaseAgent(ABC):
     #: Pydantic model the final answer is constrained to. None means free text.
     RESPONSE_FORMAT: type[BaseModel] | None = None
 
-    def __init__(self, name: str) -> None:
+    def __init__(
+        self,
+        name: str,
+        *,
+        provider: str | None = None,
+        model: str | None = None,
+    ) -> None:
+        """Build the agent.
+
+        ``provider`` and ``model`` override what ``config/models.yaml`` routes
+        this agent to. The chat page offers a model picker, so the override is
+        a first-class argument rather than something callers patch in.
+        """
         self.name = name
 
         config = get_models_config().agent_llm_config(name)
+        if provider and model:
+            config = get_models_config().llm_config(provider, model)
+        elif model:
+            config = {**config, "model": model}
         self.model_name = config["model"]
         self.llm = LLMFactory.create_llm(config, agent_name=name)
 
@@ -90,6 +106,16 @@ class BaseAgent(ABC):
         under ``structured_response``.
         """
         return self._graph.invoke({"messages": messages}, **kwargs)
+
+    def stream(self, messages: list[Any], **kwargs: Any):
+        """Yield message chunks as the model produces them.
+
+        ``stream_mode="messages"`` gives token-level chunks, which is what an
+        SSE endpoint needs.
+        """
+        yield from self._graph.stream(
+            {"messages": messages}, stream_mode="messages", **kwargs
+        )
 
     # ── what subclasses provide ───────────────────────────────────────────
 

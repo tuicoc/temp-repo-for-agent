@@ -83,8 +83,8 @@ class AdvisorAgent(BaseAgent):
     SYSTEM_PROMPT = HARD_RULES
     RESPONSE_FORMAT = AdvisorDraft
 
-    def __init__(self) -> None:
-        super().__init__("advisor")
+    def __init__(self, *, provider: str | None = None, model: str | None = None) -> None:
+        super().__init__("advisor", provider=provider, model=model)
 
     def tools(self) -> Sequence[BaseTool]:
         """No tools yet.

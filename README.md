@@ -24,7 +24,7 @@ Wednesday. This project treats that as a memory problem, not a model problem.
 | [`docs/flow.md`](docs/flow.md) | The design, in 21 sections: hot path, cold path, memory ledger, guardrails, handoff, evaluation, improvement loop, plus appendices on feature flags, cost and build order |
 | [`docs/diagrams.md`](docs/diagrams.md) | The same 21 subjects as figures. Section N of `docs/flow.md` explains figure N |
 | [`CONTRIBUTING.md`](CONTRIBUTING.md) | How commits and branches are written, and the rules for changing the specification |
-| [`reports/`](reports) | Provider comparisons: latency, tokens and answers, one file per run |
+| [`backend/reports/`](backend/reports) | Provider comparisons: latency, tokens and answers, one file per run |
 
 `docs/flow.md` and `docs/diagrams.md` are the specification and they are
 binding. Changing either is a decision, not an edit, and has its own rules —
@@ -32,88 +32,75 @@ see [CONTRIBUTING.md](CONTRIBUTING.md#changing-the-specification).
 
 ## Project structure
 
-```
-config/                       Configuration, no secrets
-  models.yaml                 Providers, models, rate limits, agent routing
-  probe_prompts.yaml          Trial prompts for the provider comparison
-src/
-  config/config_manager.py    Loads .env once, parses the YAML, fails fast
-  llm/
-    factory.py                LLMFactory: builds a chat model from a config block
-    rate_limiter.py           Sliding-window request and token limiting
-    callback_handler.py       Token accounting, rate-limit backoff
-    token_ledger.py           Per-agent token totals for one run
-    tracing.py                Langfuse, optional, with PII masking
-  agents/
-    base.py                   Compiles a ReAct graph from a prompt and tools
-    advisor.py                Talks to the customer, drafts the reply
-examples/
-  probe_providers.py          Compare providers: list, run, limits
-reports/
-  writer.py                   Turns a run into JSON and Markdown with charts
-  provider-probe/             Newest run, with older ones under archive/
-tests/                        Unit tests
-docs/                         The specification
-setup.py                      Preflight check, run this first
-requirements.txt              Direct dependencies, pinned
-```
+Two deployments, kept apart. The API runs on Azure App Service; the browser app
+is built and hosted separately, so every call between them is cross-origin and
+CORS is configured rather than avoided.
 
-Each agent declares its prompt, its tools and its output schema, and the base
-compiles those into a LangGraph ReAct loop. Schemas live in the file that uses
-them: a field description is part of the prompt, so it belongs next to the
-prompt it serves rather than in a shared module.
+```
+backend/
+  config/
+    models.yaml               Providers, models, rate limits, agent routing
+    probe_prompts.yaml        Trial prompts for the provider comparison
+  src/
+    config/config_manager.py  Loads .env once, parses the YAML, fails fast
+    llm/                      Factory, rate limiter, token ledger, tracing
+    agents/                   Agent base, and the advisor on top of it
+    api/                      FastAPI: settings, db, auth, chat
+  examples/probe_providers.py Compare providers: list, run, limits
+  reports/                    Run reports, newest first, older under archive/
+  tests/
+  setup.py                    Preflight check, run this first
+  startup.sh                  Azure App Service startup command
+  requirements.txt
+  .env.example
+frontend/
+  src/
+    services/                 API client, SSE reader, token storage
+    context/AuthContext.jsx   Who is signed in
+    pages/                    Login, Chat
+    components/               Sidebar, message bubble, composer
+  package.json
+  .env.example
+docs/                         The specification
+```
 
 ## Getting started
 
-**1. Create and activate a virtual environment.** Python 3.10 or newer; 3.12 is
-what this was developed against.
+### Backend
 
 ```sh
-python3 -m venv .venv
-source .venv/bin/activate          # Windows: .venv\Scripts\activate
-```
-
-**2. Install the dependencies.**
-
-```sh
+cd backend
+python3 -m venv .venv && source .venv/bin/activate   # Windows: .venv\Scripts\activate
 pip install -r requirements.txt
+cp .env.example .env                                  # then fill it in
+python setup.py                                       # says what is still missing
+uvicorn src.api.app:app --reload
 ```
 
-**3. Add your API keys.** Copy the template and fill it in. `.env` is
-git-ignored; never put a real key in `.env.example`.
+`setup.py` checks the interpreter, the packages, and every variable the service
+needs, and prints the steps still left rather than failing halfway through a
+request.
+
+### Frontend
 
 ```sh
-cp .env.example .env
+cd frontend
+npm ci
+cp .env.example .env     # leave VITE_API_BASE_URL blank for local work
+npm run dev
 ```
 
-| Variable | Where to get it | Required |
-|---|---|---|
-| `GOOGLE_API_KEY` | [aistudio.google.com/apikey](https://aistudio.google.com/apikey) | yes |
-| `GROQ_API_KEY` | [console.groq.com/keys](https://console.groq.com/keys) | yes |
-| `NVIDIA_API_KEY` | [build.nvidia.com](https://build.nvidia.com) | yes |
-| `LANGFUSE_PUBLIC_KEY`, `LANGFUSE_SECRET_KEY`, `LANGFUSE_BASE_URL` | [cloud.langfuse.com](https://cloud.langfuse.com) | no, tracing only |
+Left blank, the dev server proxies `/api` to `http://127.0.0.1:8000`, so local
+development never touches CORS. Set `VITE_API_BASE_URL` to the deployed API
+origin for a real build, and add that page's origin to `CORS_ORIGINS` on the
+server — the browser refuses the call otherwise, before it leaves.
 
-**4. Check the machine is ready.** This reports what is still missing and what
-to do about it, rather than failing halfway through a run.
+### Comparing providers
 
 ```sh
-python setup.py
-```
-
-**5. Compare the providers.**
-
-```sh
+cd backend
 python examples/probe_providers.py list    # which models your keys can reach
-python examples/probe_providers.py run     # latency, tokens and answers
-```
-
-`run` writes a timestamped report to `reports/`, with charts, so runs can be
-compared over time.
-
-To measure a rate limit rather than trust a published figure:
-
-```sh
-python examples/probe_providers.py limits --provider groq --model openai/gpt-oss-20b
+python examples/probe_providers.py run     # score, time, and save a report
 ```
 
 ## Configuration
@@ -134,7 +121,7 @@ variable.
 ## Development
 
 ```sh
-python -m pytest
+cd backend && python -m pytest
 ```
 
 Adding a provider is a config change plus one package: `init_chat_model`
