@@ -165,6 +165,16 @@ def secrets() -> Secrets:
     return Secrets()
 
 
+def has_api_key(provider: str) -> bool:
+    """Whether this provider is usable, without raising.
+
+    The model picker needs to ask rather than find out: offering a model whose
+    key is absent turns a choice into an error the person cannot act on.
+    """
+    field = PROVIDER_ENV_VAR.get(provider)
+    return bool(field and getattr(secrets(), field.lower(), None))
+
+
 def require_api_key(provider: str) -> str:
     """Return the key for *provider*, or say exactly what is missing."""
     env_var = PROVIDER_ENV_VAR.get(provider)

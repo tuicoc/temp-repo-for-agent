@@ -27,7 +27,7 @@ from langchain_core.messages import AIMessage, HumanMessage
 from pydantic import BaseModel, Field
 
 from ..agents.advisor import AdvisorAgent
-from ..config.config_manager import get_models_config
+from ..config.config_manager import get_models_config, has_api_key
 from ..llm.callback_handler import text_of
 from .auth import CurrentUser
 from .db import connection
@@ -97,6 +97,10 @@ def list_models() -> list[ModelOption]:
     return [
         ModelOption(id=model, provider=name, label=f"{block.label} · {model}")
         for name, block in config.providers.items()
+        # Only providers this server holds a key for. A picker that lists a
+        # model the server cannot reach offers a choice whose only outcome is
+        # an error, and the person choosing has no way to know which.
+        if has_api_key(name)
         for model in block.models
     ]
 
@@ -222,8 +226,17 @@ def _stream(
         result = agent.invoke(history)
         draft = result["structured_response"]
     except Exception as error:  # noqa: BLE001 - the browser needs to hear about it
+        # The provider's own words are for the log. A customer asking about a
+        # product should not be shown a JSON error body from an API they have
+        # never heard of.
         logger.exception("Advisor failed on conversation %s", conversation_id)
-        yield _event("error", {"message": f"{type(error).__name__}: {error}"})
+        yield _event(
+            "error",
+            {
+                "message": _readable(error, agent.model_name),
+                "model": agent.model_name,
+            },
+        )
         return
 
     reply = draft.reply.strip()
@@ -252,6 +265,20 @@ def _stream(
     yield _event(
         "done", {"ttft": round(ttft, 3), "ttft_content": round(ttft_content, 3)}
     )
+
+
+def _readable(error: Exception, model: str) -> str:
+    """A sentence a person can act on, from an exception they cannot."""
+    text = f"{type(error).__name__}: {error}".lower()
+    if any(m in text for m in ("429", "rate limit", "quota", "resource_exhausted")):
+        return f"{model} has hit its rate limit. Wait a moment, or pick another model."
+    if "not set" in text or "api key" in text or "unauthorized" in text or "401" in text:
+        return f"{model} is not configured on this server. Pick another model."
+    if "timeout" in text or "timed out" in text:
+        return f"{model} did not answer in time. Try again, or pick another model."
+    if "500" in text or "internal server error" in text or "503" in text:
+        return f"{model} returned an error of its own. This is the provider, not you — try another model."
+    return f"Could not get a reply from {model}. Try again, or pick another model."
 
 
 def _event(name: str, data: dict[str, Any]) -> str:
