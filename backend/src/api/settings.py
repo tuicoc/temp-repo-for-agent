@@ -61,16 +61,45 @@ def _normalise(raw: str) -> str:
     return value
 
 
+def _looks_like_postgres(value: str) -> bool:
+    """Whether a connection string is for PostgreSQL rather than some other
+    database that happens to be configured alongside it."""
+    lowered = value.lower()
+    return lowered.startswith(("postgres://", "postgresql://", "jdbc:postgres")) or (
+        "host=" in lowered and "dbname=" in lowered
+    )
+
+
+def database_env_candidates() -> list[str]:
+    """Names of environment variables that look database-related.
+
+    For the error message only, and names only — a connection string holds a
+    password. Printing what is actually present ends the guessing game about
+    which name the portal used this time.
+    """
+    markers = ("POSTGRES", "PGHOST", "PGUSER", "DATABASE", "CONNSTR", "AZURE_SQL")
+    return sorted(
+        name
+        for name in os.environ
+        if any(marker in name.upper() for marker in markers)
+    )
+
+
 def resolve_database_url() -> tuple[str | None, str | None]:
     """Find the connection string. Returns (value, which variable it came from)."""
     for name in CONNECTION_STRING_VARS:
         if value := os.environ.get(name):
             return _normalise(value), name
 
-    # Azure App Service exposes the older Connection strings blade with a
-    # per-type prefix, and the suffix is whatever the entry was named.
+    # App Service's Connection strings blade renames what it injects: the
+    # entry is prefixed by its type, and the portal's default type is Custom,
+    # not PostgreSQL. So an entry named AZURE_POSTGRESQL_CONNECTIONSTRING
+    # arrives as CUSTOMCONNSTR_AZURE_POSTGRESQL_CONNECTIONSTRING. Any of the
+    # prefixes will do as long as the value looks like a Postgres DSN.
     for name, value in os.environ.items():
-        if name.startswith("POSTGRESQLCONNSTR_") and value:
+        if not value or "CONNSTR_" not in name:
+            continue
+        if _looks_like_postgres(value):
             return _normalise(value), name
 
     parts = {
@@ -134,12 +163,21 @@ class WebSettings(BaseSettings):
         searched = ", ".join(
             (*CONNECTION_STRING_VARS, "POSTGRESQLCONNSTR_*", *CONNECTION_PART_VARS.values())
         )
+        present = database_env_candidates()
+        found = (
+            "Variables that are set and look related: " + ", ".join(present)
+            if present
+            else "No database-looking variable is set at all."
+        )
         raise RuntimeError(
-            "No PostgreSQL connection string found. Looked at: "
-            + searched
-            + ". On Azure, connecting the database under Settings -> Service "
-            "Connector sets one of these for you; locally, put DATABASE_URL in "
-            "backend/.env."
+            "No PostgreSQL connection string found.\n"
+            f"Looked at: {searched}, and any *CONNSTR_* holding a Postgres DSN.\n"
+            f"{found}\n"
+            "Names only — the values are not printed because they carry a "
+            "password.\n"
+            "On Azure: Settings -> Environment variables. A connection string "
+            "added under the Connection strings tab is renamed with its type as "
+            "a prefix, so check there too. Locally: DATABASE_URL in backend/.env."
         )
 
     def require(self, field: str) -> str:

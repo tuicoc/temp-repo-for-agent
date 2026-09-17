@@ -15,12 +15,13 @@ from __future__ import annotations
 
 import logging
 from contextlib import asynccontextmanager
+from typing import Any
 
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from . import auth, chat
-from .db import close_pool, init_db
+from .db import close_pool, diagnose_connection, init_db
 from .settings import get_settings
 
 logging.basicConfig(
@@ -33,10 +34,25 @@ logging.getLogger("httpcore").setLevel(logging.WARNING)
 logger = logging.getLogger(__name__)
 
 
+# Set when startup could not reach the database. The app still serves, so the
+# problem can be asked about rather than guessed at from a container that will
+# not stay up.
+STARTUP_ERROR: str | None = None
+
+
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    init_db()
-    logger.info("Database ready")
+    global STARTUP_ERROR
+    try:
+        init_db()
+        logger.info("Database ready")
+    except Exception as error:  # noqa: BLE001 - reported through /health
+        STARTUP_ERROR = str(error)
+        logger.error("Database unavailable at startup: %s", error)
+        logger.error(
+            "The app is serving anyway so that /health can be read. "
+            "Every request needing the database will fail until this is fixed."
+        )
     yield
     close_pool()
 
@@ -59,6 +75,17 @@ app.include_router(chat.router)
 
 
 @app.get("/health")
-def health() -> dict[str, str]:
-    """What Azure polls. Cheap on purpose: no database, no model."""
-    return {"status": "ok"}
+def health() -> dict[str, Any]:
+    """What Azure polls, and what a person reads when something is wrong.
+
+    Cheap when healthy. When the database could not be reached at startup it
+    also reports where the connection string came from, the host, and the
+    address that host resolves to — the three facts that separate a DNS problem
+    from a routing problem from a credentials problem.
+    """
+    if STARTUP_ERROR is None:
+        return {"status": "ok"}
+    report = diagnose_connection()
+    report["status"] = "degraded"
+    report["startup_error"] = STARTUP_ERROR.splitlines()[0]
+    return report
