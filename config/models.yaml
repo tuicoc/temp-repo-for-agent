@@ -1,0 +1,58 @@
+# Which models to try on each provider, and what each provider is believed to
+# allow. No secrets here — this file is committed. Keys live in .env, read from
+# the environment, never interpolated into this file.
+#
+#     python examples/probe_providers.py list    # what your key can reach
+#     python examples/probe_providers.py run     # score, time and save a report
+#
+# The lists are deliberately short. Every model here costs four calls per run
+# against a free tier, and a run that exhausts the day's quota measures nothing.
+# Add one for a single run with --model rather than editing this file.
+#
+# Dropped after the run of 2026-09-17, with the reason:
+#   gemini-3.8-flash    daily quota exhausted after one call
+#   gemini-2.5-flash    404, retired for new keys; the API names 3.6 instead
+#   moonshotai/kimi-k3  every call timed out at 60s
+#   z-ai/glm-5.3-flash  30s to first token, 10 tok/s
+#   qwen/qwen3.8-27b    fine (0.42s ttft), left out only to keep the run small
+#
+# The rate_limits blocks feed the rate limiter. These are cautious guesses, not
+# published figures: Google's rate-limit page now tells you to read your own
+# quota in AI Studio rather than listing numbers, and NVIDIA states limits vary
+# per model and are unpublished. Replace them with what you measure:
+#
+#     python examples/probe_providers.py limits --provider groq --model <name>
+
+providers:
+  google_genai:
+    label: Google AI Studio
+    models_url: https://generativelanguage.googleapis.com/v1beta/models
+    models:
+      - gemini-3.5-flash-lite
+      - gemini-3.6-flash
+    rate_limits:
+      requests_per_minute: 10
+      input_tokens_per_minute: 250000
+      output_tokens_per_minute: 50000
+
+  groq:
+    label: Groq
+    models_url: https://api.groq.com/openai/v1/models
+    models:
+      - openai/gpt-oss-20b
+    rate_limits:
+      requests_per_minute: 30
+      input_tokens_per_minute: 6000
+      # Groq enforces this per model and refuses a request whose *expected*
+      # output exceeds it, so max_tokens below has to stay under it.
+      output_tokens_per_minute: 1000
+
+  nvidia:
+    label: NVIDIA NIM
+    models_url: https://integrate.api.nvidia.com/v1/models
+    models:
+      - nvidia/nemotron-3-super-120b-a12b
+    rate_limits:
+      requests_per_minute: 40
+      input_tokens_per_minute: 100000
+      output_tokens_per_minute: 50000

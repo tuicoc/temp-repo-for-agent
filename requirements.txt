@@ -1,0 +1,25 @@
+# Direct dependencies, pinned to the versions this project was developed
+# against. Transitive dependencies are resolved by pip and are not pinned here.
+#
+#     python -m venv .venv && source .venv/bin/activate
+#     pip install -r requirements.txt
+
+# Model access. init_chat_model dispatches to whichever of these matches the
+# provider named in config/models.yaml, so adding a provider is a config line
+# plus one package here.
+langchain==1.4.0
+langchain-google-genai==4.4.0
+langchain-groq==1.1.3
+langchain-nvidia-ai-endpoints==1.4.3
+
+# Configuration. pydantic-settings types the settings and fails at startup
+# when a key is missing; python-dotenv loads .env once.
+pydantic-settings==2.15.0
+python-dotenv==1.2.3
+PyYAML==6.0.3
+
+# Plain HTTP, used to ask each provider which models the key can reach.
+httpx==0.28.1
+
+# Tracing. Optional at runtime: with no keys set the handler is never built.
+langfuse==4.15.4

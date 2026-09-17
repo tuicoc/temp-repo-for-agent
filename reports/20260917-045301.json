@@ -1,0 +1,265 @@
+{
+  "run_id": "20260917-045301",
+  "generated_at": "2026-09-17T04:54:17.156432+00:00",
+  "notes": "Langfuse session `probe-20260917-045301`.",
+  "results": [
+    {
+      "provider": "google_genai",
+      "model": "gemini-3.5-flash-lite",
+      "prompt_key": "reasoning",
+      "ttft": null,
+      "total": 1.6664498760073911,
+      "tokens": [
+        0,
+        0
+      ],
+      "queued": 1.7243000911548734e-05,
+      "answer": "{\n  \"khach_noi_dung\": false,\n  \"muc_giam_thuc_te_phan_tram\": 28.0,\n  \"giai_thich\": \"Khách nói sai vì lần giảm thứ hai áp dụng trên giá đã giảm của lần thứ nhất chứ không tính trên giá gốc. Tổng mức giảm thực tế là 28%.\"\n}",
+      "error": "",
+      "passed": true,
+      "wrong_fields": []
+    },
+    {
+      "provider": "google_genai",
+      "model": "gemini-3.5-flash-lite",
+      "prompt_key": "extraction",
+      "ttft": null,
+      "total": 1.3848835620156024,
+      "tokens": [
+        0,
+        0
+      ],
+      "queued": 1.5017983969300985e-05,
+      "answer": "{\n  \"ten_khach\": \"Lan\",\n  \"thanh_pho\": \"Đà Nẵng\",\n  \"so_luong\": 2,\n  \"size\": \"M\",\n  \"mau\": \"xanh\",\n  \"tong_tien_vnd\": 350000\n}",
+      "error": "",
+      "passed": true,
+      "wrong_fields": []
+    },
+    {
+      "provider": "google_genai",
+      "model": "gemini-3.5-flash-lite",
+      "prompt_key": "vietnamese",
+      "ttft": 1.0757815030228812,
+      "total": 1.1679796380049083,
+      "tokens": [
+        51,
+        30
+      ],
+      "queued": 1.3704993762075901e-05,
+      "answer": "",
+      "error": "",
+      "passed": null,
+      "wrong_fields": []
+    },
+    {
+      "provider": "google_genai",
+      "model": "gemini-3.5-flash-lite",
+      "prompt_key": "instruction",
+      "ttft": 1.0087242269946728,
+      "total": 1.1358674259972759,
+      "tokens": [
+        47,
+        32
+      ],
+      "queued": 1.3201002730056643e-05,
+      "answer": "",
+      "error": "",
+      "passed": null,
+      "wrong_fields": []
+    },
+    {
+      "provider": "google_genai",
+      "model": "gemini-3.6-flash",
+      "prompt_key": "reasoning",
+      "ttft": null,
+      "total": null,
+      "tokens": [
+        0,
+        0
+      ],
+      "queued": 1.3982004020363092e-05,
+      "answer": "",
+      "error": "GoogleAPIError: 503 UNAVAILABLE. {'error': {'code': 503, 'message': 'This model is currently experiencing high demand. Spikes in demand are usually temporary. Please try again later.', 'status': 'UNAVAILABLE'}}",
+      "passed": null,
+      "wrong_fields": []
+    },
+    {
+      "provider": "google_genai",
+      "model": "gemini-3.6-flash",
+      "prompt_key": "extraction",
+      "ttft": null,
+      "total": null,
+      "tokens": [
+        0,
+        0
+      ],
+      "queued": 1.3516983017325401e-05,
+      "answer": "",
+      "error": "OutputParserException: Failed to parse OrderExtraction from completion {\"ten_khach\": \"Lan\"}. Got: 5 validation errors for OrderExtraction\nthanh_pho\n  Field required [type=missing, input_value={'ten_khach': 'Lan'}, input_type=dict]\n    For further information visit https://errors.pydantic.dev/2.13/v/",
+      "passed": null,
+      "wrong_fields": []
+    },
+    {
+      "provider": "google_genai",
+      "model": "gemini-3.6-flash",
+      "prompt_key": "vietnamese",
+      "ttft": 4.566040953999618,
+      "total": 4.6100151569989976,
+      "tokens": [
+        51,
+        508
+      ],
+      "queued": 1.4322984497994184e-05,
+      "answer": "",
+      "error": "",
+      "passed": null,
+      "wrong_fields": []
+    },
+    {
+      "provider": "google_genai",
+      "model": "gemini-3.6-flash",
+      "prompt_key": "instruction",
+      "ttft": 4.117972343025031,
+      "total": 4.161462486023083,
+      "tokens": [
+        47,
+        508
+      ],
+      "queued": 1.5416997484862804e-05,
+      "answer": "",
+      "error": "",
+      "passed": null,
+      "wrong_fields": []
+    },
+    {
+      "provider": "groq",
+      "model": "openai/gpt-oss-20b",
+      "prompt_key": "reasoning",
+      "ttft": null,
+      "total": 1.6253825070161838,
+      "tokens": [
+        0,
+        0
+      ],
+      "queued": 1.2279982911422849e-05,
+      "answer": "{\n  \"khach_noi_dung\": false,\n  \"muc_giam_thuc_te_phan_tram\": 28.0,\n  \"giai_thich\": \"Đầu tiên giảm 20% rồi giảm thêm 10% trên giá còn lại. Tính toán: 0.8×0.9=0.72, tức là giảm 28%.\"\n}",
+      "error": "",
+      "passed": true,
+      "wrong_fields": []
+    },
+    {
+      "provider": "groq",
+      "model": "openai/gpt-oss-20b",
+      "prompt_key": "extraction",
+      "ttft": null,
+      "total": 2.8199159700016025,
+      "tokens": [
+        0,
+        0
+      ],
+      "queued": 1.688100746832788e-05,
+      "answer": "{\n  \"ten_khach\": \"Lan\",\n  \"thanh_pho\": \"Đà Nẵng\",\n  \"so_luong\": 2,\n  \"size\": \"M\",\n  \"mau\": \"xanh\",\n  \"tong_tien_vnd\": 350000\n}",
+      "error": "",
+      "passed": true,
+      "wrong_fields": []
+    },
+    {
+      "provider": "groq",
+      "model": "openai/gpt-oss-20b",
+      "prompt_key": "vietnamese",
+      "ttft": 2.3842274000053294,
+      "total": 2.398768581013428,
+      "tokens": [
+        119,
+        214
+      ],
+      "queued": 1.6229983884841204e-05,
+      "answer": "Xin lỗi anh, hiện tại sản phẩm này đã hết hàng, anh vui lòng đợi xem khi có sẵn.",
+      "error": "",
+      "passed": null,
+      "wrong_fields": []
+    },
+    {
+      "provider": "groq",
+      "model": "openai/gpt-oss-20b",
+      "prompt_key": "instruction",
+      "ttft": 1.6470876020030119,
+      "total": 1.6941039400117006,
+      "tokens": [
+        118,
+        432
+      ],
+      "queued": 1.3804004993289709e-05,
+      "answer": "- Tăng cường trí nhớ và học tập.  \n- Cải thiện tâm trạng, giảm căng thẳng.  \n- Hỗ trợ hệ miễn dịch, ngăn ngừa bệnh.",
+      "error": "",
+      "passed": null,
+      "wrong_fields": []
+    },
+    {
+      "provider": "nvidia",
+      "model": "nvidia/nemotron-3-super-120b-a12b",
+      "prompt_key": "reasoning",
+      "ttft": null,
+      "total": 5.975766947987722,
+      "tokens": [
+        0,
+        0
+      ],
+      "queued": 1.1797994375228882e-05,
+      "answer": "{\n  \"khach_noi_dung\": false,\n  \"muc_giam_thuc_te_phan_tram\": 28.0,\n  \"giai_thich\": \"Giảm giá liên tiếp được tính bằng cách nhân hệ số còn lại sau mỗi lần giảm. Giảm 20% => giá còn 80% (=0,8). Sau đó giảm thêm 10% trên giá đã giảm => giá còn 90% của 0,8 (=0,9 × 0,8 = 0,72). Giá cuối cùng là 72% giá gốc, tức là giảm tổng cộng 1 – 0,72 = 0,28 = 28%.\"\n}",
+      "error": "",
+      "passed": true,
+      "wrong_fields": []
+    },
+    {
+      "provider": "nvidia",
+      "model": "nvidia/nemotron-3-super-120b-a12b",
+      "prompt_key": "extraction",
+      "ttft": null,
+      "total": 3.6993106700247154,
+      "tokens": [
+        0,
+        0
+      ],
+      "queued": 1.2745993444696069e-05,
+      "answer": "{\n  \"ten_khach\": \"Chị Lan\",\n  \"thanh_pho\": \"Đà Nẵng\",\n  \"so_luong\": 2,\n  \"size\": \"M\",\n  \"mau\": \"xanh\",\n  \"tong_tien_vnd\": 350000\n}",
+      "error": "",
+      "passed": false,
+      "wrong_fields": [
+        "ten_khach='Chị Lan' (want 'Lan')"
+      ]
+    },
+    {
+      "provider": "nvidia",
+      "model": "nvidia/nemotron-3-super-120b-a12b",
+      "prompt_key": "vietnamese",
+      "ttft": 4.095268292003311,
+      "total": 4.4028702399809845,
+      "tokens": [
+        66,
+        196
+      ],
+      "queued": 1.2787990272045135e-05,
+      "answer": "Sản phẩm này hiện đang hết hàng, anh/chị vui lòng chờ một chút nhé.",
+      "error": "",
+      "passed": null,
+      "wrong_fields": []
+    },
+    {
+      "provider": "nvidia",
+      "model": "nvidia/nemotron-3-super-120b-a12b",
+      "prompt_key": "instruction",
+      "ttft": 18.61281724300352,
+      "total": 20.00906795699848,
+      "tokens": [
+        64,
+        308
+      ],
+      "queued": 1.3650016626343131e-05,
+      "answer": "- Cải thiện trí nhớ và tập trung.\n- Tăng cường hệ miễn dịch, giảm bệnh.\n- Cân bằng hormon, giảm stress.",
+      "error": "",
+      "passed": null,
+      "wrong_fields": []
+    }
+  ]
+}
