@@ -63,8 +63,13 @@ def pool() -> ConnectionPool:
     global _pool
     if _pool is None:
         settings = get_settings()
+        url, source = settings.require_database_url()
+        # Which variable it came from, never what was in it. On Azure this is
+        # the difference between "the database is not connected" and "it is
+        # connected under a name we were not reading".
+        logger.info("Connecting to PostgreSQL using %s", source)
         _pool = ConnectionPool(
-            settings.require("database_url"),
+            url,
             min_size=1,
             # One core, and Azure's smaller Postgres tiers cap connections
             # low enough that a generous pool is a way to exhaust them.

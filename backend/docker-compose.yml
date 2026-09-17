@@ -1,0 +1,43 @@
+# The one thing everyone on the team needs to be identical: the database.
+#
+#     docker compose up -d
+#
+# The backend itself is not here. It runs on the host with its own virtualenv
+# and hot reload, which is what you want while developing, and requirements.txt
+# is pinned so the Python side is already the same everywhere. Packaging it
+# into an image as well would add a build to every change and buy nothing.
+#
+#     cd backend
+#     uvicorn src.api.app:app --reload
+#
+# DATABASE_URL in backend/.env already points here.
+
+# Pinned, because otherwise Compose names the project after whatever directory
+# the file sits in. Moving this file would then orphan the running container
+# and silently start a second one with its own empty volume.
+name: agent-core
+
+services:
+  postgres:
+    # pgvector rather than plain postgres, and not for today: docs/flow.md
+    # section 6.2 stores kb_chunks as embeddings, which needs the extension.
+    # Same PostgreSQL 16, so nothing else changes, and switching later would
+    # mean rebuilding the volume for no reason.
+    image: pgvector/pgvector:pg16
+    environment:
+      POSTGRES_PASSWORD: dev
+      POSTGRES_DB: agentcore
+    ports:
+      # 55432, not 5432, so this cannot collide with a Postgres someone has
+      # already installed.
+      - "55432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+volumes:
+  pgdata:

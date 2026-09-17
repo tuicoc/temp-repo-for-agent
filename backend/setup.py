@@ -165,7 +165,12 @@ def read_env_file():
             if not line or line.startswith("#") or "=" not in line:
                 continue
             name, _, value = line.partition("=")
-            values[name.strip()] = value.strip().strip("'\"")
+            value = value.strip()
+            # A trailing "# ..." is a comment, not part of the value. Without
+            # this, a blank key with a note beside it reads as set.
+            if "#" in value and not value.startswith(("'", '"')):
+                value = value.split("#", 1)[0].strip()
+            values[name.strip()] = value.strip("'\"")
     return values
 
 
