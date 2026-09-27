@@ -1,38 +1,86 @@
-# Which models to try on each provider, and what each provider is believed to
+# Which models each provider offers us, and what each provider is believed to
 # allow. No secrets here — this file is committed. Keys live in .env, read from
 # the environment, never interpolated into this file.
 #
-#     python examples/probe_providers.py list    # what your key can reach
-#     python examples/probe_providers.py run     # score, time and save a report
+# The lists are deliberately short: the Admin page offers every model listed
+# under a provider whose key is set, and a model nobody has measured is not a
+# choice anyone should be offered.
 #
-# The lists are deliberately short. Every model here costs four calls per run
-# against a free tier, and a run that exhausts the day's quota measures nothing.
-# Add one for a single run with --model rather than editing this file.
-#
-# Dropped after the run of 2026-09-17, with the reason:
+# Dropped after the provider comparison of 2026-09-17, with the reason:
 #   gemini-3.8-flash    daily quota exhausted after one call
 #   gemini-2.5-flash    404, retired for new keys; the API names 3.6 instead
 #   moonshotai/kimi-k3  every call timed out at 60s
 #   z-ai/glm-5.3-flash  30s to first token, 10 tok/s
-#   qwen/qwen3.8-27b    fine (0.42s ttft), left out only to keep the run small
+#
+# Added on 2026-09-23 so the advisor's model can be switched at runtime and
+# timed on the voice path; the Admin endpoint only accepts models listed here.
+# None of them has passed the scored probe or produced an AdvisorDraft yet:
+#   qwen/qwen3.8-27b       0.42s ttft in the unscored run of 2026-09-17
+#   openai/gpt-oss-120b    2.24s ttft in the same run, for quality rather than speed
+#   gemini-3.1-flash-lite  newer lite model on the same key, unmeasured
+# gemini-2.5-flash-lite was added the same day and removed an hour later: the
+# models endpoint lists it, but generating returns 404 "no longer available to
+# new users". A listed model is not a usable one.
 #
 # The rate_limits blocks feed the rate limiter. These are cautious guesses, not
 # published figures: Google's rate-limit page now tells you to read your own
 # quota in AI Studio rather than listing numbers, and NVIDIA states limits vary
-# per model and are unpublished. Replace them with what you measure:
+# per model and are unpublished. Replace them with what you measure.
+
+# Every number a model call is made with lives in this file, at one of three
+# levels, each narrower than the last:
 #
-#     python examples/probe_providers.py limits --provider groq --model <name>
+#   defaults      the system-wide value, used unless something below says
+#                 otherwise. Shared settings belong here and nowhere else.
+#   providers.*   what a provider forces on anyone routed to it. Only the
+#                 fields it genuinely constrains; a preference is not a
+#                 constraint.
+#   agents.*      what one agent needs. This wins, except against a provider
+#                 ceiling, which cannot be exceeded by wishing.
+#
+# A field left unset at all three levels is an error at startup, not a silent
+# fall back to whatever the provider defaults to. `null` is different from
+# unset and means "make the call without this parameter at all".
+defaults:
+  # docs/design.md section 9.6 and Appendix D: every call is temperature 0, or a
+  # run cannot be reproduced and the evaluation cache never hits. This is the
+  # one number that makes `eval replay` mean anything, so it is a default
+  # rather than something each agent remembers to set.
+  temperature: 0.0
+  # Enough for a short structured reply. An agent that reasons, or that answers
+  # at length, raises it in its own block below.
+  max_tokens: 1024
+  # Seconds before a single call is abandoned. Without one, a model that stops
+  # producing tokens mid-stream blocks the whole run indefinitely.
+  timeout: 60.0
+  # The SDKs retry internally, underneath LangChain, where neither the rate
+  # limiter nor its callbacks can see it. One attempt per call keeps every
+  # request visible to the limiter, which is the only thing that can space them
+  # out.
+  max_retries: 0
+
+rate_limiter:
+  # Headroom left under every published limit. Our count of a minute and the
+  # provider's never agree exactly, and that is true of all of them, so this is
+  # one setting for the process rather than one per provider.
+  buffer_percentage: 0.1
 
 # Agent -> model. An agent names a provider and a model here rather than
 # hard-coding one, so swapping the model an agent uses is a line of config.
-# The values come from the provider comparison in reports/provider-probe/.
+# The values come from the provider comparison of 2026-09-17.
 agents:
   # The advisor is on the hot path, where a customer is waiting, so it is
-  # chosen on time to first token rather than throughput. See the
-  # recommendation in reports/provider-probe/.
+  # chosen on time to first token rather than throughput, which is what the
+  # provider comparison of 2026-09-17 recommended.
   advisor:
     provider: google_genai
     model: gemini-3.5-flash-lite
+    generation:
+      # gemini-3.5-flash-lite produces reasoning output, and thinking tokens
+      # count against this budget before a single character of the reply does.
+      # The reply itself is short, but it is a validated object: truncating it
+      # is a parse failure and a wasted regeneration, not a shorter answer.
+      max_tokens: 2048
 
 providers:
   google_genai:
@@ -41,6 +89,7 @@ providers:
     models:
       - gemini-3.5-flash-lite
       - gemini-3.6-flash
+      - gemini-3.1-flash-lite
     rate_limits:
       requests_per_minute: 10
       input_tokens_per_minute: 250000
@@ -51,19 +100,121 @@ providers:
     models_url: https://api.groq.com/openai/v1/models
     models:
       - openai/gpt-oss-20b
+      - qwen/qwen3.8-27b
+      - openai/gpt-oss-120b
     rate_limits:
       requests_per_minute: 30
       input_tokens_per_minute: 6000
       # Groq enforces this per model and refuses a request whose *expected*
-      # output exceeds it, so max_tokens below has to stay under it.
+      # output exceeds it, which is what max_output_tokens below is for.
       output_tokens_per_minute: 1000
+    # A request Groq will not accept, whatever the agent asked for. Kept under
+    # the per-minute allowance above so that one reply cannot spend the whole
+    # minute's output budget and stall every conversation behind it.
+    max_output_tokens: 800
 
   nvidia:
     label: NVIDIA NIM
     models_url: https://integrate.api.nvidia.com/v1/models
     models:
       - nvidia/nemotron-3-super-120b-a12b
+    generation:
+      # ChatNVIDIA forwards keyword arguments it does not recognise into the
+      # request body, and the server rejects the whole call with "Unsupported
+      # parameter(s): max_retries". null means the parameter is not sent at
+      # all, which is different from sending zero. Found by running the probe,
+      # which failed all twelve NVIDIA calls.
+      max_retries: null
     rate_limits:
       requests_per_minute: 40
       input_tokens_per_minute: 100000
       output_tokens_per_minute: 50000
+
+# ── Evaluation models ────────────────────────────────────────────────────────
+# An evaluation model reads a piece of state and answers typed questions: a
+# choice among named options, a score on an ordered scale, or the probability
+# that something is true. It writes no text. That is the shape of the soft
+# guardrail of docs/design.md section 4.5 ("does this draft promise free
+# shipping the tools did not give"), so the PolicyAgent asks one of these.
+#
+# Kept apart from `providers` and `agents` on purpose: these are not chat
+# models, LangChain has no integration for them, and the Admin page offers
+# every model under `providers` to the advisor, which must never include one
+# of these.
+evaluation_providers:
+  vercel_gateway:
+    label: Vercel AI Gateway
+    # POST <base_url>/evaluate. Not the OpenAI-compatible endpoint, which does
+    # not serve evaluation models.
+    base_url: https://ai-gateway.vercel.sh/v1
+    models_url: https://ai-gateway.vercel.sh/v1/models
+    models:
+      # TypeSafe AI's Jev. $0.042 per million input tokens, output free, since
+      # 2026-09-25. The gateway refuses every call until the Vercel team has a
+      # card on file (customer_verification_required).
+      - typesafe-ai/jev
+    # Off because the gateway refuses it on the Hobby plan (permission_denied,
+    # "only available for Pro and Enterprise plans", 2026-09-23). The provider
+    # may therefore keep what it is sent, so nothing reaches Jev that intake
+    # has not tokenised (section 4.1): no raw customer text, ever.
+    zero_data_retention: false
+    rate_limits:
+      # A guess. The lab of 2026-09-23 saw 429 after about 80 calls in a row.
+      requests_per_minute: 30
+      input_tokens_per_minute: 100000
+      output_tokens_per_minute: 100000
+      input_token_price_per_million: 0.042
+
+# Agent -> evaluation model. `timeout` is how long the caller waits before
+# going on without an answer: the PolicyAgent sits on the hot path inside the
+# 3 s TTFT budget, and its measured median was 0.6 s (architecture notes 8.5).
+evaluators:
+  policy:
+    provider: vercel_gateway
+    model: typesafe-ai/jev
+    timeout: 1.5
+
+# ── Voice ────────────────────────────────────────────────────────────────────
+# docs/design.md section 4.11 and Appendix C: VAD, ASR and TTS run locally.
+# These are the choices a call starts with; the Admin page may change them for
+# this process, the way it changes the advisor's model. The weights are not
+# in the repository: `python -m src.components.voice.fetch` downloads them into
+# `models/voice/`, and the packages are in requirements-voice.txt.
+voice:
+  # Which recogniser turns the caller's speech into text. The lab of
+  # 2026-09-22 found the 30M Zipformer the fastest on CPU at a usable WER.
+  asr: zipformer-30m
+  # How the end of the caller's turn is decided: "smart" asks Smart Turn v3.2
+  # after 200 ms of silence and ends at 1.2 s regardless; "silence-<ms>" ends
+  # after a fixed silence.
+  endpointing: smart
+  # Continuous speech, in ms, that pauses the agent: the caller may be cutting
+  # in. Shorter sounds ("dạ", "vâng") are backchannel and ignored.
+  barge_in_ms: 400
+  # What turns that pause into an interruption, as LiveKit's agents do it
+  # (min_interruption_words, false_interruption_timeout): the words recognised
+  # must number at least this many and not all be backchannel ("ừ", "vâng");
+  # otherwise the agent resumes where it paused. The same bar applies to
+  # anything said while the agent is still working out its answer.
+  min_interruption_words: 2
+  # A pause that has heard no words by then resumes as well.
+  false_interruption_ms: 2500
+  # vieneu: local and streaming. edge:<voice> uses Microsoft's free endpoint,
+  # which refuses a share of requests, so it is for listening, not timing.
+  tts: "vieneu:"
+  # Section 4.11: brand names the recogniser is told to expect (the
+  # catalogue's brands are added on their own), and what it wrote -> what was
+  # said. Only errors actually heard in the lab belong here.
+  lexicon:
+    hotwords: [AirPure, Xiaomi, Samsung, Karofi, Kangaroo, Sunhouse, RunLite]
+    corrections:
+      # Heard in the lab of 2026-09-22 and again on the first live call.
+      like tờ: Lite
+      liker: Lite
+      layer tờ: Lite
+      xiao mi: Xiaomi
+      sam sung: Samsung
+      e pua: AirPure
+      ea pua: AirPure
+      lõi lộc: lõi lọc
+      sai z eo: size L

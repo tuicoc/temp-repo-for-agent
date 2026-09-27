@@ -223,7 +223,40 @@ def check_keys():
     else:
         print(OK + "Langfuse tracing configured")
 
+    if os.environ.get("AI_GATEWAY_API_KEY") or from_file.get("AI_GATEWAY_API_KEY"):
+        print(OK + "policy model configured (Jev, Vercel AI Gateway)")
+    else:
+        print(BAD + "policy model off: AI_GATEWAY_API_KEY empty (optional, hard checks only)")
+
     return not absent and not missing_web
+
+
+def check_btc_pack():
+    """The organisers' data: the business tools and the knowledge base read it."""
+    configured = os.environ.get("BTC_DATA_DIR") or read_env_file().get("BTC_DATA_DIR")
+    folder = configured or os.path.join(ROOT, "data", "btc")
+    if os.path.exists(os.path.join(folder, "eval", "mock_tools.py")):
+        print(OK + "organisers' data found: " + folder)
+        return True
+    print(BAD + "organisers' data not found at " + folder)
+    note(
+        "It ships in backend/data/btc; BTC_DATA_DIR in .env points elsewhere.\n"
+        "       The catalogue, CRM and knowledge servers read it."
+    )
+    return False
+
+
+def check_voice():
+    """The hotline channel's local speech packages, part of requirements.txt."""
+    try:
+        from importlib.util import find_spec
+        missing = [m for m in ("onnxruntime", "sherpa_onnx", "soxr") if find_spec(m) is None]
+    except (ImportError, ValueError):
+        missing = ["onnxruntime"]
+    if missing:
+        print(BAD + "voice packages missing: pip install -r requirements.txt")
+    else:
+        print(OK + "voice packages installed")
 
 
 def check_models():
@@ -239,9 +272,8 @@ def check_models():
     if empty:
         print(BAD + "config/models.yaml has %d provider(s) with no models listed" % empty)
         note(
-            "Discover the models your keys can reach, then paste the interesting "
-            "ones into config/models.yaml:\n"
-            "       python examples/probe_providers.py list"
+            "List the models your keys can reach (each provider's models_url in "
+            "config/models.yaml) and paste the ones to use into the file."
         )
         return False
     print(OK + "config/models.yaml lists models")
@@ -259,6 +291,8 @@ def main():
     check_packages()
     check_env_file()
     check_keys()
+    check_btc_pack()
+    check_voice()
     check_models()
     return report()
 
@@ -266,7 +300,7 @@ def main():
 def report():
     if not todo:
         print("\nEverything is ready. Next:\n")
-        print("    python examples/probe_providers.py run")
+        print("    uvicorn src.api.app:app --reload")
         return 0
 
     print("\nStill to do, in order:\n")

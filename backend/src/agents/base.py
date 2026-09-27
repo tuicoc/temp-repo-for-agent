@@ -1,64 +1,32 @@
-"""The base every agent inherits from.
+"""What every agent has in common: its models come from config, by its name.
 
-The reference project defines its own ``Tool`` wrapper, its own ``ToolResult``,
-and its own ReAct loop. That code predates the framework growing its own, and
-copying it here would repeat the mistake this project already avoided in the
-LLM factory: hand-writing what LangChain already does.
+An agent's name is its key in ``config/models.yaml``. Under ``agents`` it
+names a chat model, which :class:`~src.llm.factory.LLMFactory` builds with the
+shared rate limiter and the token ledger already on it. Under ``evaluators``
+it names an evaluation model such as Jev, reached through
+:func:`~src.llm.jev.evaluate`. Either way, changing the model an agent uses
+is one line of config, the same for every agent, and nothing below an agent
+picks a model by itself.
 
-So this base is thin on purpose. It owns three things and delegates the rest:
-
-- **Which model an agent runs on.** Read from ``agents:`` in
-  ``config/models.yaml``, built through ``LLMFactory`` so the shared rate
-  limiter, the token ledger and Langfuse come along.
-- **Compiling the agent once.** ``langchain.agents.create_agent`` returns a
-  compiled LangGraph implementing the ReAct loop with a ``ToolNode``, which is
-  what ``docs/flow.md`` section 10 specifies. Passing ``response_format``
-  constrains the final answer to a schema, so the reply is a validated object
-  rather than text to parse.
-- **A place to put the contract.** Subclasses declare ``SYSTEM_PROMPT``,
-  ``RESPONSE_FORMAT`` and ``tools()``, and implement ``process``.
-
-Tools are plain functions decorated with ``@tool`` from ``langchain_core``.
-The decorator derives the argument schema from the type hints and the
-docstring, so the description the model reads and the validation the code gets
-come from one place. Parameter descriptions belong under an ``Args:`` heading:
-without it the generated schema is silently incomplete and models start
-guessing arguments.
-
-Nothing here is a "module" in the reference's sense — no profile, memory,
-knowledge or think layer. Those are this project's own, and they arrive with
-the sections of ``docs/flow.md`` that define them. Fixing their interfaces
-before anything is built against them would be guessing.
+That is all the base does. The agents differ too much for more: the Advisor
+is a tool loop, the Policy one request to Jev, the Memory and QA agents run
+after the call. None holds state between calls (``docs/design.md``,
+principle 2). Each builds the rest from ``src/components`` and the framework.
 """
 
 from __future__ import annotations
 
-import logging
-from abc import ABC, abstractmethod
-from typing import Any, Sequence
+from typing import Any, Mapping
 
-from langchain.agents import create_agent
-from langchain_core.tools import BaseTool
-from pydantic import BaseModel
+from langchain_core.language_models import BaseChatModel
 
 from ..config.config_manager import get_models_config
+from ..llm import jev
 from ..llm.factory import LLMFactory
 
-logger = logging.getLogger(__name__)
 
-
-class BaseAgent(ABC):
-    """Abstract base for every agent in the system.
-
-    A subclass supplies its prompt, its tools and its output shape, then
-    implements :meth:`process`. It gets a compiled ReAct graph for free.
-    """
-
-    #: Instructions sent with every call.
-    SYSTEM_PROMPT: str = ""
-
-    #: Pydantic model the final answer is constrained to. None means free text.
-    RESPONSE_FORMAT: type[BaseModel] | None = None
+class BaseAgent:
+    """A named agent whose models are resolved from ``config/models.yaml``."""
 
     def __init__(
         self,
@@ -66,68 +34,51 @@ class BaseAgent(ABC):
         *,
         provider: str | None = None,
         model: str | None = None,
+        generation: Mapping[str, Any] | None = None,
     ) -> None:
-        """Build the agent.
+        """Resolve the agent's chat model, if it has one.
 
-        ``provider`` and ``model`` override what ``config/models.yaml`` routes
-        this agent to. The chat page offers a model picker, so the override is
-        a first-class argument rather than something callers patch in.
+        ``provider`` and ``model`` override the routing in the file, for the
+        Admin page's model picker; the agent's own ``generation`` block still
+        applies over the top, so a different model changes who answers, not
+        how much this agent may say.
+
+        ``generation`` overrides individual parameters (today only
+        ``temperature``) for an operator changing them at runtime. Anything
+        else is refused, so the file stays the one place a model's parameters
+        are defined.
+
+        An agent with no entry under ``agents`` and no override has no chat
+        model (``llm`` is None): the Policy asks Jev and nothing else.
         """
         self.name = name
+        self.llm: BaseChatModel | None = None
+        self.model_name: str | None = None
 
-        config = get_models_config().agent_llm_config(name)
+        models = get_models_config()
+        if not (provider or model or name in models.agents):
+            return
+
         if provider and model:
-            config = get_models_config().llm_config(provider, model)
-        elif model:
-            config = {**config, "model": model}
+            config = models.llm_config(provider, model, agent=name)
+        else:
+            config = models.agent_llm_config(name)
+            if model:
+                config = {**config, "model": model}
+        if generation:
+            unknown = set(generation) - {"temperature"}
+            if unknown:
+                raise ValueError(f"Cannot override {sorted(unknown)} at runtime; edit config/models.yaml")
+            config = {**config, **generation}
         self.model_name = config["model"]
         self.llm = LLMFactory.create_llm(config, agent_name=name)
 
-        self._tools = list(self.tools())
-        self._graph = create_agent(
-            model=self.llm,
-            tools=self._tools,
-            system_prompt=self.SYSTEM_PROMPT or None,
-            response_format=self.RESPONSE_FORMAT,
-        )
-        logger.info(
-            "Agent '%s' ready on %s | tools: %s",
-            name,
-            self.model_name,
-            [t.name for t in self._tools] or "none",
-        )
+    async def evaluate(
+        self, state: jev.State, questions: Mapping[str, jev.Question]
+    ) -> jev.Decision:
+        """Ask the evaluation model routed to this agent under ``evaluators``.
 
-    # ── running ───────────────────────────────────────────────────────────
-
-    def invoke(self, messages: list[Any], **kwargs: Any) -> dict[str, Any]:
-        """Run the ReAct loop over *messages* and return the graph's output.
-
-        With ``RESPONSE_FORMAT`` set, the result carries the validated object
-        under ``structured_response``.
+        Raises :class:`~src.llm.jev.JevUnavailable` rather than waiting; the
+        agent decides what to do without an answer.
         """
-        return self._graph.invoke({"messages": messages}, **kwargs)
-
-    def stream(self, messages: list[Any], **kwargs: Any):
-        """Yield message chunks as the model produces them.
-
-        ``stream_mode="messages"`` gives token-level chunks, which is what an
-        SSE endpoint needs.
-        """
-        yield from self._graph.stream(
-            {"messages": messages}, stream_mode="messages", **kwargs
-        )
-
-    # ── what subclasses provide ───────────────────────────────────────────
-
-    def tools(self) -> Sequence[BaseTool]:
-        """The tools this agent may call. Override; the default is none.
-
-        An empty list is a real answer, not an oversight: ``docs/flow.md``
-        section 9 gives some lanes no tools so that "the agent called no tool"
-        is mechanically true rather than a promise made in a prompt.
-        """
-        return []
-
-    @abstractmethod
-    def process(self, state: dict[str, Any]) -> dict[str, Any]:
-        """Entry point. Takes the current state, returns the keys to update."""
+        return await jev.evaluate(self.name, state, questions)

@@ -2,7 +2,6 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Base, ported from the reference project so the two look like one product. */
 @layer base {
   *, *::before, *::after { box-sizing: border-box; }
 
@@ -13,35 +12,35 @@
 
   body {
     background-color: #FFFFFF;
-    color: #1A1A1A;
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;
-    font-size: 0.875rem;
-    line-height: 1.5;
+    color: #000000;
+    font-family: "Be Vietnam Pro", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;
+    font-size: 14px;
+    line-height: 1.55;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
+    font-variant-numeric: tabular-nums;
   }
 
   /* Barely there. A conversation is read for minutes; the scrollbar should not
      be part of the reading. */
   ::-webkit-scrollbar       { width: 4px; height: 4px; }
   ::-webkit-scrollbar-track { background: transparent; }
-  ::-webkit-scrollbar-thumb { background: #C5C5C5; border-radius: 99px; }
-  ::-webkit-scrollbar-thumb:hover { background: #999999; }
+  ::-webkit-scrollbar-thumb { background: #CDD1D6; border-radius: 99px; }
+  ::-webkit-scrollbar-thumb:hover { background: #9AA0A6; }
 
   textarea { resize: none; }
+
+  /* Keyboard focus is visible, in the one accent, and nowhere else. */
+  :focus-visible {
+    outline: 2px solid #2F5D8A;
+    outline-offset: 2px;
+  }
+  input:focus-visible, textarea:focus-visible, select:focus-visible { outline: none; }
 }
 
-/* A message arrives rather than appears. Short enough not to delay reading. */
+/* A message arrives rather than appears: motion answers an action. */
 @keyframes msgIn {
-  from { opacity: 0; transform: translateY(6px); }
+  from { opacity: 0; transform: translateY(4px); }
   to   { opacity: 1; transform: translateY(0); }
 }
-.msg-enter { animation: msgIn 0.18s cubic-bezier(0.16, 1, 0.3, 1) both; }
-
-@keyframes fadeUp {
-  from { opacity: 0; transform: translateY(10px); }
-  to   { opacity: 1; transform: translateY(0); }
-}
-.chip-1 { animation: fadeUp 0.28s 0.04s cubic-bezier(0.16,1,0.3,1) both; }
-.chip-2 { animation: fadeUp 0.28s 0.10s cubic-bezier(0.16,1,0.3,1) both; }
-.chip-3 { animation: fadeUp 0.28s 0.16s cubic-bezier(0.16,1,0.3,1) both; }
+.msg-enter { animation: msgIn 0.16s ease-out both; }

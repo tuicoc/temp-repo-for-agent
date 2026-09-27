@@ -9,7 +9,14 @@ export default defineConfig({
   plugins: [react()],
   server: {
     proxy: {
+      // ws: the hotline channel's audio runs over a WebSocket under /api.
       '/api': {
+        target: 'http://127.0.0.1:8000',
+        changeOrigin: true,
+        ws: true,
+      },
+      // The admin page renders the service's own health report.
+      '/health': {
         target: 'http://127.0.0.1:8000',
         changeOrigin: true,
       },

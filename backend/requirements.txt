@@ -7,7 +7,12 @@
 # Model access. init_chat_model dispatches to whichever of these matches the
 # provider named in config/models.yaml, so adding a provider is a config line
 # plus one package here.
-langchain==1.4.0
+# The mcp extra brings the langchain.mcp namespace, which replaced the
+# standalone langchain-mcp-adapters package in 1.4. It is in beta and warns on
+# import; pinning langchain pins its API. fastmcp is what our own MCP servers
+# are written with, so it is a direct dependency and pinned in its own right.
+langchain[mcp]==1.4.0
+fastmcp==4.0.5
 langchain-google-genai==4.4.0
 langchain-groq==1.1.3
 langchain-nvidia-ai-endpoints==1.4.3
@@ -32,10 +37,33 @@ fastapi==0.141.1
 uvicorn[standard]==0.53.0
 gunicorn==26.2.0
 
-# Auth and storage.
+# Auth and storage. The checkpointer is docs/flow.md section 3.1's working
+# memory: agent state per thread, in the same Postgres, over the same pool.
 PyJWT==2.14.0
 bcrypt==5.0.0
 psycopg[binary,pool]==3.3.5
+langgraph-checkpoint-postgres==3.1.2
+
+# The voice channel (docs/design.md section 4.11): VAD, turn detection, ASR
+# and TTS, all local, all on CPU, about 650 MB installed. In this file rather
+# than a second one so every machine, the deployment included, runs the same
+# service. The weights are not packages: the API downloads the missing ones
+# when it starts (src/components/voice/fetch.py). On an Intel Mac onnxruntime
+# must stay at 1.23.2, the last release with x86_64 wheels, and numba and
+# llvmlite are pinned for the same reason.
+numpy==2.2.6
+soxr==1.0.0
+soundfile==0.13.1
+huggingface_hub==1.32.0
+transformers==5.17.0
+onnxruntime==1.23.2
+sherpa-onnx==1.13.8
+ctranslate2==4.8.2
+faster-whisper==1.2.1
+edge-tts==7.2.8
+vieneu==3.8.1
+numba==0.62.1
+llvmlite==0.45.1
 
 # Tests. Kept in this file rather than a second one: at this size a separate
 # dev file is more to remember than it saves. A deployment does not need these.

@@ -1,0 +1,20 @@
+# The situations a call can be in. docs/design.md section 10.3.
+#
+# One list, used in two places: the QaAgent tags each call after hang-up so
+# its lesson card joins the right body of evidence, and a playbook entry is
+# written for one situation and found by kb.search in it. If the two used
+# different lists, a lesson learned in one situation could never be applied
+# in it.
+#
+# A first draft for the air purifier catalogue, to be settled before either
+# side is built. Descriptions are what a classifier reads, so they describe
+# what the customer does, not keywords.
+situations:
+  price_comparison: The customer says the same product is cheaper elsewhere.
+  too_expensive: The customer finds the price too high, without naming another shop.
+  family_decision: The customer must ask someone at home before buying.
+  buying_for_elderly: The customer is buying for an older relative who wants something simple.
+  buying_for_children: The customer asks about safety or noise with small children at home.
+  unsure_which_model: The customer cannot choose between several products.
+  returning_undecided: A returning customer who was quoted before and has not decided.
+  other: None of the above.

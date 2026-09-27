@@ -1,0 +1,16 @@
+fastapi==0.141.1
+uvicorn[standard]==0.53.0
+httpx==0.28.1
+numpy==2.2.6
+soxr==1.0.0
+soundfile==0.13.1
+huggingface_hub==1.32.0
+transformers==5.17.0
+onnxruntime==1.23.2
+sherpa-onnx==1.13.8
+ctranslate2==4.8.2
+faster-whisper==1.2.1
+edge-tts==7.2.8
+vieneu==3.8.1
+numba==0.62.1
+llvmlite==0.45.1

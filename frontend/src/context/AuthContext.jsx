@@ -7,6 +7,7 @@
 
 import { createContext, useContext, useEffect, useState } from 'react'
 import { api } from '../services/api'
+import { endRememberedSession } from '../services/session'
 import { setAccessToken, getAccessToken, clearAccessToken } from '../services/tokenStore'
 
 const AuthContext = createContext(null)
@@ -45,6 +46,8 @@ export function AuthProvider({ children }) {
   }
 
   async function logout() {
+    // A customer who signs out has left: their chat session ends with them.
+    await endRememberedSession()
     try {
       await api.logout()
     } catch {

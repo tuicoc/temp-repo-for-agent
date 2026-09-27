@@ -155,8 +155,10 @@ def text_of(message: BaseMessage) -> str:
     and sometimes a fragment of the model thinking out loud instead of the
     answer. Both were observed in a probe run.
 
-    Thinking blocks are dropped: a block whose type says so, and a block
-    carrying a ``signature`` in its extras, which is how Gemini marks one.
+    Thinking blocks are dropped: a block whose type says so, or one Gemini
+    flags ``thought``. A ``signature`` alone does not make a block thinking:
+    Gemini 3.5 attaches a thought signature to the answer's own text block
+    too, and dropping it left every reply empty (2026-09-26).
     """
     content = getattr(message, "content", "")
     if isinstance(content, str):
@@ -171,7 +173,7 @@ def text_of(message: BaseMessage) -> str:
             continue
         if block.get("type") in _THINKING_TYPES:
             continue
-        if "signature" in (block.get("extras") or {}):
+        if block.get("thought") is True:
             continue
         text = block.get("text")
         if text:

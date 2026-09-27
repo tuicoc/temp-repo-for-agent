@@ -1,0 +1,140 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Voice lab</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #FFFFFF;
+      --text: #000000;
+      --muted: #5F6368;
+      --faint: #9AA0A6;
+      --rule: #E1E3E6;
+      --chosen: #F2F3F5;
+      --accent: #2F5D8A;
+    }
+    * { box-sizing: border-box; }
+    html, body { margin: 0; height: 100%; }
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font: 13px/1.5 "Be Vietnam Pro", system-ui, sans-serif;
+      font-variant-numeric: tabular-nums;
+    }
+    .shell {
+      display: grid;
+      grid-template-columns: 272px minmax(0, 1fr) 420px;
+      height: 100vh;
+    }
+    .pane { overflow-y: auto; padding: 20px; }
+    .controls { border-right: 1px solid var(--rule); }
+    .timings { border-left: 1px solid var(--rule); }
+    h1 { font-size: 20px; font-weight: 600; margin: 0 0 4px; }
+    h2 {
+      font-size: 13px; font-weight: 500; margin: 20px 0 8px;
+      padding-bottom: 6px; border-bottom: 1px solid var(--rule);
+    }
+    h2:first-child { margin-top: 0; }
+    .sub, .note { color: var(--muted); font-size: 12px; margin: 0 0 16px; }
+    label { display: block; margin-bottom: 12px; color: var(--muted); font-size: 12px; }
+    select {
+      display: block; width: 100%; margin-top: 4px; padding: 6px 8px;
+      font: inherit; font-size: 13px; color: var(--text);
+      background: var(--bg); border: 1px solid var(--rule); border-radius: 4px;
+    }
+    label.check { display: flex; gap: 8px; align-items: flex-start; color: var(--text); font-size: 13px; }
+    label.check input { margin-top: 3px; }
+    button {
+      width: 100%; padding: 8px 12px; margin: 4px 0 16px;
+      font: inherit; font-weight: 500; border-radius: 4px; cursor: pointer;
+      border: 1px solid var(--accent); background: var(--accent); color: #FFFFFF;
+    }
+    button.secondary { background: var(--bg); color: var(--accent); }
+    button:disabled { opacity: 0.5; cursor: default; }
+    #switch { margin: 0 0 8px; }
+    .state { display: flex; align-items: center; gap: 8px; margin-bottom: 8px; }
+    .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--rule); }
+    .dot.live { background: var(--accent); }
+    .meter { height: 4px; background: var(--chosen); border-radius: 2px; overflow: hidden; margin-bottom: 16px; }
+    .meter div { height: 100%; width: 0; background: var(--accent); transition: width 60ms linear; }
+    .flag { border-left: 2px solid var(--accent); padding: 2px 0 2px 10px; margin: 0 0 12px; font-size: 12px; }
+    .flag:empty { display: none; }
+
+    .transcript { display: flex; flex-direction: column; gap: 14px; }
+    .empty { color: var(--muted); margin: auto; text-align: center; max-width: 360px; }
+    .turn { max-width: 78%; }
+    .turn.agent { align-self: flex-start; }
+    .turn.customer { align-self: flex-end; text-align: right; }
+    .who { font-size: 11.5px; color: var(--muted); margin-bottom: 2px; }
+    .bubble { display: inline-block; text-align: left; padding: 8px 12px; border-radius: 8px; border: 1px solid var(--rule); }
+    .customer .bubble { background: var(--chosen); border-color: var(--chosen); }
+    .meta { font-size: 11.5px; color: var(--muted); margin-top: 3px; }
+    .raw { color: var(--faint); }
+    .unheard { color: var(--faint); }
+
+    table { width: 100%; border-collapse: collapse; font-size: 12px; }
+    th { text-align: right; font-weight: 500; color: var(--muted); padding: 4px 6px; border-bottom: 1px solid var(--rule); }
+    td { text-align: right; padding: 4px 6px; border-bottom: 1px solid var(--rule); }
+    th:first-child, td:first-child { text-align: left; }
+    td.total { font-weight: 600; }
+    .legend { color: var(--muted); font-size: 11.5px; margin: 8px 0 0; }
+    .cmp { font-size: 12px; padding: 6px 0; border-bottom: 1px solid var(--rule); }
+    .cmp .model { color: var(--muted); font-size: 11.5px; }
+  </style>
+</head>
+<body>
+  <div class="shell">
+    <aside class="pane controls">
+      <h1>Voice lab</h1>
+      <p class="sub">Local speech recognition, the real agent, spoken replies. Every turn is timed from the moment you stop speaking to the first sound of the answer.</p>
+      <label>Speech recognition <select id="asr"></select></label>
+      <label>End of turn <select id="endpointing"></select></label>
+      <label>Voice <select id="voice"></select></label>
+      <label>Agent <select id="agent"></select></label>
+      <label>Advisor model on the backend <select id="advisor"></select></label>
+      <button id="switch" class="secondary">Switch model</button>
+      <p class="note" id="advisor-note">Changes the backend's advisor for this backend process, the chat page included. Restarting the backend returns to config/models.yaml. Works during a call: the next turn answers on the new model.</p>
+      <label class="check"><input type="checkbox" id="compare"> Also run every other recogniser on each turn</label>
+      <button id="call">Start call</button>
+      <div class="state"><span class="dot" id="dot"></span><span id="state">Idle</span></div>
+      <div class="meter"><div id="level"></div></div>
+      <p class="flag" id="status"></p>
+      <p class="note">Use headphones to test interrupting the agent. Without them the microphone also hears the agent, and echo cancellation may not remove all of it.</p>
+    </aside>
+
+    <main class="pane transcript" id="transcript">
+      <p class="empty" id="empty">Pick the models, start a call, and speak Vietnamese. The agent greets you first.</p>
+    </main>
+
+    <section class="pane timings">
+      <h2>Seconds per turn</h2>
+      <table>
+        <thead><tr><th>Turn</th><th>End of turn</th><th>ASR</th><th>Agent</th><th>TTS</th><th>Play</th><th>TTFA</th></tr></thead>
+        <tbody id="rows"></tbody>
+      </table>
+      <p class="legend">End of turn: wait after you stopped. ASR: recognition. Agent: the reply from the backend. TTS: until the first sentence was ready. Play: until it started playing. TTFA is their sum; the brief's target is 2.5 s at p95.</p>
+
+      <h2>Median by recogniser</h2>
+      <table>
+        <thead><tr><th>Recogniser</th><th>Turns</th><th>End of turn</th><th>ASR</th><th>TTFA</th></tr></thead>
+        <tbody id="summary"></tbody>
+      </table>
+
+      <h2>Median by advisor model</h2>
+      <table>
+        <thead><tr><th>Model</th><th>Turns</th><th>Agent</th><th>TTFA</th></tr></thead>
+        <tbody id="by-advisor"></tbody>
+      </table>
+      <p class="legend">Turns where the agent failed and the fallback line was spoken are counted under "failed".</p>
+
+      <h2>Other recognisers on the same audio</h2>
+      <div id="compare-list"><p class="note">Tick the option on the left to fill this in.</p></div>
+    </section>
+  </div>
+  <script src="/static/app.js"></script>
+</body>
+</html>

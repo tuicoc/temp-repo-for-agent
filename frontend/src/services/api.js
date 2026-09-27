@@ -28,6 +28,16 @@ function headers(extra = {}) {
   }
 }
 
+async function detailOf(response, fallback) {
+  try {
+    const body = await response.json()
+    if (body?.detail) return typeof body.detail === 'string' ? body.detail : JSON.stringify(body.detail)
+  } catch {
+    // A non-JSON error body: keep the status-based message.
+  }
+  return fallback
+}
+
 async function request(path, options = {}) {
   const response = await fetch(url(path), { ...options, headers: headers(options.headers) })
 
@@ -39,14 +49,7 @@ async function request(path, options = {}) {
   }
 
   if (!response.ok) {
-    let detail = `Request failed (${response.status})`
-    try {
-      const body = await response.json()
-      if (body?.detail) detail = body.detail
-    } catch {
-      // A non-JSON error body: keep the status-based message.
-    }
-    throw new ApiError(response.status, detail)
+    throw new ApiError(response.status, await detailOf(response, `Request failed (${response.status})`))
   }
 
   return response.status === 204 ? null : response.json()
@@ -58,21 +61,48 @@ export const api = {
   me: () => request('/auth/me'),
   logout: () => request('/auth/logout', { method: 'POST' }),
 
-  models: () => request('/models'),
-  conversations: () => request('/conversations'),
-  createConversation: () => request('/conversations', { method: 'POST' }),
-  deleteConversation: (id) => request(`/conversations/${id}`, { method: 'DELETE' }),
-  messages: (id) => request(`/conversations/${id}/messages`),
+  // A call is placed on a channel — web, zalo (with its account) or hotline
+  // (with the number it comes from) — and hung up.
+  startCall: (body) => request('/calls', { method: 'POST', body: JSON.stringify(body) }),
+  endCall: (id) => request(`/calls/${id}/end`, { method: 'POST' }),
+  calls: (openOnly = false) => request(`/calls?open_only=${openOnly}`),
+  call: (id) => request(`/calls/${id}`),
+
+  // Handoff and copilot. The customer asks for a person; a consultant
+  // accepts; from then on the assistant drafts and the consultant sends.
+  requestHandoff: (id, reason) =>
+    request(`/calls/${id}/handoff`, { method: 'POST', body: JSON.stringify({ reason: reason ?? null }) }),
+  acceptHandoff: (id) => request(`/calls/${id}/accept`, { method: 'POST' }),
+  // The consultant's words pass the guard: { sent, warnings, call }. Sending
+  // anyway after a warning is `force`.
+  reply: (id, content, action, force = false) =>
+    request(`/calls/${id}/reply`, { method: 'POST', body: JSON.stringify({ content, action, force }) }),
+  // The Gap Loop: the consultant's answer saved as a FAQ entry.
+  saveFaq: (id, question, answer) =>
+    request(`/calls/${id}/faq`, { method: 'POST', body: JSON.stringify({ question, answer }) }),
+
+  health: () => fetch('/health').then((r) => r.json()),
+
+  // Admin: what this process runs on. A restart returns to config/models.yaml.
+  advisorSettings: () => request('/admin/advisor'),
+  setAdvisor: (body) => request('/admin/advisor', { method: 'POST', body: JSON.stringify(body) }),
+  voiceSettings: () => request('/admin/voice'),
+  setVoice: (body) => request('/admin/voice', { method: 'POST', body: JSON.stringify(body) }),
+  warmVoice: () => request('/admin/voice/warm', { method: 'POST' }),
+  clock: () => request('/admin/clock'),
+  setClock: (day) => request('/admin/clock', { method: 'POST', body: JSON.stringify({ day }) }),
+  latency: (channel = 'all') => request(`/admin/latency?channel=${channel}`),
 }
 
-// Send one turn and read the Server-Sent Events the backend replies with.
+// Send one turn of a call and read the Server-Sent Events the backend replies
+// with. A body without `content` is the pickup: the agent speaks first.
 //
 // `fetch` is used rather than EventSource because EventSource cannot send a
 // POST body or an Authorization header. The frames are parsed by hand, which
 // is a few lines: one event is a run of "event:"/"data:" lines ending in a
-// blank line.
-export async function sendMessage(conversationId, body, handlers) {
-  const response = await fetch(url(`/conversations/${conversationId}/messages`), {
+// blank line. A comment line (": keepalive") has no data and is dropped.
+export async function sendTurn(callId, body, handlers) {
+  const response = await fetch(url(`/calls/${callId}/turn`), {
     method: 'POST',
     headers: headers(),
     body: JSON.stringify(body),
@@ -80,7 +110,10 @@ export async function sendMessage(conversationId, body, handlers) {
 
   if (!response.ok || !response.body) {
     if (response.status === 401) clearAccessToken()
-    throw new ApiError(response.status, `Could not reach the agent (${response.status})`)
+    throw new ApiError(
+      response.status,
+      await detailOf(response, `Could not reach the agent (${response.status})`),
+    )
   }
 
   const reader = response.body.getReader()

@@ -4,28 +4,31 @@ export default {
   theme: {
     extend: {
       colors: {
-        // Taken from the reference project rather than invented. The page is
-        // white, not the warm parchment its tailwind config also defines — the
-        // components use these values, and matching the config instead of the
-        // components produced a different-looking app.
-        ink: '#1A1A1A',
-        muted: '#6B6B6B',
-        faint: '#9A9A9A',
-        line: '#E5E5E5',
-        'line-2': '#DEDEDE',
+        // Paper is white and text is black, not a tinted near-black. Two
+        // greys for secondary text, one cool grey for rules, one wash for a
+        // selected or hovered row. One accent — a steel blue with the calm
+        // of a telephony console — carries every "this is live, this is
+        // chosen, this is a link" meaning. Red is for destruction only.
+        ink: '#000000',
+        muted: '#5F6368',
+        faint: '#9AA0A6',
+        line: '#E1E3E6',
+        'line-2': '#CDD1D6',
         surface: '#FFFFFF',
-        sidebar: '#F3F3F3',
-        hover: '#F7F7F7',
-        bubble: '#EFEFEF',
-        accent: '#B86F50',
-        'accent-tint': '#F4DED1',
+        hover: '#F2F3F5',
+        bubble: '#F2F3F5',
+        accent: '#2F5D8A',
+        'accent-tint': '#E8EEF5',
+        danger: '#B3261E',
       },
       fontFamily: {
-        sans: ['-apple-system', 'BlinkMacSystemFont', '"Segoe UI"', 'system-ui', 'sans-serif'],
-        mono: ['"Fira Code"', '"Cascadia Code"', 'Menlo', 'Monaco', 'Consolas', 'monospace'],
+        // Designed for Vietnamese diacritics, which every reply on this
+        // screen has. One family; weight and size carry the hierarchy.
+        sans: ['"Be Vietnam Pro"', '-apple-system', 'BlinkMacSystemFont', '"Segoe UI"', 'system-ui', 'sans-serif'],
+        mono: ['Menlo', '"Cascadia Code"', 'Consolas', 'monospace'],
       },
       boxShadow: {
-        input: '0 0 0 3px rgba(184,111,80,0.12)',
+        input: '0 0 0 3px rgba(47,93,138,0.16)',
       },
     },
   },

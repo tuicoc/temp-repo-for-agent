@@ -1,0 +1,20 @@
+{"id": "Q01", "query": "máy mới mua 2 tuần bị kêu rè rè, đổi được ko", "relevant": ["F02"], "why": "defect within 30 days, not the 7-day return"}
+{"id": "Q02", "query": "mua trả góp mà đơn 2 triệu được ko em", "relevant": ["F08"], "why": "installments"}
+{"id": "Q03", "query": "nhận hàng có được mở ra xem trước ko", "relevant": ["F17"], "why": "inspect on delivery"}
+{"id": "Q04", "query": "lỡ ghi sai địa chỉ rồi, sửa sao em", "relevant": ["F19"], "why": "change address"}
+{"id": "Q05", "query": "giờ này còn ai trực ko", "relevant": ["F22"], "why": "opening hours"}
+{"id": "Q06", "query": "bao lâu thì phải thay màng lọc", "relevant": ["F11"], "why": "filter replacement, different word for filter"}
+{"id": "Q07", "query": "ship ra Hà Nội mất phí ko, đơn 6 triệu", "relevant": ["F05"], "why": "shipping fee"}
+{"id": "Q08", "query": "đồ có phải hàng xịn ko hay hàng dựng", "relevant": ["F16"], "why": "authentic, slang"}
+{"id": "Q09", "query": "chạy nguyên đêm tốn điện ko", "relevant": ["F15"], "why": "power use"}
+{"id": "Q10", "query": "có cần thợ tới lắp ko", "relevant": ["F12"], "why": "installation"}
+{"id": "Q11", "query": "có xuất bill đỏ cho công ty ko", "relevant": ["F10"], "why": "VAT invoice, slang"}
+{"id": "Q12", "query": "dùng mã giảm 200k với mã free ship chung được ko", "relevant": ["F20"], "why": "stacking promotions"}
+{"id": "Q13", "query": "nhà có bé 2 tuổi hay nghịch nút, có mẫu nào khóa được ko", "relevant": ["F24"], "why": "child lock"}
+{"id": "Q14", "query": "đặt nhầm mẫu, hủy được ko em", "relevant": ["F18"], "why": "cancel"}
+{"id": "Q15", "query": "bảo hành bao lâu, hư thì gửi đâu", "relevant": ["F03", "F04"], "why": "warranty length and where"}
+{"id": "Q16", "query": "shop có bán máy lọc nước không", "relevant": [], "why": "out of scope: another category"}
+{"id": "Q17", "query": "cho chị địa chỉ cửa hàng ở Cần Thơ", "relevant": [], "why": "out of scope: no store list"}
+{"id": "Q18", "query": "làm rơi vỡ vỏ máy thì có được bảo hành ko", "relevant": [], "why": "warranty does not say; near miss"}
+{"id": "Q19", "query": "máy này có giúp chữa viêm xoang không", "relevant": [], "why": "medical, out of scope"}
+{"id": "Q20", "query": "có giao quốc tế sang Úc ko", "relevant": [], "why": "not covered"}

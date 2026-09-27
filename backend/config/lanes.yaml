@@ -1,0 +1,32 @@
+# Which tools the advisor may call in each lane. docs/design.md section 4.3.
+#
+# A lane is one configuration of the AdvisorAgent: its instruction lives with
+# the advisor's prompts, its tools here. `route` picks the lane by rules; the
+# advisor is offered exactly these tools and no others. A lane with no tools
+# is a real answer: CLARIFY and CONFIRM_IDENTITY bind nothing, so "the agent
+# called no tool" is mechanically true.
+#
+# Names are the wire names, the organisers' names with the dot as an
+# underscore (inventory.check -> inventory_check); src/mcp/client.py turns
+# them back for the trace.
+lanes:
+  HANDOFF:
+    - handoff_transfer
+  CLARIFY: []
+  CONFIRM_IDENTITY: []
+  ORDER_SERVICE:
+    - order_status
+    - order_update
+    - crm_get_customer
+    - handoff_transfer
+  OUT_OF_SCOPE:
+    - handoff_transfer
+  CONTINUITY: &sales
+    - catalog_search
+    - inventory_check
+    - pricing_get_quote
+    - order_create
+    - schedule_callback
+    - kb_search
+    - handoff_transfer
+  NEW: *sales

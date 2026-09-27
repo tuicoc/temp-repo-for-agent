@@ -1,0 +1,127 @@
+[
+ {
+  "id": "F01",
+  "title": "Đổi trả",
+  "text": "Sản phẩm được đổi trả trong 7 ngày kể từ khi nhận hàng nếu còn nguyên hộp, đủ phụ kiện và chưa qua sử dụng. Khách chịu phí vận chuyển đổi trả."
+ },
+ {
+  "id": "F02",
+  "title": "Đổi máy lỗi",
+  "text": "Máy lỗi do nhà sản xuất trong 30 ngày đầu được đổi máy mới cùng mẫu. Cần mang máy và hóa đơn tới cửa hàng hoặc gửi về kho, bên em chịu phí gửi."
+ },
+ {
+  "id": "F03",
+  "title": "Bảo hành",
+  "text": "Máy lọc không khí được bảo hành chính hãng 12 tháng, riêng Sharp và Daikin 24 tháng. Lõi lọc là vật tư tiêu hao, không bảo hành."
+ },
+ {
+  "id": "F04",
+  "title": "Trung tâm bảo hành",
+  "text": "Khách mang máy tới trung tâm bảo hành của hãng gần nhất, hoặc gọi hotline 1900 1234 để bên em nhận máy tại nhà trong nội thành TP.HCM và Hà Nội."
+ },
+ {
+  "id": "F05",
+  "title": "Phí giao hàng",
+  "text": "Miễn phí giao hàng cho đơn từ 5.000.000đ trong nội thành TP.HCM và Hà Nội. Đơn nhỏ hơn hoặc giao tỉnh tính phí theo đơn vị vận chuyển, thường 30.000đ đến 60.000đ."
+ },
+ {
+  "id": "F06",
+  "title": "Thời gian giao hàng",
+  "text": "Nội thành TP.HCM và Hà Nội giao trong 1 đến 2 ngày, các tỉnh 3 đến 5 ngày làm việc. Ngày giao cụ thể của từng đơn tra theo mã đơn."
+ },
+ {
+  "id": "F07",
+  "title": "Thanh toán khi nhận hàng",
+  "text": "Bên em hỗ trợ COD, tức thanh toán tiền mặt khi nhận hàng, trên toàn quốc cho đơn dưới 20.000.000đ."
+ },
+ {
+  "id": "F08",
+  "title": "Trả góp",
+  "text": "Trả góp 0% qua thẻ tín dụng của 25 ngân hàng, kỳ hạn 6 hoặc 12 tháng, áp dụng cho đơn từ 3.000.000đ."
+ },
+ {
+  "id": "F09",
+  "title": "Chuyển khoản",
+  "text": "Khách có thể chuyển khoản trước theo số tài khoản in trên phiếu đặt hàng. Đơn được xác nhận sau khi bên em nhận tiền."
+ },
+ {
+  "id": "F10",
+  "title": "Hóa đơn VAT",
+  "text": "Bên em xuất hóa đơn VAT cho mọi đơn hàng. Khách gửi tên công ty, mã số thuế và email trong vòng 24 giờ sau khi đặt."
+ },
+ {
+  "id": "F11",
+  "title": "Thay lõi lọc",
+  "text": "Lõi HEPA nên thay sau 6 đến 12 tháng tùy mức ô nhiễm. Máy có đèn báo khi cần thay. Lõi chính hãng có bán tại cửa hàng và trên website."
+ },
+ {
+  "id": "F12",
+  "title": "Lắp đặt",
+  "text": "Máy lọc không khí không cần lắp đặt, chỉ cần tháo túi bọc lõi lọc và cắm điện là dùng được."
+ },
+ {
+  "id": "F13",
+  "title": "Kết nối ứng dụng",
+  "text": "Các mẫu có Wi-Fi điều khiển được qua ứng dụng của hãng: bật tắt, hẹn giờ, xem chỉ số bụi mịn PM2.5 trong phòng."
+ },
+ {
+  "id": "F14",
+  "title": "Độ ồn và chế độ ngủ",
+  "text": "Ở chế độ ngủ máy chạy êm khoảng 20 đến 32 dB, tắt đèn màn hình, phù hợp để trong phòng ngủ ban đêm."
+ },
+ {
+  "id": "F15",
+  "title": "Điện năng",
+  "text": "Máy lọc không khí tiêu thụ khoảng 10 đến 60W tùy mức quạt. Chạy cả đêm ở chế độ ngủ tốn khoảng 0,1 số điện."
+ },
+ {
+  "id": "F16",
+  "title": "Hàng chính hãng",
+  "text": "Toàn bộ sản phẩm là hàng chính hãng, có tem bảo hành và phiếu nhập khẩu. Khách có thể kiểm tra số serial trên website của hãng."
+ },
+ {
+  "id": "F17",
+  "title": "Kiểm tra hàng khi nhận",
+  "text": "Khách được mở hộp kiểm tra ngoại quan trước khi thanh toán. Nếu hàng móp méo hoặc sai mẫu, khách từ chối nhận và không mất phí."
+ },
+ {
+  "id": "F18",
+  "title": "Hủy đơn",
+  "text": "Khách hủy đơn miễn phí khi đơn chưa giao cho đơn vị vận chuyển. Đơn đã giao đi thì xử lý theo chính sách đổi trả."
+ },
+ {
+  "id": "F19",
+  "title": "Đổi địa chỉ giao hàng",
+  "text": "Khách đổi địa chỉ giao hàng bằng cách báo mã đơn và địa chỉ mới trước khi đơn giao cho đơn vị vận chuyển."
+ },
+ {
+  "id": "F20",
+  "title": "Cộng dồn khuyến mãi",
+  "text": "Mỗi đơn hàng chỉ áp dụng một chương trình khuyến mãi, không cộng dồn các mã giảm giá."
+ },
+ {
+  "id": "F21",
+  "title": "Thành viên và tích điểm",
+  "text": "Mỗi 100.000đ chi tiêu được tích 1 điểm. 100 điểm đổi được voucher 100.000đ cho lần mua sau."
+ },
+ {
+  "id": "F22",
+  "title": "Giờ làm việc",
+  "text": "Hotline và chat có nhân viên trực từ 8 giờ đến 21 giờ mỗi ngày, kể cả cuối tuần. Ngoài giờ trợ lý tự động vẫn hỗ trợ."
+ },
+ {
+  "id": "F23",
+  "title": "Mua số lượng lớn",
+  "text": "Khách doanh nghiệp mua từ 5 máy trở lên được báo giá riêng. Liên hệ bộ phận doanh nghiệp qua email hoặc để lại số điện thoại."
+ },
+ {
+  "id": "F24",
+  "title": "Khóa trẻ em",
+  "text": "Nhiều mẫu có khóa trẻ em để khóa nút bấm, tránh trẻ nhỏ tự điều chỉnh. Thông tin có ghi trong thông số từng mẫu."
+ },
+ {
+  "id": "F25",
+  "title": "Bảo quản khi không dùng",
+  "text": "Khi không dùng lâu ngày, rút điện, bọc lõi lọc trong túi kín và để máy nơi khô ráo, tránh ánh nắng."
+ }
+]

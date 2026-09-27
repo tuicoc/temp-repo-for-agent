@@ -1,0 +1,40 @@
+{
+ "summary": "Jev nhanh gấp khoảng hai lần Gemini ở mọi việc (trung vị 0,6 đến 0,8 giây so với 1,1 đến 1,8 giây). Ở ngưỡng mặc định 0,5 Jev kém Gemini ở kiểm tra chính sách và chấm câu hỏi lặp, nhưng xác suất của nó tách đúng sai rất rõ: chọn ngưỡng riêng cho từng câu hỏi thì Jev ngang Gemini ở bốn trên năm việc. GPT-OSS trên Groq nhanh gần bằng Jev ở câu ngắn nhưng kém chính xác nhất và hỏng structured output 6 lần. Đề xuất: dùng Jev cho các quyết định trên đường nóng, giữ model sinh chữ ở chỗ cần viết lời giải thích hoặc nằm ngoài đường nóng.",
+ "tasks": {
+  "route": {
+   "kind": "yes",
+   "decision": "Thay bằng Jev",
+   "reason": "Đúng 97% như Gemini, trung vị 0,60 giây so với 1,13 giây. Nhận đúng mọi câu phủ định kiểu \"k cần gặp nhân viên đâu\" (đòi gặp người: ca có từ 0,98, ca không tối đa 0,29). Câu hỏi viết tiếng Anh tốt hơn tiếng Việt (97% so với 94%). Vẫn vượt ngân sách 300 ms của §8.4, nên luật quyết trước, và Jev quá 1 giây thì luật tự quyết."
+  },
+  "identity": {
+   "kind": "yes",
+   "decision": "Thay bằng Jev",
+   "reason": "Cả ba model đúng 16/16, kể cả \"không sai\", \"hình như vậy\". Jev 0,59 giây, xác suất tách rõ: câu xác nhận từ 0,93, câu không tối đa 0,24. Thay danh sách từ AFFIRMATION trong calls.py."
+  },
+  "policy": {
+   "kind": "both",
+   "decision": "Dùng kèm",
+   "reason": "Chặn hay cho qua đúng từng câu nháp: Gemini 93%, Jev 80% ở ngưỡng 0,5 và 90% với ngưỡng chỉnh, trong đó một câu hỏng vì gateway 503. Mọi báo nhầm của Jev dưới 0,66 trong khi ca đúng từ 0,92, kể cả các ca phải so số tiền và so ngày. Jev làm cổng nhanh (0,62 giây, vừa ngân sách 1 giây của guard_soft); chỉ khi Jev chặn mới gọi model sinh chữ để viết lý do và gợi ý sửa mà §11.2 cần. Giá làm tròn \"tầm 2 triệu 7\" cả hai đều bỏ sót: việc của regex guard_hard."
+  },
+  "faq": {
+   "kind": "both",
+   "decision": "Thay, đo thêm",
+   "reason": "Jev đứng đầu đúng 13 trên 13 câu nó trả lời (2 câu gateway 503) và nhận ra đủ 5 câu ngoài phạm vi, tức luật 5 của router; Gemini 14/15; 0,83 giây so với 1,82 giây. Nhưng BM25 không dùng model cũng đúng 14/15: bộ câu hỏi còn dễ. Cần FAQ thật và câu hỏi khó hơn trước khi chốt."
+  },
+  "rqr": {
+   "kind": "no",
+   "decision": "Chưa thay",
+   "reason": "Việc chấm nằm ngoài đường nóng nên độ trễ không quan trọng. Gemini 95%; Jev 85% ở ngưỡng 0,5 và 95% với ngưỡng chỉnh (ca hỏi lại từ 0,78, ca không tối đa 0,64). Thước đo KPI số 1 phải công bố độ chính xác, nên dùng model đúng sẵn; cân nhắc Jev khi cần chấm khối lượng lớn."
+  }
+ },
+ "method": [
+  "Dữ liệu mock do Claude soạn và gán nhãn, chưa qua người duyệt: 40 lượt định tuyến, 16 câu xác nhận, 30 câu nháp, 25 mục FAQ với 20 câu hỏi, 20 câu hỏi của agent. Mẫu nhỏ, một mẫu là 2,5 tới 6 điểm phần trăm.",
+  "Mọi model nhận cùng câu hỏi và cùng mô tả lựa chọn, một lời gọi cho mọi câu hỏi của một mẫu. Model sinh chữ trả lời qua structured output.",
+  "Gemini 3.5 Flash-Lite chạy mức suy nghĩ thấp nhất (reasoning_effort minimal). GPT-OSS 20B trên Groq chạy reasoning_effort low và chế độ json_schema, vì ở mặc định nó tiêu hết trần 800 token output cho suy nghĩ và trả JSON hỏng.",
+  "Thời gian là riêng lời gọi, không tính chờ hạn mức, đo từ một máy ở Việt Nam ngày 23/09/2026. Từ máy chủ Azure con số sẽ khác.",
+  "Jev đi qua Vercel AI Gateway gói Hobby: không bật được Zero Data Retention; gateway trả 429 sau khoảng 80 lời gọi liên tiếp và 503 ở 4 trên 216 lời gọi. Groq trả output không parse được ở 6 lời gọi. Mọi lỗi được tính là sai.",
+  "Ngưỡng 0,5 là mặc định chưa chỉnh. Ngưỡng chỉnh chọn riêng cho từng câu hỏi bằng leave-one-out: mỗi mẫu được chấm bằng ngưỡng tốt nhất trên các mẫu còn lại, không tự chấm trên chính nó.",
+  "Hai nhãn có thể tranh cãi: P10 (shop chịu phí ship đổi trả, Jev coi là hứa miễn phí giao hàng) và P27 (nêu mốc 5 triệu của chính sách, cả Jev và Gemini coi là số tiền không có trong tool).",
+  "FAQ: mỗi đoạn được chấm trên thang 4 bậc trong một lời gọi, xếp theo điểm; điểm cao nhất dưới 1,5 thì coi là ngoài phạm vi. BM25 không có ngưỡng ngoài phạm vi nên chỉ so phần xếp hạng."
+ ]
+}

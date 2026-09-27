@@ -1,0 +1,20 @@
+{"id": "E01", "known_facts": ["Phòng ngủ 25 m²", "Ngân sách khoảng 5 triệu", "Nhà có con nhỏ"], "agent_question": "Dạ chị cho em xin lại diện tích phòng để em tư vấn ạ?", "asks_known": true, "why": "asks a known fact again"}
+{"id": "E02", "known_facts": ["Phòng ngủ 25 m²", "Ngân sách khoảng 5 triệu"], "agent_question": "Dạ phòng ngủ 25 m² như chị nói hôm trước, mình vẫn đặt máy ở phòng ngủ đúng không ạ?", "asks_known": false, "why": "confirmation, not a repeat question"}
+{"id": "E03", "known_facts": ["Ngân sách khoảng 5 triệu"], "agent_question": "Chị dự tính tầm giá bao nhiêu ạ?", "asks_known": true, "why": "budget asked again"}
+{"id": "E04", "known_facts": ["Phòng ngủ 25 m²"], "agent_question": "Còn phòng khách nhà mình rộng khoảng bao nhiêu ạ?", "asks_known": false, "why": "a different room: new information"}
+{"id": "E05", "known_facts": ["Nhà có con nhỏ"], "agent_question": "Bé nhà mình được mấy tuổi rồi ạ?", "asks_known": false, "why": "new detail about a known fact"}
+{"id": "E06", "known_facts": ["Nhà có con nhỏ"], "agent_question": "Nhà mình có em bé không chị?", "asks_known": true, "why": "known fact asked again"}
+{"id": "E07", "known_facts": ["Địa chỉ giao hàng: quận 7, TP.HCM"], "agent_question": "Dạ em giao về địa chỉ ở quận 7 như lần trước đúng không chị?", "asks_known": false, "why": "confirmation"}
+{"id": "E08", "known_facts": ["Địa chỉ giao hàng: quận 7, TP.HCM"], "agent_question": "Chị cho em xin địa chỉ nhận hàng ạ?", "asks_known": true, "why": "known address asked again"}
+{"id": "E09", "known_facts": ["Số điện thoại đã xác minh"], "agent_question": "Chị cho em xin số điện thoại để tiện liên hệ ạ?", "asks_known": true, "why": "known phone asked again"}
+{"id": "E10", "known_facts": ["Đã tư vấn Xiaomi 4 Lite, báo giá Q-1071"], "agent_question": "Hôm trước chị quan tâm mẫu nào ạ?", "asks_known": true, "why": "known product asked again"}
+{"id": "E11", "known_facts": ["Đã tư vấn Xiaomi 4 Lite, báo giá Q-1071"], "agent_question": "Chị vẫn quan tâm mẫu Xiaomi 4 Lite hay muốn xem thêm mẫu khác ạ?", "asks_known": false, "why": "continuity question"}
+{"id": "E12", "known_facts": ["Rào cản: chờ hỏi ý chồng"], "agent_question": "Anh nhà mình đã đồng ý chưa chị?", "asks_known": false, "why": "follows up the blocker"}
+{"id": "E13", "known_facts": ["Rào cản: chờ hỏi ý chồng"], "agent_question": "Chị có cần hỏi ý kiến ai trong nhà không ạ?", "asks_known": true, "why": "blocker asked again as if unknown"}
+{"id": "E14", "known_facts": ["Phòng ngủ 25 m²"], "agent_question": "Phòng mình có hay đóng kín cửa không chị?", "asks_known": false, "why": "new information"}
+{"id": "E15", "known_facts": ["Ngân sách khoảng 5 triệu"], "agent_question": "Nếu mẫu 5,4 triệu thì hơi vượt ngân sách của chị một chút, chị có cân nhắc không ạ?", "asks_known": false, "why": "uses the known budget"}
+{"id": "E16", "known_facts": ["Hẹn gọi lại chiều thứ Năm"], "agent_question": "Chị muốn em gọi lại lúc nào ạ?", "asks_known": true, "why": "known callback time asked again"}
+{"id": "E17", "known_facts": ["Hẹn gọi lại chiều thứ Năm"], "agent_question": "Dạ em gọi lại đúng hẹn chiều thứ Năm, giờ chị tiện nói chuyện chứ ạ?", "asks_known": false, "why": "confirmation"}
+{"id": "E18", "known_facts": [], "agent_question": "Phòng mình rộng khoảng bao nhiêu mét vuông ạ?", "asks_known": false, "why": "nothing known: a fair question"}
+{"id": "E19", "known_facts": ["Phòng ngủ 25 m²", "Nhà có con nhỏ", "Ngân sách khoảng 5 triệu"], "agent_question": "Chị cần máy cho phòng rộng tầm bao nhiêu, nhà có trẻ nhỏ không và ngân sách thế nào ạ?", "asks_known": true, "why": "three known facts asked in one breath"}
+{"id": "E20", "known_facts": ["Khách dị ứng phấn hoa"], "agent_question": "Chị có bị dị ứng gì không ạ?", "asks_known": true, "why": "known allergy asked again"}

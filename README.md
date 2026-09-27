@@ -7,10 +7,11 @@
 [![version](https://img.shields.io/badge/version-0.0.0-blue.svg)](CONTRIBUTING.md#versioning)
 
 A customer-facing advisory agent for telesales that remembers. It talks to a
-customer over chat, calls business tools for anything factual, and hands the
-conversation to a human consultant when it reaches the edge of what it knows —
-at which point it stays on as a copilot, drafting the human's replies and
-checking them before they are sent.
+customer over the shop's web chat, Zalo or a spoken hotline call, calls
+business tools for anything factual, and hands the conversation to a human
+consultant when it reaches the edge of what it knows — at which point it stays
+on as a copilot, drafting the human's replies and checking them before they
+are sent.
 
 The problem: a call centre handles thousands of conversations a day and
 remembers none of them, so a customer quoted a price on Monday is asked their
@@ -21,14 +22,13 @@ Wednesday. This project treats that as a memory problem, not a model problem.
 
 | File | What it holds |
 |---|---|
-| [`docs/flow.md`](docs/flow.md) | The design, in 21 sections: hot path, cold path, memory ledger, guardrails, handoff, evaluation, improvement loop, plus appendices on feature flags, cost and build order |
-| [`docs/diagrams.md`](docs/diagrams.md) | The same 21 subjects as figures. Section N of `docs/flow.md` explains figure N |
+| [`docs/design.md`](docs/design.md) | The design, text and figures in one place: figure 1 follows one call from advice to improvement, and nine component figures (intake, identity, memory, tools, knowledge base, guardrails, handoff, evaluation, self-reflection) sit in the sections they illustrate. Appendices cover the organisers' grading contract, models, cache and open questions |
+| [`docs/figures/`](docs/figures) | The figures: `design.excalidraw` is the single source, and each SVG is one figure cut from it |
 | [`CONTRIBUTING.md`](CONTRIBUTING.md) | How commits and branches are written, and the rules for changing the specification |
-| [`backend/reports/`](backend/reports) | Provider comparisons: latency, tokens and answers, one file per run |
 
-`docs/flow.md` and `docs/diagrams.md` are the specification and they are
-binding. Changing either is a decision, not an edit, and has its own rules —
-see [CONTRIBUTING.md](CONTRIBUTING.md#changing-the-specification).
+`docs/design.md` is the specification and it is binding. Changing it, text or
+figure, is a decision, not an edit, and has its own rules — see
+[CONTRIBUTING.md](CONTRIBUTING.md#changing-the-specification).
 
 ## Project structure
 
@@ -39,69 +39,127 @@ CORS is configured rather than avoided.
 ```
 backend/
   config/
-    models.yaml               Providers, models, rate limits, agent routing
-    probe_prompts.yaml        Trial prompts for the provider comparison
+    models.yaml               Providers, models, rate limits, agent routing, voice models
+    lanes.yaml                Which tools the advisor may see in each lane
   src/
     config/config_manager.py  Loads .env once, parses the YAML, fails fast
-    llm/                      Factory, rate limiter, token ledger, tracing
-    agents/                   Agent base, and the advisor on top of it
-    api/                      FastAPI: settings, db, auth, chat
-  examples/probe_providers.py Compare providers: list, run, limits
-  reports/                    Run reports, newest first, older under archive/
-  tests/
+    llm/                      Factory, rate limiter, token ledger, tracing, Jev client
+    components/               One package per function: intake, identity, memory,
+                              orchestration, context, guardrails, handoff, voice
+    agents/                   Advisor, Policy, Memory, QA; none holds state
+    pipeline/                 hot/: the seven-node graph of one turn; cold/: after the call
+    mcp/                      Server skeleton, client per role, and the five servers
+    api/                      FastAPI: calls (chat over SSE), voice (WebSocket), admin
+  lab/                        Where design ideas are tried before they reach src/ (voice, Jev)
+  docker-compose.yml          The Postgres the API needs
   setup.py                    Preflight check, run this first
-  startup.sh                  Azure App Service startup command
   requirements.txt
   .env.example
 frontend/
   src/
-    services/                 API client, SSE reader, token storage
-    context/AuthContext.jsx   Who is signed in
-    pages/                    Login, Chat
-    components/               Sidebar, message bubble, composer
+    services/                 API client, SSE reader, token and session storage
+    context/AuthContext.jsx   Who is signed in, and as what role
+    pages/                    Chat for customers; console and the rest for staff
+    components/               Shell, message bubble, composer, charts
   package.json
   .env.example
-docs/                         The specification
+docs/
+  design.md                   The specification
+  figures/                    Its figures: one Excalidraw source and the SVGs cut from it
 ```
 
 ## Getting started
 
-### Backend
+Running the project on your own machine. The backend and the frontend each run
+in their own terminal, both started from the repository root.
+
+### Requirements
+
+| Tool | Version | Used for |
+|---|---|---|
+| Python | 3.12 (3.10 is the minimum) | Backend |
+| Node.js | 22.12 or newer, or 20.19 or newer | Frontend |
+| Docker | With Compose v2 | PostgreSQL 16 with pgvector |
+
+### 1. Backend
+
+Start the database and create the environment:
 
 ```sh
 cd backend
-python3 -m venv .venv && source .venv/bin/activate   # Windows: .venv\Scripts\activate
+docker compose up -d
+python3.12 -m venv .venv
+source .venv/bin/activate
 pip install -r requirements.txt
-cp .env.example .env                                  # then fill it in
-python setup.py                                       # says what is still missing
+cp .env.example .env
+```
+
+On Windows, create the environment with `py -3.12 -m venv .venv` and activate it
+with `.venv\Scripts\activate`.
+
+Open `.env` and fill in:
+
+| Variable | Value |
+|---|---|
+| `GOOGLE_API_KEY` | Gemini key. The advisor runs on it. `GROQ_API_KEY` and `NVIDIA_API_KEY` add their models to the Admin page's choices |
+| `AI_GATEWAY_API_KEY` | Optional. Vercel AI Gateway key for the PolicyAgent's model, Jev. Without it the soft policy check is skipped and the hard check alone guards replies |
+| `DATABASE_URL` | `postgresql://postgres:dev@127.0.0.1:55432/agentcore` |
+| `JWT_SECRET` | The output of `python -c "import secrets; print(secrets.token_urlsafe(48))"` |
+| `SEED_USER_EMAIL`, `SEED_USER_PASSWORD` | The staff account. There is no registration page |
+| `SEED_CUSTOMER_EMAIL`, `SEED_CUSTOMER_PASSWORD` | Optional customer account, for trying the chat |
+| `CORS_ORIGINS` | `http://localhost:5173` |
+
+The catalogue, CRM, promotions and policy documents are the organisers'
+data, committed in `backend/data/btc`. `BTC_DATA_DIR` in `.env` points at a
+newer copy without editing the repository.
+
+Check the setup, then start the API:
+
+```sh
+python setup.py
 uvicorn src.api.app:app --reload
 ```
 
-`setup.py` checks the interpreter, the packages, and every variable the service
-needs, and prints the steps still left rather than failing halfway through a
-request.
+`setup.py` lists anything still missing. The API listens on
+`http://127.0.0.1:8000`.
 
-### Frontend
+### 2. Frontend
+
+In a second terminal:
 
 ```sh
 cd frontend
 npm ci
-cp .env.example .env     # leave VITE_API_BASE_URL blank for local work
+cp .env.example .env
 npm run dev
 ```
 
-Left blank, the dev server proxies `/api` to `http://127.0.0.1:8000`, so local
-development never touches CORS. Set `VITE_API_BASE_URL` to the deployed API
-origin for a real build, and add that page's origin to `CORS_ORIGINS` on the
-server — the browser refuses the call otherwise, before it leaves.
+The app is served at `http://localhost:5173`. Leave `VITE_API_BASE_URL` blank in
+`frontend/.env`: the dev server forwards `/api` to the backend on port 8000.
 
-### Comparing providers
+### 3. Sign in
+
+Open `http://localhost:5173` and sign in with the account from `.env`. The staff
+account opens the console; the customer account chooses how to reach the shop:
+the web chat, a Zalo conversation, or a call to the hotline. Nothing else
+needs to be launched, because the API starts the five MCP servers itself.
+`http://127.0.0.1:8000/health` reports the state of the service.
+
+### 4. Voice
+
+The hotline channel hears and speaks on the server itself, on CPU. Its
+packages come with `requirements.txt`. Its model weights, about 2.5 GB with
+the voice, download in the background the first time the API starts, and are
+loaded before the first call; until then the call page says voice is not ready.
+To fetch them ahead of time:
 
 ```sh
 cd backend
-python examples/probe_providers.py list    # which models your keys can reach
-python examples/probe_providers.py run     # score, time, and save a report
+python -m src.components.voice.fetch
 ```
+
+The recogniser, the end-of-turn detection, the cut-in threshold and the voice
+are chosen on the Admin page.
 
 ## Configuration
 
@@ -120,8 +178,14 @@ variable.
 
 ## Development
 
+`backend/lab/` is where a design idea is tried before it reaches `src/`: the
+voice bench that compared recognisers and voices, and the Jev bench. Tests and
+run reports live in `backend/workbench/`, which each clone keeps for itself
+and never pushes. With it in place:
+
 ```sh
-cd backend && python -m pytest
+cd backend
+python -m pytest workbench/tests
 ```
 
 Adding a provider is a config change plus one package: `init_chat_model`
@@ -129,8 +193,8 @@ dispatches on the provider id, so there is no branch in the factory to edit.
 
 Rate limiting counts an attempt when the call is made, not when it succeeds. A
 limiter that only counts successes stops counting exactly when a provider
-starts failing, and the retry loop becomes a flood; `tests/test_rate_limiter.py`
-holds that behaviour in place.
+starts failing, and the retry loop becomes a flood. The rate limiter's tests hold
+that behaviour in place.
 
 ## License
 

@@ -18,7 +18,7 @@ Three changes follow from that:
 
 ``aacquire`` also sleeps with asyncio rather than ``time.sleep``, which in the
 original stalled the whole event loop — enough to serialise the parallel tool
-calls that ``docs/flow.md`` section 6.4 depends on for its latency budget.
+calls that ``docs/design.md`` section 4.2 depends on for its latency budget.
 """
 
 from __future__ import annotations
@@ -46,7 +46,7 @@ class AdvancedTokenRateLimiter(BaseRateLimiter):
         output_tokens_per_minute: int,
         input_token_price_per_million: float,
         output_token_price_per_million: float,
-        buffer_percentage: float = 0.1,
+        buffer_percentage: float,
     ):
         self.provider = provider
         self.requests_per_minute = requests_per_minute * (1 - buffer_percentage)
@@ -85,19 +85,30 @@ class AdvancedTokenRateLimiter(BaseRateLimiter):
     def from_config(
         cls, provider: str, config: dict[str, Any]
     ) -> "AdvancedTokenRateLimiter":
-        """Instantiate from a provider config dict (from config/models.yaml)."""
-        return cls(
-            provider=provider,
-            requests_per_minute=config.get("requests_per_minute", 60),
-            input_tokens_per_minute=config.get("input_tokens_per_minute", 100_000),
-            output_tokens_per_minute=config.get("output_tokens_per_minute", 50_000),
-            input_token_price_per_million=config.get(
-                "input_token_price_per_million", 0.0
-            ),
-            output_token_price_per_million=config.get(
-                "output_token_price_per_million", 0.0
-            ),
-        )
+        """Instantiate from the ``rate_limits`` block of a resolved LLM config.
+
+        Nothing is defaulted here on purpose. Every figure is in
+        ``config/models.yaml``, so a missing one is a configuration error worth
+        reporting rather than a second set of numbers in the code — which is
+        what this was before, and its idea of a default differed from the
+        schema's.
+        """
+        try:
+            return cls(
+                provider=provider,
+                requests_per_minute=config["requests_per_minute"],
+                input_tokens_per_minute=config["input_tokens_per_minute"],
+                output_tokens_per_minute=config["output_tokens_per_minute"],
+                input_token_price_per_million=config["input_token_price_per_million"],
+                output_token_price_per_million=config["output_token_price_per_million"],
+                buffer_percentage=config["buffer_percentage"],
+            )
+        except KeyError as missing:
+            raise KeyError(
+                f"Rate limit setting {missing} is missing for provider "
+                f"{provider!r}. These come from config/models.yaml through "
+                f"ModelsConfig.llm_config."
+            ) from None
 
     # ------------------------------------------------------------------ #
     #  BaseRateLimiter interface                                           #

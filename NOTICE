@@ -5,3 +5,17 @@ This product was developed by Team 11 as part of the Sudo Code 2026 program.
 
 Licensed under the Apache License, Version 2.0. See the LICENSE file for the
 full license text.
+
+Third-party code
+
+frontend/src/components/BarVisualizer.jsx is adapted from the BarVisualizer
+component of ElevenLabs UI (https://github.com/elevenlabs/ui), used under the
+MIT License, Copyright (c) 2025 Eleven Labs Inc.
+
+Third-party data
+
+backend/data/btc is the data pack the Sudo Code 2026 organisers gave the
+finalist teams: catalogue, CRM seed, policy documents, schemas, sample
+scenarios and the reference mock tools and grader. It belongs to the
+organisers, is not covered by this project's license, and is included
+unchanged so the project runs as the organisers grade it.

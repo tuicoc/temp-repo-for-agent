@@ -14,3 +14,11 @@ dist/
 # Editors and OS
 .idea/
 .DS_Store
+
+# Downloaded model weights: each machine fetches its own (fetch_models.py).
+models/
+
+# Lab output that is regenerated on every run.
+backend/lab/**/*.log
+backend/lab/jev/cache.jsonl
+backend/lab/voice/runs/

@@ -127,10 +127,16 @@ class WebSettings(BaseSettings):
     jwt_algorithm: str = "HS256"
     access_token_minutes: int = 60 * 12
 
-    # The one account that exists. Registration is deliberately absent; see
+    # The staff account. Registration is deliberately absent; see
     # src/api/auth.py.
     seed_user_email: str | None = None
     seed_user_password: str | None = None
+
+    # A second account with the customer role, so the chat can be tested from
+    # one browser profile while the console is open in another. Optional: with
+    # these unset, only the staff account exists.
+    seed_customer_email: str | None = None
+    seed_customer_password: str | None = None
 
     # Left unset here on purpose: resolve_database_url looks in several places,
     # because Azure does not use this name.

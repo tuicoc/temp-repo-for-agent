@@ -15,6 +15,7 @@ reference project's refresh-cookie flow is the thing to port.
 
 from __future__ import annotations
 
+import asyncio
 from datetime import datetime, timedelta, timezone
 from typing import Annotated, Any
 
@@ -47,6 +48,13 @@ class LoginResponse(BaseModel):
 class User(BaseModel):
     id: int
     email: str
+    # customer, consultant, qa or admin. Decides which screens exist, and
+    # whose conversations may be read.
+    role: str = "consultant"
+
+    @property
+    def is_staff(self) -> bool:
+        return self.role != "customer"
 
 
 def create_access_token(user: User) -> str:
@@ -60,7 +68,7 @@ def create_access_token(user: User) -> str:
     )
 
 
-def current_user(
+async def current_user(
     credentials: Annotated[HTTPAuthorizationCredentials | None, Depends(security)],
 ) -> User:
     """Resolve the caller, or refuse the request.
@@ -76,60 +84,78 @@ def current_user(
     if credentials is None:
         raise unauthorised
 
+    user = await user_from_token(credentials.credentials)
+    if user is None:
+        raise unauthorised
+    return user
+
+
+async def user_from_token(token: str) -> User | None:
+    """The user a bearer token names, or None. Shared with the voice
+    WebSocket, where a browser cannot send an Authorization header."""
     settings = get_settings()
     try:
         payload: dict[str, Any] = jwt.decode(
-            credentials.credentials,
+            token,
             settings.require("jwt_secret"),
             algorithms=[settings.jwt_algorithm],
         )
     except jwt.PyJWTError:
-        raise unauthorised from None
-
+        return None
     user_id = payload.get("sub")
     if user_id is None:
-        raise unauthorised
+        return None
+    async with connection() as conn:
+        cursor = await conn.execute(
+            "SELECT id, email, role FROM users WHERE id = %s", (int(user_id),)
+        )
+        row = await cursor.fetchone()
+    return User(**row) if row is not None else None
 
-    with connection() as conn:
-        row = conn.execute(
-            "SELECT id, email FROM users WHERE id = %s", (int(user_id),)
-        ).fetchone()
-    if row is None:
-        raise unauthorised
-    return User(**row)
+
+async def staff_user(user: Annotated[User, Depends(current_user)]) -> User:
+    """The caller, provided they are staff. A customer gets 403."""
+    if not user.is_staff:
+        raise HTTPException(status.HTTP_403_FORBIDDEN, "Staff only")
+    return user
 
 
 CurrentUser = Annotated[User, Depends(current_user)]
+StaffUser = Annotated[User, Depends(staff_user)]
 
 
 @router.post("/login", response_model=LoginResponse)
-def login(body: LoginRequest) -> LoginResponse:
-    with connection() as conn:
-        row = conn.execute(
-            "SELECT id, email, password_hash FROM users WHERE email = %s",
+async def login(body: LoginRequest) -> LoginResponse:
+    async with connection() as conn:
+        cursor = await conn.execute(
+            "SELECT id, email, role, password_hash FROM users WHERE email = %s",
             (body.email.strip().lower(),),
-        ).fetchone()
+        )
+        row = await cursor.fetchone()
 
     # The password is verified even when the account does not exist, so that a
-    # wrong address and a wrong password take the same time to answer.
+    # wrong address and a wrong password take the same time to answer. bcrypt
+    # is slow by design, so it runs in a thread rather than on the event loop
+    # that every other request is waiting on.
     stored = row["password_hash"] if row else "$2b$12$" + "x" * 53
-    if not verify_password(body.password, stored) or row is None:
+    verified = await asyncio.to_thread(verify_password, body.password, stored)
+    if not verified or row is None:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Incorrect email or password",
         )
 
-    user = User(id=row["id"], email=row["email"])
+    user = User(id=row["id"], email=row["email"], role=row["role"])
     return LoginResponse(access_token=create_access_token(user), email=user.email)
 
 
 @router.get("/me", response_model=User)
-def me(user: CurrentUser) -> User:
+async def me(user: CurrentUser) -> User:
     return user
 
 
 @router.post("/logout", status_code=status.HTTP_204_NO_CONTENT)
-def logout(user: CurrentUser) -> None:
+async def logout(user: CurrentUser) -> None:
     """Accepted so the client has something to call.
 
     Nothing is revoked server-side: with no token blacklist a bearer token

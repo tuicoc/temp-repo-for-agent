@@ -1,0 +1,13 @@
+{
+  "hotwords": ["Lite", "Coway", "Sharp", "Xiaomi"],
+  "corrections": {
+    "xiao mi": "Xiaomi",
+    "like tờ": "Lite",
+    "liker": "Lite",
+    "layer tờ": "Lite",
+    "máy sáp": "máy Sharp",
+    "cao a": "Coway",
+    "cao ây": "Coway",
+    "lõi lộc": "lõi lọc"
+  }
+}

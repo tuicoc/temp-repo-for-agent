@@ -1,0 +1,16 @@
+{"id": "I01", "agent_asked": "Dạ lần trước bên em có tư vấn chị máy lọc Xiaomi 4 Lite đúng không ạ?", "customer_said": "dạ đúng rồi em", "confirms": true, "why": "plain yes"}
+{"id": "I02", "agent_asked": "Dạ lần trước bên em có tư vấn chị máy lọc Xiaomi 4 Lite đúng không ạ?", "customer_said": "ừ", "confirms": true, "why": "one-word yes"}
+{"id": "I03", "agent_asked": "Dạ lần trước bên em có tư vấn chị máy lọc Xiaomi 4 Lite đúng không ạ?", "customer_said": "đúng mà giá sao em", "confirms": true, "why": "yes followed by a question"}
+{"id": "I04", "agent_asked": "Dạ lần trước bên em có tư vấn chị máy lọc Xiaomi 4 Lite đúng không ạ?", "customer_said": "không phải, chị hỏi con Sharp cơ", "confirms": false, "why": "names another product"}
+{"id": "I05", "agent_asked": "Dạ lần trước bên em có tư vấn chị máy lọc Xiaomi 4 Lite đúng không ạ?", "customer_said": "chị không nhớ nữa", "confirms": false, "why": "does not remember"}
+{"id": "I06", "agent_asked": "Dạ lần trước bên em có tư vấn chị máy lọc Xiaomi 4 Lite đúng không ạ?", "customer_said": "hình như vậy", "confirms": false, "why": "hedged, not a confirmation"}
+{"id": "I07", "agent_asked": "Dạ lần trước bên em có tư vấn chị máy lọc Xiaomi 4 Lite đúng không ạ?", "customer_said": "không sai", "confirms": true, "why": "double negative meaning yes"}
+{"id": "I08", "agent_asked": "Dạ lần trước bên em có tư vấn chị máy lọc Xiaomi 4 Lite đúng không ạ?", "customer_said": "ko", "confirms": false, "why": "no, teencode"}
+{"id": "I09", "agent_asked": "Dạ lần trước bên em có tư vấn chị máy lọc Xiaomi 4 Lite đúng không ạ?", "customer_said": "đúng là chị có hỏi nhưng không phải máy đó", "confirms": false, "why": "yes to asking, no to the product"}
+{"id": "I10", "agent_asked": "Dạ lần trước bên em có tư vấn chị máy lọc Xiaomi 4 Lite đúng không ạ?", "customer_said": "chuẩn", "confirms": true, "why": "slang yes"}
+{"id": "I11", "agent_asked": "Dạ lần trước bên em có tư vấn chị máy lọc Xiaomi 4 Lite đúng không ạ?", "customer_said": "không, số này của chồng chị, chị chưa hỏi gì", "confirms": false, "why": "someone else's number"}
+{"id": "I12", "agent_asked": "Dạ lần trước bên em có tư vấn chị máy lọc Xiaomi 4 Lite đúng không ạ?", "customer_said": "phải phải", "confirms": true, "why": "repeated yes"}
+{"id": "I13", "agent_asked": "Dạ lần trước bên em có tư vấn chị máy lọc Xiaomi 4 Lite đúng không ạ?", "customer_said": "đâu có, chị hỏi máy lọc nước mà", "confirms": false, "why": "a different category"}
+{"id": "I14", "agent_asked": "Dạ lần trước bên em có tư vấn chị máy lọc Xiaomi 4 Lite đúng không ạ?", "customer_said": "yes", "confirms": true, "why": "English"}
+{"id": "I15", "agent_asked": "Dạ lần trước bên em có tư vấn chị máy lọc Xiaomi 4 Lite đúng không ạ?", "customer_said": "đúng rồi nhưng giờ chị không mua nữa", "confirms": true, "why": "confirms identity even though not buying"}
+{"id": "I16", "agent_asked": "Dạ lần trước bên em có tư vấn chị máy lọc Xiaomi 4 Lite đúng không ạ?", "customer_said": "sao em biết hay vậy, ừ đúng rồi", "confirms": true, "why": "surprise then yes"}

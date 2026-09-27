@@ -7,7 +7,7 @@ config block, attach a rate limiter and a token-tracking callback, hand back a
 **Provider dispatch.** The reference dispatches with a chain of
 ``if provider == "openai" ... elif provider == "gemini"``, so every new
 provider edits the factory. LangChain's ``init_chat_model`` already performs
-that dispatch, and ``docs/flow.md`` section 10 specifies it, so a provider here
+that dispatch, and ``docs/design.md`` section 4.4 specifies it, so a provider here
 is a line in ``config/models.yaml`` rather than a branch of code.
 
 **The API key is not passed.** Each integration reads its own key from the
@@ -28,7 +28,6 @@ from langchain.chat_models import init_chat_model
 from langchain_core.language_models import BaseChatModel
 
 from ..config.config_manager import require_api_key
-from . import tracing
 from .callback_handler import TokenTrackingCallback
 from .rate_limiter import AdvancedTokenRateLimiter
 
@@ -40,11 +39,13 @@ SUPPORTED_PROVIDERS = {
     "nvidia": "langchain-nvidia-ai-endpoints",
 }
 
-# Providers whose client accepts max_retries. ChatNVIDIA does not: it forwards
-# unrecognised keyword arguments into the request body, so the server rejects
-# the whole call with "Unsupported parameter(s): max_retries". Found by running
-# the probe, which failed all twelve NVIDIA calls.
-ACCEPTS_MAX_RETRIES = {"google_genai", "groq"}
+# The parameters of one model call. Their values are not here: they come from
+# config/models.yaml, which resolves the system defaults, the provider and the
+# agent into one block before this file sees it. A parameter missing from that
+# block is sent as nothing at all, which is how a provider that rejects one
+# outright is expressed — ChatNVIDIA forwards unrecognised keyword arguments
+# into the request body, so `max_retries: null` is the only way to call it.
+GENERATION_PARAMS = ("temperature", "max_tokens", "timeout", "max_retries")
 
 # One limiter per provider, shared by every model built for it.
 #
@@ -84,13 +85,15 @@ class LLMFactory:
         """Build a chat model from a provider config block.
 
         Args:
-            config: Keys ``provider`` and ``model`` are required. ``temperature``,
-                ``max_tokens``, ``timeout`` and ``rate_limits`` are optional.
+            config: A block from ``ConfigManager.llm_config``. ``provider`` and
+                ``model`` are required; ``rate_limits`` and the parameters in
+                ``GENERATION_PARAMS`` come already resolved from
+                ``config/models.yaml``.
             agent_name: Tags the token-tracking callback, so per-agent totals
                 accrue in ``token_ledger``.
-            rate_limited: Set False to skip the limiter. Only the rate-limit
-                probe does this: it has to be allowed to hit the ceiling, which
-                is the one thing the limiter exists to prevent.
+            rate_limited: Set False to skip the limiter. Only a measurement
+                of the provider's own ceiling should: it has to be allowed to
+                hit the limit, which is the one thing the limiter prevents.
 
         Returns:
             A configured ``BaseChatModel``.
@@ -118,29 +121,19 @@ class LLMFactory:
             kwargs["rate_limiter"] = limiter
             callbacks.append(TokenTrackingCallback(limiter, agent_name=agent_name))
 
-            # The SDKs retry internally, underneath LangChain, where neither the
-            # limiter nor its callbacks can see it. One attempt per call keeps
-            # every request visible to the limiter, which is the only thing that
-            # can space them out.
-            if provider in ACCEPTS_MAX_RETRIES:
-                kwargs["max_retries"] = config.get("max_retries", 0)
-
-        # None when Langfuse is not configured, which is the normal case for a
-        # teammate who has not signed up.
-        if (trace_handler := tracing.handler()) is not None:
-            callbacks.append(trace_handler)
+        # The Langfuse handler is deliberately not attached here. Attached to
+        # the model it traces model calls with no run around them and no
+        # session; docs/design.md section 8 wants the whole run, gathered by
+        # customer. BaseAgent.run_config passes it per invocation instead, and
+        # the probe passes it in its own call config.
 
         if callbacks:
             kwargs["callbacks"] = callbacks
 
-        # Some reasoning models reject temperature outright, so it is only sent
-        # when the config asks for it.
-        if config.get("temperature") is not None:
-            kwargs["temperature"] = config["temperature"]
-        if config.get("max_tokens") is not None:
-            kwargs["max_tokens"] = config["max_tokens"]
-        if config.get("timeout") is not None:
-            kwargs["timeout"] = config["timeout"]
+        for name in GENERATION_PARAMS:
+            value = config.get(name)
+            if value is not None:
+                kwargs[name] = value
 
         try:
             return init_chat_model(model, model_provider=provider, **kwargs)

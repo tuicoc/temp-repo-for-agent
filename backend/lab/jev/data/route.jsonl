@@ -1,0 +1,40 @@
+{"id": "R01", "agent_said": "", "customer_said": "em là bot hả", "intent": "conversation", "wants_human": false, "needs_tool": false, "why": "asks whether the agent is a bot; not a request for a person"}
+{"id": "R02", "agent_said": "", "customer_said": "thôi khỏi, cho gặp người thật đi, bot nói hoài không hiểu", "intent": null, "wants_human": true, "needs_tool": false, "why": "explicit request for a person"}
+{"id": "R03", "agent_said": "Dạ em có thể chuyển chị qua tư vấn viên nếu chị muốn ạ.", "customer_said": "k cần gặp nhân viên đâu, em tư vấn tiếp đi", "intent": "conversation", "wants_human": false, "needs_tool": false, "why": "negation: declines a person"}
+{"id": "R04", "agent_said": "", "customer_said": "nhân viên hôm trước tư vấn chị là máy này giảm 300k đúng ko", "intent": "shopping", "wants_human": false, "needs_tool": true, "why": "mentions staff but asks about a promotion"}
+{"id": "R05", "agent_said": "", "customer_said": "bn tiền v e", "intent": "shopping", "wants_human": false, "needs_tool": true, "why": "teencode price question"}
+{"id": "R06", "agent_said": "Dạ phòng mình rộng khoảng bao nhiêu mét vuông ạ?", "customer_said": "tầm 25m2 em", "intent": "conversation", "wants_human": false, "needs_tool": false, "why": "answers the agent's question"}
+{"id": "R07", "agent_said": "", "customer_said": "25m2 thì con nào ok", "intent": "shopping", "wants_human": false, "needs_tool": true, "why": "asks for a product recommendation"}
+{"id": "R08", "agent_said": "", "customer_said": "đơn hôm qua giao chưa em", "intent": "order_service", "wants_human": false, "needs_tool": true, "why": "status of an order already placed"}
+{"id": "R09", "agent_said": "", "customer_said": "đổi giúp chị sang màu trắng nha, đơn vừa đặt á", "intent": "order_service", "wants_human": false, "needs_tool": true, "why": "change an existing order"}
+{"id": "R10", "agent_said": "", "customer_said": "đổi trả trong bao lâu vậy", "intent": "policy", "wants_human": false, "needs_tool": false, "why": "return policy, answered from the FAQ"}
+{"id": "R11", "agent_said": "", "customer_said": "máy này để phòng có mẹ bầu có ảnh hưởng thai nhi ko", "intent": "other_question", "wants_human": false, "needs_tool": false, "why": "medical advice, out of scope"}
+{"id": "R12", "agent_said": "", "customer_said": "có trả góp 0% không shop", "intent": "policy", "wants_human": false, "needs_tool": false, "why": "payment policy"}
+{"id": "R13", "agent_said": "", "customer_said": "sếp em bảo mua 5 cái cho văn phòng, có giá sỉ ko", "intent": "shopping", "wants_human": false, "needs_tool": true, "why": "bulk price"}
+{"id": "R14", "agent_said": "Dạ em gửi chị báo giá mẫu 4 Lite là 2.690.000đ ạ.", "customer_said": "ok em", "intent": "conversation", "wants_human": false, "needs_tool": false, "why": "acknowledgement"}
+{"id": "R15", "agent_said": "Dạ chị muốn chốt mẫu 4 Lite màu trắng không ạ?", "customer_said": "ừ lấy con đó đi, giao về quận 7", "intent": "shopping", "wants_human": false, "needs_tool": true, "why": "places an order: needs a quote and order.create"}
+{"id": "R16", "agent_said": "Dạ chị muốn chốt đơn luôn không ạ?", "customer_said": "khoan đã, để chị hỏi ông xã rồi báo lại", "intent": "conversation", "wants_human": false, "needs_tool": false, "why": "defers, no new request"}
+{"id": "R17", "agent_said": "", "customer_said": "sp nay co ship cod k a", "intent": "policy", "wants_human": false, "needs_tool": false, "why": "no diacritics; payment on delivery is policy"}
+{"id": "R18", "agent_said": "", "customer_said": "ship về Đà Lạt mất mấy ngày", "intent": "shopping", "wants_human": false, "needs_tool": true, "why": "delivery time is business data"}
+{"id": "R19", "agent_said": "", "customer_said": "máy này lọc được virus ko em", "intent": "shopping", "wants_human": false, "needs_tool": true, "why": "product capability"}
+{"id": "R20", "agent_said": "", "customer_said": "cho hỏi số hotline bảo hành", "intent": "policy", "wants_human": false, "needs_tool": false, "why": "warranty contact"}
+{"id": "R21", "agent_said": "", "customer_said": "hôm trước bên em báo 4tr890, giờ còn giá đó ko", "intent": "shopping", "wants_human": false, "needs_tool": true, "why": "re-check a quote"}
+{"id": "R22", "agent_said": "", "customer_said": "có con nào có app control với auto mode ko em, budget tầm 4 củ", "intent": "shopping", "wants_human": false, "needs_tool": true, "why": "mixed English and slang for money"}
+{"id": "R23", "agent_said": "", "customer_said": "Can I talk to a real person please", "intent": null, "wants_human": true, "needs_tool": false, "why": "English request for a person"}
+{"id": "R24", "agent_said": "", "customer_said": "bot ngu quá", "intent": "conversation", "wants_human": false, "needs_tool": false, "why": "frustration without a request"}
+{"id": "R25", "agent_said": "", "customer_said": "gặp quản lý", "intent": null, "wants_human": true, "needs_tool": false, "why": "terse request for a manager"}
+{"id": "R26", "agent_said": "", "customer_said": "a ơi e muốn hủy đơn", "intent": "order_service", "wants_human": false, "needs_tool": true, "why": "cancel an order"}
+{"id": "R27", "agent_said": "", "customer_said": "đơn DH10293 của chị sao chưa thấy giao", "intent": "order_service", "wants_human": false, "needs_tool": true, "why": "order code"}
+{"id": "R28", "agent_said": "", "customer_said": "trời nay nóng ghê", "intent": "conversation", "wants_human": false, "needs_tool": false, "why": "small talk"}
+{"id": "R29", "agent_said": "", "customer_said": "cho anh xin công thức nấu phở", "intent": "other_question", "wants_human": false, "needs_tool": false, "why": "unrelated"}
+{"id": "R30", "agent_said": "", "customer_said": "máy nào lọc mùi thuốc lá mà dưới 3 triệu", "intent": "shopping", "wants_human": false, "needs_tool": true, "why": "product search with a budget"}
+{"id": "R31", "agent_said": "Dạ mẫu này hiện là 2.990.000đ ạ.", "customer_said": "ủa sao hôm qua em nói giá khác", "intent": "shopping", "wants_human": false, "needs_tool": true, "why": "price dispute"}
+{"id": "R32", "agent_said": "Dạ chị cho em xác nhận số điện thoại liên hệ ạ?", "customer_said": "đúng rồi, 0903 là số của chị", "intent": "conversation", "wants_human": false, "needs_tool": false, "why": "confirms"}
+{"id": "R33", "agent_said": "", "customer_said": "bảo hành mấy năm, hỏng thì mang đi đâu", "intent": "policy", "wants_human": false, "needs_tool": false, "why": "warranty"}
+{"id": "R34", "agent_said": "", "customer_said": "k mua nữa, hủy giúp chị cái đơn", "intent": "order_service", "wants_human": false, "needs_tool": true, "why": "cancel an order"}
+{"id": "R35", "agent_said": "", "customer_said": "mua 2 cái có giảm thêm không", "intent": "shopping", "wants_human": false, "needs_tool": true, "why": "quantity discount"}
+{"id": "R36", "agent_said": "", "customer_said": "cái này khác gì con Pro, chị thấy trên mạng rẻ hơn", "intent": "shopping", "wants_human": false, "needs_tool": true, "why": "comparison and price"}
+{"id": "R37", "agent_said": "", "customer_said": "không phải chị muốn gặp nhân viên, chị chỉ hỏi nhân viên giao hàng khi nào tới", "intent": "order_service", "wants_human": false, "needs_tool": true, "why": "negation plus staff mention; asks for delivery of an order"}
+{"id": "R38", "agent_said": "", "customer_said": "thôi em chuyển chị qua tư vấn viên đi, chị hỏi hoài không được", "intent": null, "wants_human": true, "needs_tool": false, "why": "request for a consultant"}
+{"id": "R39", "agent_said": "Dạ chị muốn em chuyển qua tư vấn viên không ạ?", "customer_said": "nói chuyện với em cũng được, miễn tư vấn đúng", "intent": "conversation", "wants_human": false, "needs_tool": false, "why": "declines a person"}
+{"id": "R40", "agent_said": "", "customer_said": "máy chạy cả đêm tốn điện ko, phòng ngủ 15m2 có con nhỏ", "intent": "shopping", "wants_human": false, "needs_tool": true, "why": "product question with needs"}

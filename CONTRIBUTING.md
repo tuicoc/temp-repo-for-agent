@@ -42,7 +42,7 @@ The format is [Conventional Commits 1.0.0](https://www.conventionalcommits.org/e
 |---|---|---|
 | `feat` | a new capability of the product | MINOR |
 | `fix` | a defect corrected | PATCH |
-| `spec` | a change to `docs/flow.md` or `docs/diagrams.md` — see below | PATCH |
+| `spec` | a change to `docs/design.md` or its figures in `docs/figures/` — see below | PATCH |
 | `perf` | a change that only makes something faster or cheaper | PATCH |
 | `refactor` | restructuring with no change in behaviour | PATCH |
 | `docs` | documentation other than the specification | none |
@@ -59,22 +59,23 @@ prevent.
 
 ### Scopes
 
-Scopes come from the architecture in `docs/flow.md`, so a scope is always a real part
+Scopes come from the components in `docs/design.md`, so a scope is always a real part
 of the system rather than a folder name that will move:
 
 | Layer | Scopes |
 |---|---|
-| L0 intake | `ingest`, `asr`, `itn`, `pii` |
-| L1 identity | `identity` |
-| L2 ledger | `memory`, `ontology`, `brief` |
-| L3 hot path | `harness`, `orchestrator`, `advisor`, `budget`, `guard`, `fallback` |
-| Handoff | `handoff`, `copilot` |
-| L4 tools | `mcp`, `catalog`, `crm`, `order`, `knowledge` |
-| L5 evaluation | `eval`, `scorer`, `manifest`, `simulator` |
-| L6 improvement | `improve`, `faq`, `exemplars`, `playbook` |
-| L7 interface | `ui`, `console` |
-| Cross-cutting | `api`, `worker`, `db`, `config`, `llm`, `trace`, `policy`, `qa` |
-| Specification | `flow`, `diagrams` |
+| Harness (the seven-node turn) | `harness`, `route`, `advisor`, `context`, `guard`, `fallback` |
+| Intake (figure A) | `ingest`, `asr`, `itn`, `pii`, `voice` |
+| Identity (figure B) | `identity` |
+| Memory (figure C) | `memory`, `ontology`, `brief` |
+| Tools (figure D) | `mcp`, `catalog`, `crm`, `order` |
+| Knowledge base (figure E) | `knowledge` |
+| Handoff (figure G) | `handoff`, `copilot` |
+| Evaluation (figure H) | `eval`, `scorer`, `manifest`, `simulator` |
+| Improvement (figures G and I) | `improve`, `faq`, `reflection`, `playbook` |
+| Interface | `ui`, `console` |
+| Cross-cutting | `api`, `db`, `config`, `llm`, `trace`, `policy`, `qa` |
+| Specification | `design` |
 
 Add a scope by adding it here in the same commit that first uses it.
 
@@ -98,32 +99,41 @@ in the second form passed the check.
 ```
 
 ```
-spec(flow)!: merge section 13 into section 12
+spec(design)!: merge section 4.10 into section 4.9
 
 Handoff and fallback share one mechanism, so describing them apart invited
-two implementations. Diagram 13 is removed and diagram 12 absorbs it.
+two implementations. Figure G is redrawn to show both.
 
-BREAKING CHANGE: sections and figures after 12 are renumbered. Any document
-or issue citing "section 14" now means section 13.
+BREAKING CHANGE: sections after 4.9 are renumbered. Any document or issue
+citing "section 4.11" now means section 4.10.
 ```
 
 ---
 
 ## Changing the specification
 
-`docs/flow.md` and `docs/diagrams.md` are the specification. They are not notes. Every
-other file in this repository exists to implement them, so a change to either
-one is a change to what the project has committed to build.
+`docs/design.md` is the specification, and its figures are part of it. It is
+not a set of notes. Every other file in this repository exists to implement it,
+so a change to it is a change to what the project has committed to build.
+
+The figures are drawn in Excalidraw. All of them live in one source file,
+`docs/figures/design.excalidraw`; each figure in `design.md` is an SVG cut from
+that file, with a fixed name (`1-flow.svg`, `a-intake.svg` … `i-reflection.svg`).
+To change a figure, open the source on [excalidraw.com](https://excalidraw.com)
+or in an Excalidraw editor plugin, edit it, select the elements of the figure
+you changed, export them as SVG with **Only selected** ticked, and save over the
+file of the same name.
 
 Four rules:
 
 **1. Use the `spec` type.** Not `docs`. A change to the specification is then
-findable with `git log --grep '^spec'`. Use scope `flow`, `diagrams`, or both
-when a change spans them.
+findable with `git log --grep '^spec'`. The scope is `design`.
 
-**2. Change both files together.** `docs/flow.md` section N explains `docs/diagrams.md`
-figure N, and both files say so in their own preamble. A commit that adds a
-section without its figure breaks that pairing, so the reviewer sends it back.
+**2. Change the text and the figure together.** A figure and the paragraph that
+explains it are one statement. A commit that changes a figure without its text,
+or the text without its figure, leaves the specification saying two things, so
+the reviewer sends it back. Commit the source file and the exported SVGs in the
+same commit.
 
 **3. State the reason in the body.** A specification change is a decision. The
 body records what was decided and why, because in four weeks nobody will
@@ -131,9 +141,9 @@ remember, and the defence will ask.
 
 | Change | How to write it |
 |---|---|
-| Add a section | `spec(flow): add section 22 on rate limiting`. Add figure 22 to `docs/diagrams.md` in the same commit. Numbering stays contiguous. |
-| Edit a section | `spec(flow): …` with a body naming the section and the reason. |
-| Remove a section | `spec(flow)!: …` with a `BREAKING CHANGE:` footer. Removal renumbers everything after it, which invalidates every outside reference. |
+| Add a section | `spec(design): add section 14 on rate limiting`. If it needs a figure, draw it in the same source file and export it in the same commit. |
+| Edit a section | `spec(design): …` with a body naming the section and the reason. |
+| Remove a section | `spec(design)!: …` with a `BREAKING CHANGE:` footer. Removal renumbers everything after it, which invalidates every outside reference. |
 | Renumber | Always breaking. Same rule as removal. |
 
 **4. One decision per commit.** Do not bundle a specification change with the
@@ -153,7 +163,7 @@ The format is [Conventional Branch](https://conventionalbranch.org):
 | `feature/` | a new capability |
 | `bugfix/` | a defect on `main` |
 | `hotfix/` | an urgent fix that cannot wait for the normal cycle |
-| `spec/` | a change to `docs/flow.md` or `docs/diagrams.md` |
+| `spec/` | a change to `docs/design.md` or its figures |
 | `docs/` | documentation other than the specification |
 | `refactor/`, `test/`, `perf/`, `build/`, `ci/`, `chore/` | as the matching commit type |
 | `release/` | release preparation; the only prefix allowed to contain dots |
@@ -196,8 +206,8 @@ tick **Require a pull request before merging** with **Required approvals: 1**.
 version is `0` the interface is unstable by definition, so a breaking change
 moves the minor digit rather than the major one.
 
-A release is a git tag, `v0.1.0`. Three files carry the version badge and all
-three are updated in the same commit: `README.md`, `docs/flow.md` and `docs/diagrams.md`.
+A release is a git tag, `v0.1.0`. Two files carry the version badge and both
+are updated in the same commit: `README.md` and `docs/design.md`.
 The specification is versioned with the project rather than on its own, so
 there is one number to quote and no chance of the two disagreeing.
 
