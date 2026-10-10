@@ -1,7 +1,6 @@
-"""P2 hook adapter: the team's agent in place of the fixture's echo.
+"""P2 hook adapter for the team's agent.
 
-The harness binds this file like any adapter (``fixtures/p2-adapter.py`` is
-the echo it replaces) and calls its five hooks. No product code is imported
+The harness binds this file and calls its five hooks. No product code is imported
 here: the agent runs in its own process, ``backend/src/pipeline/eval/bridge.py``
 under the backend's virtualenv, and the two talk JSON lines over a pipe.
 

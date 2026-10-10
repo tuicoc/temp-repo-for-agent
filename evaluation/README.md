@@ -1,10 +1,10 @@
 # Evaluation — code đang dùng
 
-Đọc [CODE-HANDOFF.md](CODE-HANDOFF.md) trước khi sửa code. Kiến trúc sản phẩm hiện hành ở [docs/design.md](../docs/design.md); agent, hot/cold pipeline và MCP đang ở `../backend/src/`. Folder này chứa evaluator/contract/dataset, **không chứa một bản product architecture thứ hai**.
+Kiến trúc sản phẩm hiện hành ở [docs/design.md](../docs/design.md); agent, hot/cold pipeline và MCP đang ở `../backend/src/`. Folder này chứa evaluator/contract/dataset, **không chứa một bản product architecture thứ hai**. Trước khi sửa code, đọc [guardrails](docs/CODING-INCIDENTS-AND-GUARDRAILS.md); khi sửa nhãn/dataset, đọc [skill duyệt GT](datasets/ground-truth-review/SKILL.md).
 
 Điểm vào: `run_eval.py` → `eval_harness/__main__.py`. Code chấm ở `eval_harness/`; [đề bài](requirements/project-brief.pdf) và contract/nguồn BTC pin ở `evaluation-contracts/`; dữ liệu JSON 5 scenario hiện dùng ở `datasets/output1-btc-diagnostic-v2/` (quyết định duyệt tại [review-decisions.md](datasets/output1-btc-diagnostic-v2/review-decisions.md)), nguồn bất biến ở `output (1)/` và revision v1 được giữ nguyên.
 
-Thư mục chính: `eval_harness/` là code chấm; `datasets/` là các revision; `tests/` là kiểm tra offline; `docs/` là yêu cầu dataset, nhãn và luồng cải tiến; `evaluation-contracts/` là contract và BTC được pin. `BTC-Data-Vong1-TEAMS/` là bản BTC gốc được giữ nguyên cho các đường dẫn bảo vệ cũ, không phải bộ test thứ hai. `runs/` là output local theo từng lần chạy và không đưa lên Git.
+Thư mục chính: `eval_harness/` là code chấm; `datasets/` là các revision; `tests/` là unit tests không gọi model; `docs/` là yêu cầu dataset, nhãn và luồng cải tiến; `evaluation-contracts/` là contract và BTC được pin. `runs/` là output local mới; `archive/runs/` giữ nguyên run cũ. Cả hai không đưa lên Git.
 
 Khi thêm hoặc sửa dữ liệu/ground truth, đọc [skill duyệt GT](datasets/ground-truth-review/SKILL.md) trước. `AGENTS.md` trong folder này nhắc lại quy tắc đó cho những lần làm việc sau.
 
@@ -20,7 +20,7 @@ backend/.venv/bin/python evaluation/run_eval.py evaluate
 
 `evaluate` (in `product.py`) pins the inputs, runs the agent through `run_fixed` with `product_adapter.py` (which starts `../backend/src/pipeline/eval/bridge.py`; business tools come back to this harness's mock), collects with `extractor-prompt.txt` through `../backend/src/pipeline/eval/extract_command.py`, and scores with the organisers' grader and this harness's checks.
 
-Output: `runs/<date-time>/` (or `--out`), with `inputs/`, `raw/`, `evidence/` and `scored/`; the table is `scored/scorer.stdout.txt`, the summary `execution-report.json`. The root README, Getting started section 5, says what each folder holds. P6 (`report`) is not run: it implements level M1 and these scenarios are M2.
+Output: `runs/<date-time>/` (or `--out`), with `inputs/`, `raw/`, `evidence/` and `scored/`; the table is `scored/scorer.stdout.txt`, the summary `execution-report.json`. `case-trace.json` is the human-readable view of all five cases, grouped by scenario/config/call/turn; it is not the scorer's input or a replacement for immutable evidence. On an interrupted run it marks missing data `MISSING`/`INCOMPLETE`. It is local-only and may contain customer data. P6 (`report`) is not run: it implements level M1 and these scenarios are M2.
 
 Mỗi run mới tạo nhãn Tool-Call Accuracy cho đủ 5 scenario ở `inputs/expected-tools/` và chấm cùng nhãn cho full/baseline. Xem [nhãn tool](docs/TOOL-CALL-LABELS.md) để biết từng kỳ vọng, giới hạn và trạng thái QA. Run cũ không bị chấm lại.
 
@@ -30,7 +30,7 @@ Xem log tổng hợp mọi lần chạy (kể cả lần lỗi hoặc thiếu b�
 backend/.venv/bin/python evaluation/run_eval.py history
 ```
 
-Lệnh đọc trực tiếp `runs/*/execution-report.json` và `scored/official-report.json`, hiển thị số cuộc gọi, TSR/CCR/RQR baseline → hệ thống, trạng thái, nguyên nhân và đường dẫn báo cáo. Không tạo bản sao kết quả; mỗi thư mục run là log gốc. Chỉ số trong bảng này vẫn là diagnostic, không phải chứng nhận M1.
+Lệnh đọc trực tiếp `runs/*/` và `archive/runs/*/` để hiển thị số cuộc gọi, TSR/CCR/RQR baseline → hệ thống, trạng thái, nguyên nhân và đường dẫn báo cáo. Không tạo bản sao kết quả; mỗi thư mục run là log gốc. Chỉ số trong bảng này vẫn là diagnostic, không phải chứng nhận M1.
 
 Trong mỗi run mới, `scored/claim-adjudication.json` giải thích riêng các claim khác chuỗi GT: chỉ đánh dấu `EQUIVALENT` khi tên rút gọn khớp duy nhất với catalog trong trace hoặc lời “đang giao” được `order.status` xác nhận; còn lại là `NEEDS_REVIEW`. `scored/tool-business-error-review.json` liệt kê lỗi tool và lần gọi sau đã phục hồi nếu có. Hai báo cáo **không thay đổi** `official-report.json`, chỉ số BTC hay các lỗi trong `validation.json`.
 

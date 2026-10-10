@@ -2,7 +2,7 @@
 
 Đọc [README evaluation](../README.md) trước. Tool Accuracy dùng tool-accuracy.v2 theo invocation TP/(TP+FP+FN), cost/call chia completed. TimingEvidence mới có version1.1.0 nullable measurements, legacy1.0.0 vẫn giữ kiểu cũ; các artifact/grading khác còn1.0.0. Không đổi wire/source BTC. Validator và audio/segments BTC đầy đủ deferred theo user, không chặn scope team hiện tại; báo rõ chưa nghiệm thu toàn bộ BTC audio.
 
-Đọc cùng [thiết kế product hiện hành](../../docs/design.md) và [bàn giao evaluator](../CODE-HANDOFF.md). Đây là **đặc tả + fixture minh họa**; runner/evaluator offline không chứng minh benchmark Agent thật đã đạt. Dùng lại schema BTC và checker hiện có.
+Đọc cùng [thiết kế product hiện hành](../../docs/design.md) và [README evaluator](../README.md). Đây là **đặc tả contract**; kiểm schema offline không chứng minh benchmark Agent thật đã đạt. Dùng lại schema BTC và checker hiện có.
 
 ## 1. Cài và kiểm tra
 
@@ -18,7 +18,7 @@ Cài dependency cần mạng hoặc wheelhouse có sẵn; lệnh kiểm tra sau 
 
 Hai schema nhóm: [contracts](contracts.schema.json) và [grading contract](grading-contract.schema.json). Validate bằng định nghĩa cụ thể, ví dụ `contracts.schema.json#/$defs/Manifest`; root contracts cố ý từ chối instance để tránh validate nhầm cả bộ. JSONL validate **từng dòng**, không validate nguyên chuỗi. Draft2020-12; contract bundle/docs1.1.0, TimingEvidence1.1.0 hỗ trợ null và đọc legacy1.0.0 theo constraints cũ; artifact khác/grading1.0.0. Đổi ý nghĩa phải version và giữ compatibility/migration, không sửa run cũ.
 
-[examples.json](examples.json) chứa ví dụ cấu trúc cho mọi định nghĩa và mutation tạo ví dụ không hợp lệ. Các ví dụ độc lập chỉ chứng minh cấu trúc; reference mẫu dùng để minh họa hình dạng, không chứng minh đúng loại nội dung hay chất lượng. [fixtures](fixtures/) là chuỗi M1 giả lập full/baseline hai call, kèm Call Brief, handoff và grading contract. Không dùng các số này làm báo cáo Agent. [check_contracts.py](check_contracts.py) nêu rõ phạm vi thực kiểm; [nghiệm thu](harness-acceptance-tests.md) tách phần còn cần runner.
+[fixtures](fixtures/) chỉ còn template mà `prepare()` dùng cho run thật. [check_contracts.py](check_contracts.py) kiểm schema, nguồn BTC đã pin và grading template; [nghiệm thu](harness-acceptance-tests.md) tách phần còn cần runner.
 
 ## 2. Nguồn và quyền quyết định
 

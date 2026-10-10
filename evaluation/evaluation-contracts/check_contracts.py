@@ -207,84 +207,17 @@ def verify_sources():
 
 
 def main():
-    examples = read("examples.json")
-    for name, ex in examples["valid"].items():
-        found = errors(ex["schema"], ex["data"])
-        require(not found, f"VALID {name}: " + "; ".join(e.message for e in found))
-    for test in examples["invalid"]:
-        ex = examples["valid"][test["base"]]
-        data = copy.deepcopy(ex["data"])
-        edit(data, test["path"], test.get("value"), test["op"] == "remove")
-        require(errors(ex["schema"], data), f"INVALID accepted: {test['name']}")
+    """Validate pinned BTC sources and the templates used by live evaluation."""
     lock = verify_sources()
-    compatibility = 0
-    for path in (ROOT/"sources/btc/test_set/public_sample").glob("*.json"):
+    for path in (ROOT / "sources/btc/test_set/public_sample").glob("*.json"):
         require(not errors("contracts.schema.json#/$defs/Scenario", json.loads(path.read_text())), str(path))
-        compatibility += 1
-    for path in (ROOT/"sources/btc/eval/runs").glob("*.jsonl"):
+    for path in (ROOT / "sources/btc/eval/runs").glob("*.jsonl"):
         for line in path.read_text().splitlines():
             require(not errors("sources/btc/schemas/trace_log.schema.json", json.loads(line)), str(path))
-            compatibility += 1
     require(not errors("contracts.schema.json#/$defs/OfficialReport", read("sources/btc/eval/runs/report_example.json")), "Report BTC mismatch")
-    compatibility += 1
-    traces = []
-    for filename in ("full.jsonl", "baseline.jsonl"):
-        for line in (ROOT/"fixtures"/filename).read_text().splitlines():
-            trace = json.loads(line)
-            require(not errors("sources/btc/schemas/trace_log.schema.json", trace), filename)
-            traces.append(trace)
-    for filename, schema in [("scenario.json", "contracts.schema.json#/$defs/Scenario"),
-                             ("manifest.json", "contracts.schema.json#/$defs/Manifest"),
-                             ("grading.json", "grading-contract.schema.json"),
-                             ("call-brief.json", "sources/btc/schemas/call_brief.schema.json"),
-                             ("handoff-brief.json", "sources/btc/schemas/handoff_brief.schema.json")]:
-        require(not errors(schema, read("fixtures/"+filename)), filename)
-    v = {k: x["data"] for k, x in examples["valid"].items()}
-    bundle = {"manifest": read("fixtures/manifest.json"), "grading": read("fixtures/grading.json"), "traces": traces,
-              "release": v["ReleaseDecision"], "metric": v["Metric"], "judge": v["JudgeRecord"],
-              "source": v["SourceDecision"], "tool": v["ToolEvent"], "coverage": v["Coverage"]}
-    require(not semantics(bundle), f"Chain invalid: {semantics(bundle)}")
-    # Formula fixtures include a correct invocation whose execution failed, and
-    # failed-call cost. These are math checks, not matching/execution benchmarks.
-    for name in ("ToolAccuracyMetric", "CostCompletedMetric"):
-        b = copy.deepcopy(bundle)
-        b["metric"] = v[name]
-        require(not semantics(b), f"Current formula fixture invalid: {name}")
-    require(v["ToolAccuracyMetric"]["value"] == 100 * 2 / (2 + 1 + 2), "Invocation/result conflated")
-    require(v["CostCompletedMetric"]["value"] == (5 + 7 + 2) / 2, "Cost must include failed cost / completed calls")
-    mutations = [
-        ("S01_DUPLICATE", lambda b: b["traces"].append(copy.deepcopy(b["traces"][0]))),
-        ("S02_COVERAGE", lambda b: b["traces"].pop()),
-        ("S03_REFERENCE", lambda b: b["grading"]["scenario"].update(pointer="/missing")),
-        ("S04_HASH", lambda b: b["grading"]["scenario"].update(sha256="0"*64)),
-        ("S05_STATUS", lambda b: b["coverage"]["status"].update(completeness="INCOMPLETE")),
-        ("S06_STATE", lambda b: b["manifest"]["state_namespaces"].update(baseline_no_memory=b["manifest"]["state_namespaces"]["full"])),
-        ("S07_TIME", lambda b: b["tool"].update(finished_at="2026-10-14T09:00:00+07:00")),
-        ("S08_FORMULA", lambda b: b["metric"].update(denominator=0)),
-        ("S09_JUDGE", lambda b: b["judge"].update(verdict=None)),
-        ("S10_RELEASE", lambda b: b["release"].update(decision="active", evaluated_hash="1"*64)),
-        ("S11_SOURCE", lambda b: b["source"].update(permission="allow", purpose="learning")),
-        ("S12_GRADING", lambda b: b["grading"]["calls"][0]["official_success_if"].update(pointer="/calls/call_2/success_if")),
-        ("S13_SUITE_COVERAGE", lambda b: b["manifest"]["asr_ids"].append("MISSING-HYPOTHESIS")),
-        ("S13_SUITE_COVERAGE", lambda b: b["manifest"]["rag_ids"].append("MISSING-QID")),
-        ("S14_INPUT", lambda b: b["traces"][-1].update(customer_text="Different input")),
-        ("S08_FORMULA", lambda b: b.update(metric={**v["ToolAccuracyMetric"], "value": 20})),
-        ("S08_FORMULA", lambda b: b.update(metric={**v["CostCompletedMetric"], "value": 14 / 3})),
-        ("S08_FORMULA", lambda b: b.update(metric={**v["ToolAccuracyMetric"], "formula_id": "tool-accuracy.v1"})),
-    ]
-    for code, mutate in mutations:
-        b = copy.deepcopy(bundle)
-        mutate(b)
-        require(code in semantics(b), f"Semantic mutation not detected: {code}")
-    # Fixed-turn has no simulator 12-turn cap. FAIL remains FAIL even if evidence is incomplete.
-    scenario = copy.deepcopy(v["Scenario"])
-    scenario["calls"]["call_1"]["customer_turns"] *= 13
-    require(not errors("contracts.schema.json#/$defs/Scenario", scenario), "Fixed-turn incorrectly capped")
-    b = copy.deepcopy(bundle)
-    b["coverage"]["status"] = {"verdict":"FAIL", "completeness":"INCOMPLETE", "reason_codes":["MISSING_AND_VIOLATION"]}
-    require("S05_STATUS" not in semantics(b), "Hard FAIL lost")
-    print(f"PASS: {len(SCHEMAS)} schemas offline; {len(examples['valid'])} valid; {len(examples['invalid'])} invalid rejected; {len(mutations)} semantic mutations; {compatibility} BTC compatibility records; {len(lock['files'])} source hashes; linked M1 fixtures.")
-    print("NOT RUN: Agent, runner, extractor, judge model, scorer benchmarks, acceptance behaviors A01–A18.")
+    require(not errors("grading-contract.schema.json", read("fixtures/grading.json")), "Grading template invalid")
+    print(f"PASS: {len(SCHEMAS)} schemas, {len(lock['files'])} pinned BTC source hashes, live grading template.")
+    print("NOT RUN: Agent, extractor, scorer, acceptance behaviors A01–A18.")
 
 
 if __name__ == "__main__":

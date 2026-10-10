@@ -1,6 +1,6 @@
 # Nghiệm thu contract và hành vi Harness
 
-Version1.1.0. Thứ tự: schema → semantic fixtures → adapter/runner integration → benchmark thật. Nguồn viết tắt theo [ma trận](schema-contract-matrix.md#2-nguồn-và-quyền-quyết-định); công thức theo [báo cáo](report-schemas.md). **PASS của checker không phải PASS của Agent**. Scope hiện tại theo [README](../README.md): validator và audio BTC đầy đủ deferred; ASR team/coverage tests vẫn làm. A09 dùng team audio/fixtures, không chờ audio BTC để kiểm harness; không gọi đó là nghiệm thu BTC đầy đủ.
+Version1.1.0. Thứ tự: schema → unit tests → adapter/runner integration → benchmark thật. Nguồn viết tắt theo [ma trận](schema-contract-matrix.md#2-nguồn-và-quyền-quyết-định); công thức theo [báo cáo](report-schemas.md). **PASS của checker không phải PASS của Agent**. Scope hiện tại theo [README](../README.md): validator và audio BTC đầy đủ deferred; ASR team/coverage tests vẫn làm.
 
 ## 1. Những gì kiểm tra ngay được
 
@@ -8,12 +8,10 @@ Chạy `python3 check_contracts.py` trong môi trường đã cài requirements.
 
 - 5 JSON Schema được meta-validate: hai schema nhóm + ba schema BTC.
 - Mọi $ref phân giải bằng registry local, không có network fallback; date-time qua FormatChecker, timezone bắt buộc khi format date-time.
-- 51 ví dụ hợp lệ trong examples.json (gồm assertion-only/judge-only/hybrid, wrapper judge lỗi, TimingEvidence1.1 thiếu measurements và hai metric hiện hành); 18 mutation phải bị từ chối: required/type/enum/nullability/date-time/retry/ASR/RAG/SIM/hybrid, legacy Timing1.0 null, negative usage/cost và thiếu required nullable cost.
-- Chuỗi fixtures M1: Scenario + Manifest + Grading + full/baseline JSONL + Call Brief + Handoff Brief. Không coi fixture này đáp ứng quy mô20/40scenario hay audio thật.
+- Grading template dùng bởi `prepare()` được validate; các fixture mô phỏng M1 đã dọn khỏi cây chạy thật.
 - Compatibility: 7 public scenarios +78 trace rows BTC +1 report_example =86 records; schema nhóm không siết sai các mẫu này.
 - 46 source hashes/inventory khớp sources.lock.json; source BTC không thay đổi.
-- Mẫu fixed-turn13 lượt **được** schema chấp nhận; FAIL+INCOMPLETE **được** giữ.
-- 18 mutation ngữ nghĩa phải bị bắt: 15 phép bên dưới và3 phép S08 mới (TCA tính sai khi result lỗi, cost chia attempted thay completed, dùng formula tool-accuracy.v1 cho protocol mới). Positive formula fixtures cũng được tính lại. Đây là kiểm toán học trên fixture, không chứng minh tool matcher/runtime execution đúng.
+- Các kiểm tra ngữ nghĩa S01–S14 bên dưới là **yêu cầu thiết kế**, không còn được script `check_contracts.py` chạy tự động sau khi bỏ fixture mô phỏng. Unit tests hiện hành chỉ phủ một phần; không gọi chúng là nghiệm thu toàn bộ.
 
 | Mã | Fixture/biến đổi | Bước & kỳ vọng | Nguồn |
 |---|---|---|---|
@@ -33,7 +31,7 @@ Chạy `python3 check_contracts.py` trong môi trường đã cài requirements.
 | S13_SUITE_COVERAGE | Manifest cần qid nhưng không result | So exact ID set; incomplete RAG | RAG/E rag_eval |
 | S14_INPUT | Baseline customer_text khác full | Reject so sánh không cùng input | Đ A baseline |
 
-Checker không dùng schema để khẳng định quote có thật, tính tool-success, approval của con người hay GT chính xác. AssetRef chỉ chứng minh file/hash/pointer tồn tại; **đúng vai trò nội dung** cần S15/A tương ứng dưới đây. Ví dụ cấu trúc trong examples.json không được chạy release.
+Checker không dùng schema để khẳng định quote có thật, tính tool-success, approval của con người hay GT chính xác. AssetRef chỉ chứng minh file/hash/pointer tồn tại; **đúng vai trò nội dung** cần S15/A tương ứng dưới đây.
 
 P0 đã có [regression tests](../tests/test_p0.py), chạy `python -B -m evaluation.eval_harness check` từ workspace root: exact full/baseline scorer parity và report CLI mẫu, mock selftest subprocess, invocation matcher (business error vẫn TP, wrong args FP+FN), cost completed0/missing và timing nullable/legacy. Chỉ fixture/offline; không đánh dấu A01/A14/A18 hoặc S18 toàn bộ PASS vì còn thiếu runtime/coverage/collection/integration. Checker riêng vẫn chỉ kiểm contract, không gọi scorer/tool.
 

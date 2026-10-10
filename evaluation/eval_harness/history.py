@@ -8,8 +8,14 @@ def render_history(runs: Path) -> str:
         "| Run | Calls | TSR baseline → system | CCR baseline → system | RQR baseline → system | Status | Reasons | Report |",
         "| --- | ---: | ---: | ---: | ---: | --- | --- | --- |",
     ]
-    for report_path in sorted(runs.glob("*/execution-report.json")):
-        run = report_path.parent
+    directories = sorted([p for root in (runs, runs.parent / "archive/runs") if root.is_dir()
+                          for p in root.iterdir() if p.is_dir()])
+    for run in directories:
+        report_path = run / "execution-report.json"
+        label = ("archive/" if run.is_relative_to(runs.parent / "archive/runs") else "") + run.name
+        if not report_path.is_file():
+            lines.append(f"| {label} | — | — | — | — | INCOMPLETE | EXECUTION_REPORT_MISSING | {run.resolve()} |")
+            continue
         try:
             report = json.loads(report_path.read_text(encoding="utf-8"))
             stages = {stage["stage"]: stage for stage in report["stages"]}
@@ -31,10 +37,10 @@ def render_history(runs: Path) -> str:
                 values = [metrics.get(side, {}).get(key, {}).get("value") for side in ("baseline", "system")]
                 return " → ".join("—" if value is None else f"{value:g}%" for value in values)
 
-            cells = [run.name, str(stages.get("run", {}).get("completed_calls", 0)),
+            cells = [label, str(stages.get("run", {}).get("completed_calls", 0)),
                      pair("task_success_rate"), pair("context_carryover_rate"), pair("repeat_question_rate"),
                      status, ", ".join(reasons) or "—", str(report_path.resolve())]
             lines.append("| " + " | ".join(str(cell).replace("|", "\\|").replace("\n", " ") for cell in cells) + " |")
         except (OSError, ValueError, KeyError, TypeError) as exc:
-            lines.append(f"| {run.name} | — | — | — | — | INVALID | {type(exc).__name__} | {report_path.resolve()} |")
+            lines.append(f"| {label} | — | — | — | — | INVALID | {type(exc).__name__} | {report_path.resolve()} |")
     return "\n".join(lines) if len(lines) > 2 else "No evaluation runs found in " + str(runs.resolve())

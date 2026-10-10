@@ -1,6 +1,6 @@
 # P6 — nhập billing ledger và casebook review
 
-Triển khai 07/10/2026. Đọc [CODE-HANDOFF](CODE-HANDOFF.md) → tài liệu này → `eval_harness/p6_evidence.py`. Hai input dưới đây là **staging sidecars**, không đổi contracts.schema.json/BTC, không sửa run đã đóng. Producer xuất thư mục mới có `artifacts.lock.json` theo helper `datasets.close_output`; importer kiểm exact inventory/hash bằng locked_run. Lock chứng minh bytes, không chứng minh người review/provider có thẩm quyền.
+Triển khai 07/10/2026. Đọc [README](README.md) → tài liệu này → `eval_harness/p6_evidence.py`. Hai input dưới đây là **staging sidecars**, không đổi contracts.schema.json/BTC, không sửa run đã đóng. Producer xuất thư mục mới có `artifacts.lock.json` theo helper `datasets.close_output`; importer kiểm exact inventory/hash bằng locked_run. Lock chứng minh bytes, không chứng minh người review/provider có thẩm quyền.
 
 ## Lệnh
 

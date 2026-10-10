@@ -22,26 +22,6 @@
       "pointer": ""
     },
     {
-      "path": "fixtures/p3-adapter.json",
-      "sha256": "3d05a136ec6e32e61f7c0a2a080b642406f2480a6c123d94883337d1417a37b8",
-      "pointer": ""
-    },
-    {
-      "path": "fixtures/p3-adapter.py",
-      "sha256": "4edbd47919f9eb486cde5680f61041ec1b90c8a53aff84f590067290308975ab",
-      "pointer": ""
-    },
-    {
-      "path": "fixtures/p3-extractor.json",
-      "sha256": "f19768d315deba6f7e2214fe7f267232f34a88b0dd532292c9026b567c95bd21",
-      "pointer": ""
-    },
-    {
-      "path": "fixtures/p3-records.json",
-      "sha256": "d32d36aef1f968f3f8170ce906777a4ee49d88acbb539a561f0a45b46bac5e9c",
-      "pointer": ""
-    },
-    {
       "path": "contracts.schema.json",
       "sha256": "851594f4d5179e5c6a47bd024f166093b1a9c34d7076c3d963cc184b97dea071",
       "pointer": "/$defs/Extraction"
@@ -52,20 +32,8 @@
       "pointer": ""
     }
   ],
-  "scenarios": [
-    {
-      "path": "fixtures/scenario.json",
-      "sha256": "bcd7ad24d316eb109acd9ce865ddf3289471901558b215164d32443abcae7c25",
-      "pointer": ""
-    }
-  ],
-  "grading_contracts": [
-    {
-      "path": "fixtures/grading.json",
-      "sha256": "62f2a28986c65710716307c31c58fa70146b70f4ef25de5b7182a2062b92370e",
-      "pointer": ""
-    }
-  ],
+  "scenarios": [],
+  "grading_contracts": [],
   "suites": [
     {
       "id": "fixed_turn",

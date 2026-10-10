@@ -28,6 +28,7 @@ from pathlib import Path
 import subprocess
 
 from eval_harness.assets import Assets, read_json
+from eval_harness.case_trace import write as write_case_trace
 from eval_harness.collector import collect
 from eval_harness.contracts import ROOT, checker, validate
 from eval_harness.datasets import close_output
@@ -225,6 +226,10 @@ def evaluate(out, *, only=None, extractor_calls=64):
               "quality_accepted": False, "table": "scored/scorer.stdout.txt",
               "notice": "The team's agent on generated diagnostic scenarios whose labels await QA; "
                         "not BTC acceptance. P6 is M1-only and these scenarios are M2."}
+    try:
+        write_case_trace(out, report)
+    except (OSError, ValueError, KeyError, TypeError) as exc:
+        report["pipeline_error"] = (report["pipeline_error"] + "; " if report["pipeline_error"] else "") + f"Case trace: {type(exc).__name__}: {exc}"
     _write(out / "execution-report.json", report)
     close_output(out)
     return report
