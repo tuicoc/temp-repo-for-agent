@@ -1,5 +1,7 @@
 # Agent Core
 
+> **Bàn giao nhánh `dai`:** [Bắt đầu phát triển evaluation tại đây](evaluation/CODE-HANDOFF.md). Agent đang chạy nằm trong `backend/src/agents/`, hot/cold flow trong `backend/src/pipeline/`. `evaluation/product-integration-reference/` là mã bridge **cũ để tham khảo**, không phải source active và không được chép đè vào backend.
+
 > **The project has no final name yet.** "Agent Core" is a placeholder used in
 > the badges, the licence and the documentation so that nothing has to stay
 > blank. Renaming it later is a single `refactor` commit.
