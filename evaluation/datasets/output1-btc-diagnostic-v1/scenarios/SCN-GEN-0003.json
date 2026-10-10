@@ -1,0 +1,302 @@
+{
+  "scenario_id": "SCN-GEN-0003",
+  "level": "M2",
+  "persona": "khach_goi_lan_3_het_kien_nhan",
+  "hard_case": "cold callback lead after promised Tet purchase",
+  "customer_phone": "0977879432",
+  "customer_name": "Loan",
+  "honorific": "chị",
+  "notes": "coverage_case=consult_order_status_lifecycle; cold callback lead after promised Tet purchase",
+  "calls": {
+    "call_1": {
+      "customer_goal": "Tôi muốn đặt hàng máy lọc không khí AirPure Y.",
+      "customer_turns": [
+        "Chị đã hỏi về máy lọc không khí AirPure Y rồi, bây giờ chị muốn đặt hàng.",
+        "Chị muốn đặt hàng ngay bây giờ nếu còn hàng."
+      ],
+      "facts_established": {
+        "product_name": "Máy lọc không khí AirPure Y",
+        "price": 5200000,
+        "available": true
+      },
+      "expected_outcome": "hen_goi_lai",
+      "success_if": {
+        "tool_called": "inventory.check",
+        "args_match": {
+          "sku": "SKU-AP-Y"
+        },
+        "must_not_call_tools": [
+          "order.create"
+        ]
+      },
+      "ground_truth_facts": {
+        "sku": "SKU-AP-Y",
+        "list_price_vnd": 5200000,
+        "final_price_vnd": 5200000,
+        "in_stock": true,
+        "stock_qty": 15,
+        "applied_promos": [
+          {
+            "promo_code": "COD-0",
+            "type": "freecod",
+            "saving_vnd": 0,
+            "gift_sku": null,
+            "free_shipping": false,
+            "free_cod": true
+          },
+          {
+            "promo_code": "GIFT-FILTER",
+            "type": "gift",
+            "saving_vnd": 0,
+            "gift_sku": "SKU-AP-FLT-X",
+            "free_shipping": false,
+            "free_cod": false
+          }
+        ],
+        "rejected_promos_with_reason": [
+          {
+            "promo_code": "AIR-OCT",
+            "reason": "sku_or_category_not_covered"
+          },
+          {
+            "promo_code": "XM-COMBO",
+            "reason": "sku_or_category_not_covered"
+          },
+          {
+            "promo_code": "RUN-10",
+            "reason": "sku_or_category_not_covered"
+          },
+          {
+            "promo_code": "AIR-2ND-50",
+            "reason": "minimum_quantity_not_met"
+          },
+          {
+            "promo_code": "NAM-SHIP0",
+            "reason": "region_not_eligible"
+          },
+          {
+            "promo_code": "TRADE-IN-AP",
+            "reason": "required_owned_sku_missing"
+          },
+          {
+            "promo_code": "MOM-FREESHIP",
+            "reason": "sku_or_category_not_covered"
+          },
+          {
+            "promo_code": "AP-SEP",
+            "reason": "outside_promotion_period"
+          },
+          {
+            "promo_code": "RUN2-SALE",
+            "reason": "outside_promotion_period"
+          },
+          {
+            "promo_code": "PUMP-GIFT",
+            "reason": "outside_promotion_period"
+          },
+          {
+            "promo_code": "11-11",
+            "reason": "outside_promotion_period"
+          }
+        ],
+        "product_name": "Máy lọc không khí AirPure Y",
+        "category": "gia-dung/may-loc-khong-khi",
+        "date": "2026-10-15",
+        "customer_id": "C033",
+        "session_index": 1
+      }
+    },
+    "call_2": {
+      "customer_goal": "Chị muốn xác nhận đơn hàng máy lọc không khí đã đặt.",
+      "customer_turns": [
+        "Chị đã đặt hàng hôm trước, bây giờ chị muốn biết tình trạng đơn hàng.",
+        "Đơn hàng của chị đã được xác nhận chưa?"
+      ],
+      "facts_established": {
+        "order_status": "pending"
+      },
+      "expected_outcome": "khac",
+      "days_later": 2,
+      "success_if": {
+        "must_say_any": [
+          "mã đơn",
+          "thông tin đơn"
+        ],
+        "must_not_call_tools": [
+          "order.create"
+        ]
+      },
+      "ground_truth_facts": {
+        "sku": "SKU-AP-Y",
+        "list_price_vnd": 5200000,
+        "final_price_vnd": 5200000,
+        "applied_promos": [
+          {
+            "promo_code": "COD-0",
+            "type": "freecod",
+            "saving_vnd": 0,
+            "gift_sku": null,
+            "free_shipping": false,
+            "free_cod": true
+          },
+          {
+            "promo_code": "GIFT-FILTER",
+            "type": "gift",
+            "saving_vnd": 0,
+            "gift_sku": "SKU-AP-FLT-X",
+            "free_shipping": false,
+            "free_cod": false
+          }
+        ],
+        "rejected_promos_with_reason": [
+          {
+            "promo_code": "AIR-OCT",
+            "reason": "sku_or_category_not_covered"
+          },
+          {
+            "promo_code": "XM-COMBO",
+            "reason": "sku_or_category_not_covered"
+          },
+          {
+            "promo_code": "RUN-10",
+            "reason": "sku_or_category_not_covered"
+          },
+          {
+            "promo_code": "AIR-2ND-50",
+            "reason": "minimum_quantity_not_met"
+          },
+          {
+            "promo_code": "NAM-SHIP0",
+            "reason": "region_not_eligible"
+          },
+          {
+            "promo_code": "TRADE-IN-AP",
+            "reason": "required_owned_sku_missing"
+          },
+          {
+            "promo_code": "MOM-FREESHIP",
+            "reason": "sku_or_category_not_covered"
+          },
+          {
+            "promo_code": "AP-SEP",
+            "reason": "outside_promotion_period"
+          },
+          {
+            "promo_code": "RUN2-SALE",
+            "reason": "outside_promotion_period"
+          },
+          {
+            "promo_code": "PUMP-GIFT",
+            "reason": "outside_promotion_period"
+          },
+          {
+            "promo_code": "11-11",
+            "reason": "outside_promotion_period"
+          }
+        ],
+        "in_stock": true,
+        "stock_qty": 15,
+        "product_name": "Máy lọc không khí AirPure Y",
+        "category": "gia-dung/may-loc-khong-khi",
+        "date": "2026-10-15",
+        "delivery_days": 2
+      }
+    },
+    "call_3": {
+      "customer_goal": "Chị muốn cập nhật thông tin về đơn hàng máy lọc không khí.",
+      "customer_turns": [
+        "Chị vẫn chưa nhận được đơn hàng. Xin cho chị hỏi tình trạng đơn hàng.",
+        "Đơn hàng của chị đã được giao chưa?"
+      ],
+      "facts_established": {
+        "order_status": "pending"
+      },
+      "expected_outcome": "khac",
+      "days_later": 3,
+      "success_if": {
+        "must_say_any": [
+          "mã đơn",
+          "thông tin đơn"
+        ],
+        "must_not_call_tools": [
+          "order.create"
+        ]
+      },
+      "ground_truth_facts": {
+        "sku": "SKU-AP-Y",
+        "list_price_vnd": 5200000,
+        "final_price_vnd": 5200000,
+        "applied_promos": [
+          {
+            "promo_code": "COD-0",
+            "type": "freecod",
+            "saving_vnd": 0,
+            "gift_sku": null,
+            "free_shipping": false,
+            "free_cod": true
+          },
+          {
+            "promo_code": "GIFT-FILTER",
+            "type": "gift",
+            "saving_vnd": 0,
+            "gift_sku": "SKU-AP-FLT-X",
+            "free_shipping": false,
+            "free_cod": false
+          }
+        ],
+        "rejected_promos_with_reason": [
+          {
+            "promo_code": "AIR-OCT",
+            "reason": "sku_or_category_not_covered"
+          },
+          {
+            "promo_code": "XM-COMBO",
+            "reason": "sku_or_category_not_covered"
+          },
+          {
+            "promo_code": "RUN-10",
+            "reason": "sku_or_category_not_covered"
+          },
+          {
+            "promo_code": "AIR-2ND-50",
+            "reason": "minimum_quantity_not_met"
+          },
+          {
+            "promo_code": "NAM-SHIP0",
+            "reason": "region_not_eligible"
+          },
+          {
+            "promo_code": "TRADE-IN-AP",
+            "reason": "required_owned_sku_missing"
+          },
+          {
+            "promo_code": "MOM-FREESHIP",
+            "reason": "sku_or_category_not_covered"
+          },
+          {
+            "promo_code": "AP-SEP",
+            "reason": "outside_promotion_period"
+          },
+          {
+            "promo_code": "RUN2-SALE",
+            "reason": "outside_promotion_period"
+          },
+          {
+            "promo_code": "PUMP-GIFT",
+            "reason": "outside_promotion_period"
+          },
+          {
+            "promo_code": "11-11",
+            "reason": "outside_promotion_period"
+          }
+        ],
+        "in_stock": true,
+        "stock_qty": 15,
+        "product_name": "Máy lọc không khí AirPure Y",
+        "category": "gia-dung/may-loc-khong-khi",
+        "date": "2026-10-15",
+        "delivery_days": 2
+      }
+    }
+  }
+}

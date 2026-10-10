@@ -1,0 +1,16 @@
+{
+  "scenario_id": "SCN-GEN-0005",
+  "rubric_id": "M2",
+  "criteria_passed": {
+    "continuity": true,
+    "repeat-question-avoidance": true,
+    "factual-price-stock-promotion-accuracy": true,
+    "policy-adherence": true,
+    "natural-Vietnamese": true,
+    "internal-consistency": true
+  },
+  "overall_pass": true,
+  "confidence": 0.95,
+  "needs_manual_review": true,
+  "reasons": ""
+}

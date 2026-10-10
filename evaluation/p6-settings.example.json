@@ -1,0 +1,18 @@
+{
+  "asset_root": ".",
+  "execution_settings": {
+    "path": "p6-execution-settings.example.json",
+    "sha256": "e5a91a820804c1515f590ee455c61a3ea626ddbd486daeff819c5e66927ceeea",
+    "pointer": ""
+  },
+  "extractor": "fixtures/p3-extractor.json",
+  "asr": {
+    "settings": {
+      "path": "p5-settings.example.json",
+      "sha256": "ed85ab0196957e7a990355b4cffa6019b3bff1e3731899c52f59616d11ae5982",
+      "pointer": ""
+    },
+    "split": "eval",
+    "mode": "replay"
+  }
+}

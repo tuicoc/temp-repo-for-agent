@@ -1,0 +1,15 @@
+{
+  "kind": "fixture_replay",
+  "version": "fixture-p3-v1",
+  "records": {
+    "path": "fixtures/p3-records.json",
+    "sha256": "d32d36aef1f968f3f8170ce906777a4ee49d88acbb539a561f0a45b46bac5e9c",
+    "pointer": ""
+  },
+  "schema": {
+    "path": "contracts.schema.json",
+    "sha256": "851594f4d5179e5c6a47bd024f166093b1a9c34d7076c3d963cc184b97dea071",
+    "pointer": "/$defs/Extraction"
+  },
+  "implementation_sha256": "ac4467ca19fd3395c5d4dd0a10caea1f05d754b8b31ae3feb26ebd7e2797801a"
+}

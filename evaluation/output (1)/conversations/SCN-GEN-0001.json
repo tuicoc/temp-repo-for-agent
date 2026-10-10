@@ -1,0 +1,122 @@
+{
+  "conversation_id": "SCN-GEN-0001",
+  "customer_id": "C031",
+  "session_index": 1,
+  "channel": "hotline",
+  "date": "2026-10-15",
+  "region": "bac",
+  "category": "gia-dung/may-loc-khong-khi",
+  "persona": "khach_quay_lai_sau_8_thang",
+  "turns": [
+    {
+      "speaker": "agent_ai",
+      "text": "Chào chị Oanh, em là trợ lý ảo của Shop BTC. Chị đã đặt hàng máy lọc không khí AirPure X trước đây, đúng không ạ?",
+      "asks_slot": null,
+      "q_type": null,
+      "tool_called": null,
+      "tool_args": null,
+      "entities": [],
+      "pause_before_ms": 0,
+      "emotion": null,
+      "barge_in": false
+    },
+    {
+      "speaker": "customer",
+      "text": "Đúng rồi, chị muốn kiểm tra tình trạng đơn hàng máy lọc không khí AirPure X mà chị đã đặt.",
+      "facts_stated": {
+        "order_id": "OD188213"
+      },
+      "entities": [],
+      "pause_before_ms": 0,
+      "emotion": null,
+      "barge_in": false
+    },
+    {
+      "speaker": "agent_ai",
+      "text": "Đơn hàng của chị là OD188213 và hiện tại đã được giao. Chị có cần thêm thông tin gì không?",
+      "asks_slot": null,
+      "q_type": null,
+      "tool_called": null,
+      "tool_args": null,
+      "entities": [],
+      "pause_before_ms": 0,
+      "emotion": null,
+      "barge_in": false
+    },
+    {
+      "speaker": "customer",
+      "text": "Tốt quá! Nhưng chị muốn cập nhật đơn hàng của mình, có ưu đãi nào không?",
+      "facts_stated": {
+        "previous_order": "OD188213",
+        "previous_sku": "SKU-AP-X-2024",
+        "previous_price": 4490000
+      },
+      "entities": [],
+      "pause_before_ms": 0,
+      "emotion": null,
+      "barge_in": false
+    },
+    {
+      "speaker": "agent_ai",
+      "text": "Chị đang đủ điều kiện nhận ưu đãi TRADE-IN-AP với mức giảm 400.000đ khi đặt hàng máy lọc không khí mới. Chị có muốn đặt hàng ngay bây giờ không?",
+      "asks_slot": null,
+      "q_type": null,
+      "tool_called": null,
+      "tool_args": null,
+      "entities": [],
+      "pause_before_ms": 0,
+      "emotion": null,
+      "barge_in": false
+    },
+    {
+      "speaker": "customer",
+      "text": "Vâng, chị muốn đặt hàng ngay bây giờ.",
+      "facts_stated": {},
+      "entities": [],
+      "pause_before_ms": 0,
+      "emotion": null,
+      "barge_in": false
+    },
+    {
+      "speaker": "agent_ai",
+      "text": "Vậy chị sẽ nhận máy lọc không khí AirPure X với giá 4.490.000đ sau khi giảm. Chị có muốn xác nhận đơn hàng này không?",
+      "asks_slot": null,
+      "q_type": null,
+      "tool_called": "order.create",
+      "tool_args": {
+        "sku": "SKU-AP-X",
+        "price": 4490000,
+        "order_id": "OD188213"
+      },
+      "entities": [],
+      "pause_before_ms": 0,
+      "emotion": null,
+      "barge_in": false
+    },
+    {
+      "speaker": "customer",
+      "text": "Đúng rồi, chị xác nhận đơn hàng.",
+      "facts_stated": {},
+      "entities": [],
+      "pause_before_ms": 0,
+      "emotion": null,
+      "barge_in": false
+    }
+  ],
+  "gold": {
+    "intent": "cap_nhat_don",
+    "outcome": "cap_nhat_don",
+    "objection_type": null,
+    "objection_handling": null,
+    "sentiment": "positive",
+    "decision_maker": null,
+    "commitments": [],
+    "supersedes": [],
+    "callback": null,
+    "order": {
+      "sku": "SKU-AP-X",
+      "final_price": 4490000,
+      "order_id": "OD188213"
+    }
+  }
+}

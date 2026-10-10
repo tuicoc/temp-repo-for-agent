@@ -1,0 +1,8 @@
+{
+  "asset_root": ".",
+  "registry": {
+    "path": "datasets/p5-current/registry.json",
+    "sha256": "ac557c2499561fc5317a92858d6752452934743d8111a17b42a66a52c1c36ad2",
+    "pointer": ""
+  }
+}

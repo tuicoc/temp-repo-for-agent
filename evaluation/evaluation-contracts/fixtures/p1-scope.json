@@ -1,0 +1,31 @@
+{
+  "notice": "SYNTHETIC FIXTURE ONLY; this is not a human review of a real dataset.",
+  "deferred": [
+    {"id": "btc.validator", "reason": "DEFERRED_BY_USER_2026_10_04"},
+    {"id": "btc.audio_segments", "reason": "DEFERRED_BY_USER_2026_10_04"}
+  ],
+  "asr_assets": [],
+  "rag_ids": [],
+  "source_decisions": [
+    {
+      "schema_version": "1.0.0",
+      "artifact_id": "FIXTURE-P1-SourceDecision",
+      "run_id": "FIXTURE-R0",
+      "source_split": "development",
+      "origin": {
+        "path": "fixtures/scenario.json",
+        "sha256": "bcd7ad24d316eb109acd9ce865ddf3289471901558b215164d32443abcae7c25",
+        "pointer": ""
+      },
+      "permission": "allow",
+      "purpose": "report_only",
+      "policy_version": "fixture-only-v1",
+      "reason": "Synthetic development fixture; not authorized for production or learning"
+    }
+  ],
+  "pii_review": {
+    "status": "approved",
+    "reviewed_by": "fixture-author-not-a-real-human-review",
+    "scope": "synthetic"
+  }
+}

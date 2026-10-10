@@ -1,0 +1,84 @@
+[
+  {
+    "input_sha256": "cc26b1d05005a642a0fe5ef37829a96f169162b973e72f386ac7bac270e2c1fb",
+    "items": [
+      {
+        "kind": "question",
+        "slot_or_field": "room_area_m2",
+        "value": null,
+        "question_type": "open",
+        "speaker": "agent",
+        "source_field": "agent_text",
+        "quote": "Phòng chị bao nhiêu m²?",
+        "start": 0,
+        "end": 23,
+        "purpose": "Fixture annotation from actual scripted source"
+      },
+      {
+        "kind": "claim",
+        "slot_or_field": "price_vnd",
+        "value": 5000000,
+        "question_type": null,
+        "speaker": "agent",
+        "source_field": "agent_text",
+        "quote": "5000000 đồng",
+        "start": 32,
+        "end": 44,
+        "purpose": "Fixture annotation from actual scripted source"
+      },
+      {
+        "kind": "claim",
+        "slot_or_field": "delivery_days",
+        "value": 2,
+        "question_type": null,
+        "speaker": "agent",
+        "source_field": "agent_text",
+        "quote": "2 ngày",
+        "start": 51,
+        "end": 57,
+        "purpose": "Fixture annotation from actual scripted source"
+      }
+    ]
+  },
+  {
+    "input_sha256": "abab4e952a1bb25323068eb76df24b024a31dfd84ccfbaf95523d0d58b4de2a6",
+    "items": [
+      {
+        "kind": "question",
+        "slot_or_field": "room_area_m2",
+        "value": 30,
+        "question_type": "confirm",
+        "speaker": "agent",
+        "source_field": "agent_text",
+        "quote": "Vẫn phòng 30 m² đúng không ạ?",
+        "start": 0,
+        "end": 29,
+        "purpose": "Fixture annotation from actual scripted source"
+      },
+      {
+        "kind": "question",
+        "slot_or_field": "room_area_m2",
+        "value": 30,
+        "question_type": "confirm",
+        "speaker": "agent",
+        "source_field": "agent_text",
+        "quote": "Vẫn phòng 30 m² đúng không ạ?",
+        "start": 30,
+        "end": 59,
+        "purpose": "Fixture annotation from actual scripted source"
+      },
+      {
+        "kind": "fact_usage",
+        "slot_or_field": "room_area_m2",
+        "value": 30,
+        "question_type": null,
+        "speaker": "agent",
+        "source_field": "agent_text",
+        "quote": "30 m²",
+        "start": 10,
+        "end": 15,
+        "purpose": "Fixture annotation from actual scripted source"
+      }
+    ]
+  }
+]

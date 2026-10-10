@@ -1,0 +1,236 @@
+{
+  "scenario_id": "SCN-GEN-0004",
+  "level": "M2",
+  "persona": "hai_nguoi_chung_sdt",
+  "hard_case": "shared phone with C035; keep identities and histories separate",
+  "customer_phone": "0958421083",
+  "customer_name": "Loan",
+  "honorific": "cô",
+  "notes": "coverage_case=shared_phone_identity; shared phone with C035; keep identities and histories separate",
+  "calls": {
+    "call_1": {
+      "customer_goal": "Tôi muốn hỏi về máy lọc không khí AirPure Mini.",
+      "customer_turns": [
+        "Chào cô, tôi muốn biết thêm về máy lọc không khí AirPure Mini.",
+        "Máy này có tính năng gì đặc biệt không?",
+        "Tôi ở Cần Thơ, không biết có hàng không?",
+        "Tôi đang chờ con gái quyết định trước khi mua."
+      ],
+      "facts_established": {
+        "product_name": "Máy lọc không khí AirPure Mini",
+        "location": "Cần Thơ",
+        "waiting_for": "con gái quyết định"
+      },
+      "expected_outcome": "thong_tin",
+      "success_if": {
+        "tool_called": "order.create",
+        "args_match": {
+          "sku": "SKU-AP-MINI",
+          "price_vnd": 2190000
+        }
+      },
+      "ground_truth_facts": {
+        "sku": "SKU-AP-MINI",
+        "list_price_vnd": 2190000,
+        "final_price_vnd": 2190000,
+        "applied_promos": [
+          {
+            "promo_code": "COD-0",
+            "type": "freecod",
+            "saving_vnd": 0,
+            "gift_sku": null,
+            "free_shipping": false,
+            "free_cod": true
+          }
+        ],
+        "rejected_promos_with_reason": [
+          {
+            "promo_code": "GIFT-FILTER",
+            "reason": "sku_or_category_not_covered"
+          },
+          {
+            "promo_code": "AIR-OCT",
+            "reason": "sku_or_category_not_covered"
+          },
+          {
+            "promo_code": "XM-COMBO",
+            "reason": "sku_or_category_not_covered"
+          },
+          {
+            "promo_code": "RUN-10",
+            "reason": "sku_or_category_not_covered"
+          },
+          {
+            "promo_code": "AIR-2ND-50",
+            "reason": "minimum_quantity_not_met"
+          },
+          {
+            "promo_code": "NAM-SHIP0",
+            "reason": "region_not_eligible"
+          },
+          {
+            "promo_code": "TRADE-IN-AP",
+            "reason": "sku_or_category_not_covered"
+          },
+          {
+            "promo_code": "MOM-FREESHIP",
+            "reason": "sku_or_category_not_covered"
+          },
+          {
+            "promo_code": "AP-SEP",
+            "reason": "outside_promotion_period"
+          },
+          {
+            "promo_code": "RUN2-SALE",
+            "reason": "outside_promotion_period"
+          },
+          {
+            "promo_code": "PUMP-GIFT",
+            "reason": "outside_promotion_period"
+          },
+          {
+            "promo_code": "11-11",
+            "reason": "outside_promotion_period"
+          }
+        ],
+        "in_stock": true,
+        "stock_qty": 8,
+        "product_name": "Máy lọc không khí AirPure Mini",
+        "category": "gia-dung/may-loc-khong-khi",
+        "date": "2026-10-15",
+        "customer_id": "C034",
+        "session_index": 1
+      }
+    },
+    "call_2": {
+      "customer_goal": "Tôi muốn xác nhận đơn hàng máy lọc không khí AirPure Mini.",
+      "customer_turns": [
+        "Tôi đã quyết định mua máy lọc không khí AirPure Mini.",
+        "Xin hãy xác nhận đơn hàng của tôi.",
+        "Tôi muốn biết khi nào thì hàng sẽ được giao.",
+        "Có cần thanh toán trước không?"
+      ],
+      "facts_established": {
+        "confirmed_order": "Máy lọc không khí AirPure Mini",
+        "payment_method": "COD",
+        "expected_delivery_date": "sẽ gọi lại để xác nhận"
+      },
+      "expected_outcome": "thong_tin",
+      "days_later": 1,
+      "must_carry_over": [
+        "product_name",
+        "location",
+        "waiting_for"
+      ],
+      "success_if": {
+        "tool_called": "order.create",
+        "args_match": {
+          "sku": "SKU-AP-MINI",
+          "price_vnd": 2190000
+        }
+      },
+      "ground_truth_facts": {
+        "sku": "SKU-AP-MINI",
+        "list_price_vnd": 2190000,
+        "final_price_vnd": 2190000,
+        "applied_promos": [
+          {
+            "promo_code": "COD-0",
+            "type": "freecod",
+            "saving_vnd": 0,
+            "gift_sku": null,
+            "free_shipping": false,
+            "free_cod": true
+          }
+        ],
+        "rejected_promos_with_reason": [
+          {
+            "promo_code": "GIFT-FILTER",
+            "reason": "sku_or_category_not_covered"
+          },
+          {
+            "promo_code": "AIR-OCT",
+            "reason": "sku_or_category_not_covered"
+          },
+          {
+            "promo_code": "XM-COMBO",
+            "reason": "sku_or_category_not_covered"
+          },
+          {
+            "promo_code": "RUN-10",
+            "reason": "sku_or_category_not_covered"
+          },
+          {
+            "promo_code": "AIR-2ND-50",
+            "reason": "minimum_quantity_not_met"
+          },
+          {
+            "promo_code": "NAM-SHIP0",
+            "reason": "region_not_eligible"
+          },
+          {
+            "promo_code": "TRADE-IN-AP",
+            "reason": "sku_or_category_not_covered"
+          },
+          {
+            "promo_code": "MOM-FREESHIP",
+            "reason": "sku_or_category_not_covered"
+          },
+          {
+            "promo_code": "AP-SEP",
+            "reason": "outside_promotion_period"
+          },
+          {
+            "promo_code": "RUN2-SALE",
+            "reason": "outside_promotion_period"
+          },
+          {
+            "promo_code": "PUMP-GIFT",
+            "reason": "outside_promotion_period"
+          },
+          {
+            "promo_code": "11-11",
+            "reason": "outside_promotion_period"
+          }
+        ],
+        "in_stock": true,
+        "stock_qty": 8,
+        "product_name": "Máy lọc không khí AirPure Mini",
+        "category": "gia-dung/may-loc-khong-khi",
+        "date": "2026-10-15"
+      }
+    },
+    "call_3": {
+      "customer_goal": "Tôi muốn kiểm tra tình trạng đơn hàng của máy lọc không khí AirPure Mini.",
+      "customer_turns": [
+        "Tôi muốn biết đơn hàng máy lọc không khí AirPure Mini của tôi đang ở đâu?",
+        "Tôi đã xác nhận đơn, khi nào thì tôi sẽ nhận được hàng?"
+      ],
+      "facts_established": {
+        "order_status": "Đang giao",
+        "tracking_info": "Sẽ có thông tin trong 24 giờ tới."
+      },
+      "expected_outcome": "cap_nhat_don",
+      "days_later": 3,
+      "must_carry_over": [
+        "confirmed_order",
+        "payment_method",
+        "expected_delivery_date"
+      ],
+      "success_if": {
+        "kind": "reply_matches_any",
+        "payload": {
+          "messages": [
+            "Tôi muốn biết tình trạng đơn hàng của mình",
+            "Đơn hàng của tôi đã được giao chưa?"
+          ]
+        }
+      },
+      "ground_truth_facts": {
+        "sku": "SKU-AP-MINI",
+        "list_price_vnd": 2190000,
+        "final_price_vnd": 2190000
+      }
+    }
+  }
+}

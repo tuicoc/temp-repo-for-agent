@@ -1,0 +1,19 @@
+{
+  "kind": "test",
+  "entrypoint": "p2_fixture:factory",
+  "code": {
+    "path": "fixtures/p2-adapter.py",
+    "sha256": "17089d34d727e48f3189d2f87bb330c792cb4612bab67ad4f40c2ae142012ad1",
+    "pointer": ""
+  },
+  "capabilities": [
+    "after_call_barrier",
+    "briefs",
+    "business_tools",
+    "memory_isolation",
+    "memory_read_gate",
+    "snapshots",
+    "timestamps",
+    "usage"
+  ]
+}

@@ -1,0 +1,14 @@
+{
+  "model_id": "Systran/faster-whisper-small",
+  "revision": "536b0662742c02347bc0e980a01041f333bce120",
+  "runtime": "faster-whisper 1.2.1",
+  "local_path": "models/faster-whisper-small",
+  "intended_use": "Vietnamese multilingual ASR development baseline",
+  "selection_reason": "Runs locally on CPU with INT8; small enough for this Mac while preserving multilingual Vietnamese support.",
+  "downloaded_at": "2026-10-03",
+  "source": "https://huggingface.co/Systran/faster-whisper-small",
+  "limitations": [
+    "Not a Vietnamese-specialized model.",
+    "Must be benchmarked on reviewed human speech before production selection."
+  ]
+}

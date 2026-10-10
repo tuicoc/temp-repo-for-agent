@@ -1,0 +1,19 @@
+{
+  "kind": "test",
+  "entrypoint": "p3_fixture:factory",
+  "code": {
+    "path": "fixtures/p3-adapter.py",
+    "sha256": "4edbd47919f9eb486cde5680f61041ec1b90c8a53aff84f590067290308975ab",
+    "pointer": ""
+  },
+  "capabilities": [
+    "after_call_barrier",
+    "briefs",
+    "business_tools",
+    "memory_isolation",
+    "memory_read_gate",
+    "snapshots",
+    "timestamps",
+    "usage"
+  ]
+}

@@ -1,0 +1,21 @@
+{
+  "model_id": "Systran/faster-whisper-medium",
+  "revision": "08e178d48790749d25932bbc082711ddcfdfbc4f",
+  "source": "https://huggingface.co/Systran/faster-whisper-medium",
+  "local_path": "models/faster-whisper-medium",
+  "runtime": "faster-whisper 1.2.1",
+  "compute_type": "int8",
+  "device": "cpu",
+  "cpu_threads": 4,
+  "requested_at": "2026-10-03",
+  "download_status": "complete",
+  "verified_local_run": "runs/dev-whisper-medium-v1",
+  "file_hash_evidence": "runs/dev-whisper-medium-v1/manifest.json#/model_files",
+  "intended_use": "Development trial on 4 synthetic Vietnamese audio files; not PhoWhisper",
+  "limitations": [
+    "Download completion and local file hashes are verified separately before inference.",
+    "Multilingual Whisper-medium, not a Vietnamese-specialized model.",
+    "Synthetic ground truth pending human listening; no official PASS threshold.",
+    "Small is not rerun; existing Small outputs may only be referenced with their provenance."
+  ]
+}

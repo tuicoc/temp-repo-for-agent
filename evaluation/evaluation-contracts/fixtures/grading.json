@@ -1,0 +1,70 @@
+{
+  "schema_version": "1.0.0",
+  "scenario": {
+    "path": "fixtures/scenario.json",
+    "sha256": "bcd7ad24d316eb109acd9ce865ddf3289471901558b215164d32443abcae7c25",
+    "pointer": ""
+  },
+  "scenario_id": "FIXTURE-M1",
+  "level": "M1",
+  "required_evidence": [
+    "trace",
+    "memory"
+  ],
+  "calls": [
+    {
+      "call": "call_1",
+      "official_success_if": {
+        "path": "fixtures/scenario.json",
+        "sha256": "bcd7ad24d316eb109acd9ce865ddf3289471901558b215164d32443abcae7c25",
+        "pointer": "/calls/call_1/success_if"
+      },
+      "mode": "assertion_only",
+      "suites": [
+        {
+          "id": "fixed_turn",
+          "applicable": true,
+          "reason": "M1 fixture"
+        }
+      ],
+      "checks": [],
+      "criteria": [],
+      "aggregation": "assertion",
+      "ground_truth": [
+        {
+          "path": "fixtures/scenario.json",
+          "sha256": "bcd7ad24d316eb109acd9ce865ddf3289471901558b215164d32443abcae7c25",
+          "pointer": ""
+        }
+      ],
+      "dispute_ids": []
+    },
+    {
+      "call": "call_2",
+      "official_success_if": {
+        "path": "fixtures/scenario.json",
+        "sha256": "bcd7ad24d316eb109acd9ce865ddf3289471901558b215164d32443abcae7c25",
+        "pointer": "/calls/call_2/success_if"
+      },
+      "mode": "assertion_only",
+      "suites": [
+        {
+          "id": "fixed_turn",
+          "applicable": true,
+          "reason": "M1 fixture"
+        }
+      ],
+      "checks": [],
+      "criteria": [],
+      "aggregation": "assertion",
+      "ground_truth": [
+        {
+          "path": "fixtures/scenario.json",
+          "sha256": "bcd7ad24d316eb109acd9ce865ddf3289471901558b215164d32443abcae7c25",
+          "pointer": ""
+        }
+      ],
+      "dispute_ids": []
+    }
+  ]
+}

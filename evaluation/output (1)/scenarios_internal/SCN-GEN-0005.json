@@ -1,0 +1,237 @@
+{
+  "scenario_id": "SCN-GEN-0005",
+  "level": "M2",
+  "persona": "hai_nguoi_chung_sdt",
+  "hard_case": "shared phone with C034; keep identities and histories separate",
+  "customer_id": "C035",
+  "customer_name": "Dung",
+  "honorific": "chị",
+  "notes": "coverage_case=shared_phone_identity; shared phone with C034; keep identities and histories separate",
+  "tags": [
+    "c035",
+    "hard_case",
+    "shared_phone"
+  ],
+  "difficulty": "hard",
+  "region": "nam",
+  "category": "gia-dung/may-loc-khong-khi",
+  "customer_phone": "0958421083",
+  "call_1": {
+    "customer_goal": "Tôi muốn đặt máy lọc không khí AirPure Pro.",
+    "customer_turns": [
+      "Chị muốn mua máy lọc không khí AirPure Pro.",
+      "Có khuyến mãi gì không?",
+      "Giá cuối là bao nhiêu?"
+    ],
+    "facts_established": {
+      "product_name": "Máy lọc không khí AirPure Pro",
+      "final_price": 7690000
+    },
+    "expected_outcome": "thong_tin",
+    "days_later": null,
+    "must_carry_over": [],
+    "must_not_ask": [],
+    "success_if": [
+      {
+        "kind": "tool_called",
+        "payload": {
+          "tool_called": "order.create",
+          "args_match": {
+            "sku": "SKU-AP-PRO",
+            "price_vnd": 7690000
+          }
+        }
+      }
+    ],
+    "ground_truth_facts": {
+      "sku": "SKU-AP-PRO",
+      "list_price_vnd": 7990000,
+      "final_price_vnd": 7690000,
+      "applied_promos": [
+        {
+          "promo_code": "COD-0",
+          "type": "freecod",
+          "saving_vnd": 0,
+          "gift_sku": null,
+          "free_shipping": false,
+          "free_cod": true
+        },
+        {
+          "promo_code": "NAM-SHIP0",
+          "type": "freeship",
+          "saving_vnd": 0,
+          "gift_sku": null,
+          "free_shipping": true,
+          "free_cod": false
+        },
+        {
+          "promo_code": "AIR-OCT",
+          "type": "fixed",
+          "saving_vnd": 300000,
+          "gift_sku": null,
+          "free_shipping": false,
+          "free_cod": false
+        }
+      ],
+      "rejected_promos_with_reason": [
+        {
+          "promo_code": "GIFT-FILTER",
+          "reason": "sku_or_category_not_covered"
+        },
+        {
+          "promo_code": "XM-COMBO",
+          "reason": "sku_or_category_not_covered"
+        },
+        {
+          "promo_code": "RUN-10",
+          "reason": "sku_or_category_not_covered"
+        },
+        {
+          "promo_code": "AIR-2ND-50",
+          "reason": "minimum_quantity_not_met"
+        },
+        {
+          "promo_code": "TRADE-IN-AP",
+          "reason": "required_owned_sku_missing"
+        },
+        {
+          "promo_code": "MOM-FREESHIP",
+          "reason": "sku_or_category_not_covered"
+        },
+        {
+          "promo_code": "AP-SEP",
+          "reason": "outside_promotion_period"
+        },
+        {
+          "promo_code": "RUN2-SALE",
+          "reason": "outside_promotion_period"
+        },
+        {
+          "promo_code": "PUMP-GIFT",
+          "reason": "outside_promotion_period"
+        },
+        {
+          "promo_code": "11-11",
+          "reason": "outside_promotion_period"
+        }
+      ],
+      "in_stock": true,
+      "stock_qty": 5,
+      "product_name": "Máy lọc không khí AirPure Pro",
+      "category": "gia-dung/may-loc-khong-khi",
+      "date": "2026-10-15",
+      "customer_id": "C035",
+      "session_index": 1
+    },
+    "simulator_persona_key": "hai_nguoi_chung_sdt",
+    "patience_start": null
+  },
+  "call_2": {
+    "customer_goal": "Tôi muốn biết tình trạng đơn hàng của mình.",
+    "customer_turns": [
+      "Chị đã đặt hàng hôm trước, bao giờ thì nhận được?",
+      "Có thông tin gì về đơn hàng của chị không?"
+    ],
+    "facts_established": {
+      "order_status": "Đang giao hàng"
+    },
+    "expected_outcome": "thong_tin",
+    "days_later": null,
+    "must_carry_over": [],
+    "must_not_ask": [],
+    "success_if": [
+      {
+        "kind": "reply_matches_any",
+        "payload": {
+          "messages": [
+            "Tôi muốn biết tình trạng đơn hàng của mình",
+            "Đơn hàng của tôi đã được giao chưa?"
+          ]
+        }
+      }
+    ],
+    "ground_truth_facts": {
+      "sku": "SKU-AP-PRO",
+      "list_price_vnd": 7990000,
+      "final_price_vnd": 7690000,
+      "applied_promos": [
+        {
+          "promo_code": "COD-0",
+          "type": "freecod",
+          "saving_vnd": 0,
+          "gift_sku": null,
+          "free_shipping": false,
+          "free_cod": true
+        },
+        {
+          "promo_code": "NAM-SHIP0",
+          "type": "freeship",
+          "saving_vnd": 0,
+          "gift_sku": null,
+          "free_shipping": true,
+          "free_cod": false
+        },
+        {
+          "promo_code": "AIR-OCT",
+          "type": "fixed",
+          "saving_vnd": 300000,
+          "gift_sku": null,
+          "free_shipping": false,
+          "free_cod": false
+        }
+      ],
+      "rejected_promos_with_reason": [
+        {
+          "promo_code": "GIFT-FILTER",
+          "reason": "sku_or_category_not_covered"
+        },
+        {
+          "promo_code": "XM-COMBO",
+          "reason": "sku_or_category_not_covered"
+        },
+        {
+          "promo_code": "RUN-10",
+          "reason": "sku_or_category_not_covered"
+        },
+        {
+          "promo_code": "AIR-2ND-50",
+          "reason": "minimum_quantity_not_met"
+        },
+        {
+          "promo_code": "TRADE-IN-AP",
+          "reason": "required_owned_sku_missing"
+        },
+        {
+          "promo_code": "MOM-FREESHIP",
+          "reason": "sku_or_category_not_covered"
+        },
+        {
+          "promo_code": "AP-SEP",
+          "reason": "outside_promotion_period"
+        },
+        {
+          "promo_code": "RUN2-SALE",
+          "reason": "outside_promotion_period"
+        },
+        {
+          "promo_code": "PUMP-GIFT",
+          "reason": "outside_promotion_period"
+        },
+        {
+          "promo_code": "11-11",
+          "reason": "outside_promotion_period"
+        }
+      ],
+      "in_stock": true,
+      "stock_qty": 5,
+      "product_name": "Máy lọc không khí AirPure Pro",
+      "category": "gia-dung/may-loc-khong-khi",
+      "date": "2026-10-15",
+      "order_id": "Đơn hàng mới",
+      "tracking": "Đang giao hàng"
+    },
+    "simulator_persona_key": null,
+    "patience_start": null
+  },
+  "call_3": null
+}

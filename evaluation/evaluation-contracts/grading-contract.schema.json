@@ -1,0 +1,524 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Grading contract — NHÓM v1.0.0",
+  "$comment": "Đề A.3/B; DC §2/4/12; không sao chép success_if.",
+  "type": "object",
+  "properties": {
+    "schema_version": {
+      "const": "1.0.0"
+    },
+    "scenario": {
+      "$ref": "contracts.schema.json#/$defs/AssetRef"
+    },
+    "scenario_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "level": {
+      "enum": [
+        "M1",
+        "M2"
+      ]
+    },
+    "calls": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "call": {
+            "enum": [
+              "call_1",
+              "call_2",
+              "call_3"
+            ]
+          },
+          "official_success_if": {
+            "anyOf": [
+              {
+                "$ref": "contracts.schema.json#/$defs/AssetRef"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "mode": {
+            "enum": [
+              "assertion_only",
+              "judge_only",
+              "hybrid"
+            ]
+          },
+          "suites": {
+            "type": "array",
+            "items": {
+              "$ref": "contracts.schema.json#/$defs/Suite"
+            }
+          },
+          "checks": {
+            "type": "array",
+            "items": {
+              "oneOf": [
+                {
+                  "type": "object",
+                  "properties": {
+                    "check_id": {
+                      "type": "string",
+                      "minLength": 1
+                    },
+                    "kind": {
+                      "const": "schema"
+                    },
+                    "params": {
+                      "type": "object",
+                      "properties": {
+                        "schema_ref": {
+                          "type": "string",
+                          "minLength": 1
+                        },
+                        "artifact_role": {
+                          "enum": [
+                            "trace",
+                            "call_brief",
+                            "handoff_brief",
+                            "tool_args"
+                          ]
+                        }
+                      },
+                      "required": [
+                        "schema_ref",
+                        "artifact_role"
+                      ],
+                      "additionalProperties": false
+                    },
+                    "required_evidence": {
+                      "type": "array",
+                      "items": {
+                        "type": "string",
+                        "minLength": 1
+                      }
+                    }
+                  },
+                  "required": [
+                    "check_id",
+                    "kind",
+                    "params",
+                    "required_evidence"
+                  ],
+                  "additionalProperties": false
+                },
+                {
+                  "type": "object",
+                  "properties": {
+                    "check_id": {
+                      "type": "string",
+                      "minLength": 1
+                    },
+                    "kind": {
+                      "const": "tool_success"
+                    },
+                    "params": {
+                      "type": "object",
+                      "properties": {
+                        "tool_name": {
+                          "type": "string",
+                          "minLength": 1
+                        },
+                        "expected_status": {
+                          "type": "string",
+                          "minLength": 1
+                        }
+                      },
+                      "required": [
+                        "tool_name",
+                        "expected_status"
+                      ],
+                      "additionalProperties": false
+                    },
+                    "required_evidence": {
+                      "type": "array",
+                      "items": {
+                        "type": "string",
+                        "minLength": 1
+                      }
+                    }
+                  },
+                  "required": [
+                    "check_id",
+                    "kind",
+                    "params",
+                    "required_evidence"
+                  ],
+                  "additionalProperties": false
+                },
+                {
+                  "type": "object",
+                  "properties": {
+                    "check_id": {
+                      "type": "string",
+                      "minLength": 1
+                    },
+                    "kind": {
+                      "const": "memory"
+                    },
+                    "params": {
+                      "type": "object",
+                      "properties": {
+                        "expectation": {
+                          "$ref": "contracts.schema.json#/$defs/AssetRef"
+                        }
+                      },
+                      "required": [
+                        "expectation"
+                      ],
+                      "additionalProperties": false
+                    },
+                    "required_evidence": {
+                      "type": "array",
+                      "items": {
+                        "type": "string",
+                        "minLength": 1
+                      }
+                    }
+                  },
+                  "required": [
+                    "check_id",
+                    "kind",
+                    "params",
+                    "required_evidence"
+                  ],
+                  "additionalProperties": false
+                },
+                {
+                  "type": "object",
+                  "properties": {
+                    "check_id": {
+                      "type": "string",
+                      "minLength": 1
+                    },
+                    "kind": {
+                      "const": "fact_value"
+                    },
+                    "params": {
+                      "type": "object",
+                      "properties": {
+                        "slot": {
+                          "type": "string",
+                          "minLength": 1
+                        },
+                        "expected_source": {
+                          "$ref": "contracts.schema.json#/$defs/AssetRef"
+                        }
+                      },
+                      "required": [
+                        "slot",
+                        "expected_source"
+                      ],
+                      "additionalProperties": false
+                    },
+                    "required_evidence": {
+                      "type": "array",
+                      "items": {
+                        "type": "string",
+                        "minLength": 1
+                      }
+                    }
+                  },
+                  "required": [
+                    "check_id",
+                    "kind",
+                    "params",
+                    "required_evidence"
+                  ],
+                  "additionalProperties": false
+                },
+                {
+                  "type": "object",
+                  "properties": {
+                    "check_id": {
+                      "type": "string",
+                      "minLength": 1
+                    },
+                    "kind": {
+                      "const": "claim_grounding"
+                    },
+                    "params": {
+                      "type": "object",
+                      "properties": {
+                        "fields": {
+                          "type": "array",
+                          "items": {
+                            "type": "string",
+                            "minLength": 1
+                          }
+                        },
+                        "ground_truth": {
+                          "$ref": "contracts.schema.json#/$defs/AssetRef"
+                        }
+                      },
+                      "required": [
+                        "fields",
+                        "ground_truth"
+                      ],
+                      "additionalProperties": false
+                    },
+                    "required_evidence": {
+                      "type": "array",
+                      "items": {
+                        "type": "string",
+                        "minLength": 1
+                      }
+                    }
+                  },
+                  "required": [
+                    "check_id",
+                    "kind",
+                    "params",
+                    "required_evidence"
+                  ],
+                  "additionalProperties": false
+                },
+                {
+                  "type": "object",
+                  "properties": {
+                    "check_id": {
+                      "type": "string",
+                      "minLength": 1
+                    },
+                    "kind": {
+                      "const": "guardrail"
+                    },
+                    "params": {
+                      "type": "object",
+                      "properties": {
+                        "patterns": {
+                          "type": "array",
+                          "items": {
+                            "type": "string"
+                          }
+                        }
+                      },
+                      "required": [
+                        "patterns"
+                      ],
+                      "additionalProperties": false
+                    },
+                    "required_evidence": {
+                      "type": "array",
+                      "items": {
+                        "type": "string",
+                        "minLength": 1
+                      }
+                    }
+                  },
+                  "required": [
+                    "check_id",
+                    "kind",
+                    "params",
+                    "required_evidence"
+                  ],
+                  "additionalProperties": false
+                },
+                {
+                  "type": "object",
+                  "properties": {
+                    "check_id": {
+                      "type": "string",
+                      "minLength": 1
+                    },
+                    "kind": {
+                      "const": "tool_accuracy"
+                    },
+                    "params": {
+                      "type": "object",
+                      "properties": {
+                        "expected_calls": {
+                          "$ref": "contracts.schema.json#/$defs/AssetRef"
+                        }
+                      },
+                      "required": [
+                        "expected_calls"
+                      ],
+                      "additionalProperties": false
+                    },
+                    "required_evidence": {
+                      "type": "array",
+                      "items": {
+                        "type": "string",
+                        "minLength": 1
+                      }
+                    }
+                  },
+                  "required": [
+                    "check_id",
+                    "kind",
+                    "params",
+                    "required_evidence"
+                  ],
+                  "additionalProperties": false
+                }
+              ]
+            }
+          },
+          "criteria": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "criterion_id": {
+                  "enum": [
+                    "J01_opening_continuity",
+                    "J02_no_fabrication",
+                    "J03_conflict_handling",
+                    "J04_identity_check",
+                    "J05_escalation_quality",
+                    "J06_tone_vietnamese",
+                    "J07_closing_summary",
+                    "J08_over_confirmation",
+                    "J09_pii_handling",
+                    "J10_honest_ai",
+                    "J11_budget_transparency",
+                    "J12_out_of_stock"
+                  ]
+                },
+                "condition": {
+                  "enum": [
+                    "all",
+                    "returning_call",
+                    "conflict",
+                    "identity_mismatch",
+                    "handoff_case",
+                    "order_create_present",
+                    "pii_case",
+                    "ai_question",
+                    "budget_or_cod",
+                    "out_of_stock"
+                  ]
+                },
+                "rubric_ref": {
+                  "$ref": "contracts.schema.json#/$defs/AssetRef"
+                }
+              },
+              "required": [
+                "criterion_id",
+                "condition",
+                "rubric_ref"
+              ],
+              "additionalProperties": false
+            }
+          },
+          "aggregation": {
+            "enum": [
+              "assertion",
+              "judge",
+              "AND"
+            ]
+          },
+          "ground_truth": {
+            "type": "array",
+            "items": {
+              "$ref": "contracts.schema.json#/$defs/AssetRef"
+            }
+          },
+          "dispute_ids": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "minLength": 1
+            }
+          }
+        },
+        "required": [
+          "call",
+          "official_success_if",
+          "mode",
+          "suites",
+          "checks",
+          "criteria",
+          "aggregation",
+          "ground_truth",
+          "dispute_ids"
+        ],
+        "additionalProperties": false,
+        "allOf": [
+          {
+            "if": {
+              "properties": {
+                "mode": {
+                  "const": "assertion_only"
+                }
+              }
+            },
+            "then": {
+              "properties": {
+                "aggregation": {
+                  "const": "assertion"
+                },
+                "criteria": {
+                  "maxItems": 0
+                }
+              }
+            }
+          },
+          {
+            "if": {
+              "properties": {
+                "mode": {
+                  "const": "judge_only"
+                }
+              }
+            },
+            "then": {
+              "properties": {
+                "aggregation": {
+                  "const": "judge"
+                },
+                "criteria": {
+                  "minItems": 1
+                }
+              }
+            }
+          },
+          {
+            "if": {
+              "properties": {
+                "mode": {
+                  "const": "hybrid"
+                }
+              }
+            },
+            "then": {
+              "properties": {
+                "aggregation": {
+                  "const": "AND"
+                },
+                "criteria": {
+                  "minItems": 1
+                },
+                "checks": {
+                  "minItems": 1
+                }
+              }
+            }
+          }
+        ]
+      }
+    },
+    "required_evidence": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1
+      }
+    }
+  },
+  "required": [
+    "schema_version",
+    "scenario",
+    "scenario_id",
+    "level",
+    "calls",
+    "required_evidence"
+  ],
+  "additionalProperties": false
+}

@@ -1,0 +1,127 @@
+{
+  "conversation_id": "SCN-GEN-0004",
+  "customer_id": "C034",
+  "session_index": 1,
+  "channel": "hotline",
+  "date": "2026-10-15",
+  "region": "trung",
+  "category": "gia-dung/may-loc-khong-khi",
+  "persona": "hai_nguoi_chung_sdt",
+  "turns": [
+    {
+      "speaker": "agent_ai",
+      "text": "Chào cô Loan, cảm ơn cô đã gọi lại. Hôm trước cô đã hỏi về máy lọc không khí AirPure Mini, đúng không ạ?",
+      "asks_slot": null,
+      "q_type": null,
+      "tool_called": null,
+      "tool_args": null,
+      "entities": [],
+      "pause_before_ms": 500,
+      "emotion": null,
+      "barge_in": false
+    },
+    {
+      "speaker": "customer",
+      "text": "Đúng rồi, tôi muốn xác nhận đơn hàng máy lọc không khí AirPure Mini.",
+      "facts_stated": {
+        "confirmed_order": "Máy lọc không khí AirPure Mini"
+      },
+      "entities": [],
+      "pause_before_ms": 500,
+      "emotion": null,
+      "barge_in": false
+    },
+    {
+      "speaker": "agent_ai",
+      "text": "Tuyệt vời! Đơn hàng của cô đã được xác nhận. Giá của máy lọc không khí AirPure Mini là 2.190.000 đồng. Cô có phương thức thanh toán nào không?",
+      "asks_slot": "payment_method",
+      "q_type": "open",
+      "tool_called": null,
+      "tool_args": null,
+      "entities": [],
+      "pause_before_ms": 500,
+      "emotion": null,
+      "barge_in": false
+    },
+    {
+      "speaker": "customer",
+      "text": "Tôi muốn thanh toán khi nhận hàng.",
+      "facts_stated": {
+        "payment_method": "COD"
+      },
+      "entities": [],
+      "pause_before_ms": 500,
+      "emotion": null,
+      "barge_in": false
+    },
+    {
+      "speaker": "agent_ai",
+      "text": "Cảm ơn cô. Đơn hàng sẽ được giao tận nơi. Dự kiến cô sẽ nhận hàng trong khoảng 2-3 ngày làm việc. Cô có muốn biết thêm gì không?",
+      "asks_slot": null,
+      "q_type": null,
+      "tool_called": null,
+      "tool_args": null,
+      "entities": [],
+      "pause_before_ms": 500,
+      "emotion": null,
+      "barge_in": false
+    },
+    {
+      "speaker": "customer",
+      "text": "Có cần thanh toán trước không?",
+      "facts_stated": {},
+      "entities": [],
+      "pause_before_ms": 500,
+      "emotion": null,
+      "barge_in": false
+    },
+    {
+      "speaker": "agent_ai",
+      "text": "Không, cô không cần thanh toán trước. Cô có thể kiểm tra hàng trước khi thanh toán. Tôi sẽ tiến hành tạo đơn hàng cho cô nhé?",
+      "asks_slot": null,
+      "q_type": null,
+      "tool_called": "order.create",
+      "tool_args": {
+        "sku": "SKU-AP-MINI",
+        "price_vnd": 2190000
+      },
+      "entities": [],
+      "pause_before_ms": 500,
+      "emotion": null,
+      "barge_in": false
+    },
+    {
+      "speaker": "customer",
+      "text": "Vâng, xin hãy xác nhận đơn hàng của tôi.",
+      "facts_stated": {},
+      "entities": [],
+      "pause_before_ms": 500,
+      "emotion": null,
+      "barge_in": false
+    },
+    {
+      "speaker": "agent_ai",
+      "text": "Đơn hàng của cô đã được xác nhận. Cảm ơn cô đã đặt hàng tại shop. Chúng tôi sẽ gọi lại để xác nhận ngày giao hàng cụ thể.",
+      "asks_slot": null,
+      "q_type": null,
+      "tool_called": null,
+      "tool_args": null,
+      "entities": [],
+      "pause_before_ms": 500,
+      "emotion": null,
+      "barge_in": false
+    }
+  ],
+  "gold": {
+    "intent": "order.create",
+    "outcome": "cap_nhat_don",
+    "objection_type": null,
+    "objection_handling": null,
+    "sentiment": "positive",
+    "decision_maker": null,
+    "commitments": [],
+    "supersedes": [],
+    "callback": null,
+    "order": {}
+  }
+}

@@ -1,0 +1,111 @@
+{
+  "conversation_id": "SCN-GEN-0002",
+  "customer_id": "C032",
+  "session_index": 1,
+  "channel": "hotline",
+  "date": "2026-10-15",
+  "region": "trung",
+  "category": "me-be",
+  "persona": "khach_da_mua_doi_size",
+  "turns": [
+    {
+      "speaker": "customer",
+      "text": "Chị muốn kiểm tra tình trạng đơn hàng OD301177 của chị.",
+      "facts_stated": {
+        "order_id": "OD301177",
+        "order_status": "shipping"
+      },
+      "entities": [],
+      "pause_before_ms": 0,
+      "emotion": null,
+      "barge_in": false
+    },
+    {
+      "speaker": "agent_ai",
+      "text": "Chào chị Tâm, đơn hàng của chị với mã OD301177 hiện đang trong trạng thái vận chuyển. Mã vận đơn của chị là GHN7781234. Chị có cần thêm thông tin gì không?",
+      "asks_slot": null,
+      "q_type": null,
+      "tool_called": null,
+      "tool_args": null,
+      "entities": [],
+      "pause_before_ms": 0,
+      "emotion": null,
+      "barge_in": false
+    },
+    {
+      "speaker": "customer",
+      "text": "Đơn hàng của chị đã được giao chưa?",
+      "facts_stated": {},
+      "entities": [],
+      "pause_before_ms": 0,
+      "emotion": null,
+      "barge_in": false
+    },
+    {
+      "speaker": "agent_ai",
+      "text": "Hiện tại đơn hàng của chị vẫn đang trên đường vận chuyển và chưa giao đến nơi. Chị có muốn kiểm tra thêm thông tin gì không?",
+      "asks_slot": null,
+      "q_type": null,
+      "tool_called": null,
+      "tool_args": null,
+      "entities": [],
+      "pause_before_ms": 0,
+      "emotion": null,
+      "barge_in": false
+    },
+    {
+      "speaker": "customer",
+      "text": "Chị chỉ muốn biết khi nào thì chị nhận được hàng.",
+      "facts_stated": {},
+      "entities": [],
+      "pause_before_ms": 0,
+      "emotion": null,
+      "barge_in": false
+    },
+    {
+      "speaker": "agent_ai",
+      "text": "Theo chính sách giao hàng, đơn hàng sẽ được giao trong 2-4 ngày làm việc. Nếu không có gì thay đổi, chị có thể nhận hàng vào ngày mai hoặc ngày kia. Chị có cần tôi giúp gì thêm không?",
+      "asks_slot": null,
+      "q_type": null,
+      "tool_called": null,
+      "tool_args": null,
+      "entities": [],
+      "pause_before_ms": 0,
+      "emotion": null,
+      "barge_in": false
+    },
+    {
+      "speaker": "customer",
+      "text": "Cảm ơn chị, chị sẽ chờ thông tin tiếp theo.",
+      "facts_stated": {},
+      "entities": [],
+      "pause_before_ms": 0,
+      "emotion": null,
+      "barge_in": false
+    },
+    {
+      "speaker": "agent_ai",
+      "text": "Cảm ơn chị đã gọi. Nếu cần thêm thông tin gì, chị hãy liên hệ lại với chúng tôi nhé! Chúc chị một ngày tốt lành!",
+      "asks_slot": null,
+      "q_type": null,
+      "tool_called": null,
+      "tool_args": null,
+      "entities": [],
+      "pause_before_ms": 0,
+      "emotion": null,
+      "barge_in": false
+    }
+  ],
+  "gold": {
+    "intent": "cap_nhat_don",
+    "outcome": "cap_nhat_don",
+    "objection_type": null,
+    "objection_handling": null,
+    "sentiment": "neutral",
+    "decision_maker": null,
+    "commitments": [],
+    "supersedes": [],
+    "callback": null,
+    "order": null
+  }
+}

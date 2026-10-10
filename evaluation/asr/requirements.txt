@@ -1,0 +1,5 @@
+faster-whisper==1.2.1
+av==16.0.1
+numpy==2.5.3
+edge-tts==7.2.8
+jsonschema==4.26.0

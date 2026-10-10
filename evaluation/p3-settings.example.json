@@ -1,0 +1,10 @@
+{
+  "asset_root": "evaluation-contracts",
+  "manifest": "fixtures/p3-manifest.json",
+  "scope": "fixtures/p1-scope.json",
+  "adapter": {
+    "path": "fixtures/p3-adapter.json",
+    "sha256": "3d05a136ec6e32e61f7c0a2a080b642406f2480a6c123d94883337d1417a37b8",
+    "pointer": ""
+  }
+}

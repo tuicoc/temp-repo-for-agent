@@ -1,0 +1,13 @@
+{
+  "customer_phone": "0900000000",
+  "customer_name": "Khách mẫu",
+  "escalation_reason": "cau_hoi_y_te",
+  "conversation_summary": "Khách đề nghị được chuyển sang nhân viên tư vấn.",
+  "product_advised": null,
+  "price_quoted_vnd": null,
+  "open_questions": [
+    "Cần gặp người tư vấn"
+  ],
+  "next_action": "Nhân viên tiếp nhận yêu cầu",
+  "generated_at": "2026-10-15T09:00:00+07:00"
+}

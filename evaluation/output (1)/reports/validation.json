@@ -1,0 +1,37 @@
+[
+  {
+    "scenario_id": "SCN-GEN-0001",
+    "conversation_id": "SCN-GEN-0001",
+    "validator_pass": true,
+    "errors": [],
+    "needs_manual_review": false
+  },
+  {
+    "scenario_id": "SCN-GEN-0002",
+    "conversation_id": "SCN-GEN-0002",
+    "validator_pass": true,
+    "errors": [],
+    "needs_manual_review": false
+  },
+  {
+    "scenario_id": "SCN-GEN-0003",
+    "conversation_id": "SCN-GEN-0003",
+    "validator_pass": true,
+    "errors": [],
+    "needs_manual_review": false
+  },
+  {
+    "scenario_id": "SCN-GEN-0004",
+    "conversation_id": "SCN-GEN-0004",
+    "validator_pass": true,
+    "errors": [],
+    "needs_manual_review": true
+  },
+  {
+    "scenario_id": "SCN-GEN-0005",
+    "conversation_id": "SCN-GEN-0005",
+    "validator_pass": true,
+    "errors": [],
+    "needs_manual_review": true
+  }
+]

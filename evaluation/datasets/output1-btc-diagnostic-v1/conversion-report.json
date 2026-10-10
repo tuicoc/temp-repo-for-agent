@@ -1,0 +1,477 @@
+{
+  "schema_version": "output1-btc-diagnostic-v1",
+  "official_gt_approved": false,
+  "scope": "5 scenarios; JSON only; no ASR; no model run",
+  "files": [
+    {
+      "source": "output (1)/scenarios/SCN-GEN-0001.json",
+      "source_sha256": "c59a21df1214f6cc82c4f0e1eb6c27e964b9b2fb0c64260dc3a28f7732eaadf9",
+      "derived": "scenarios/SCN-GEN-0001.json",
+      "calls": [
+        {
+          "call": "call_1",
+          "field_changes": {
+            "success_if": {
+              "before": {
+                "kind": "reply_matches_any",
+                "payload": {
+                  "messages": [
+                    "Tôi muốn biết tình trạng đơn hàng của mình",
+                    "Đơn hàng của tôi đã được giao chưa?"
+                  ]
+                }
+              },
+              "after": {
+                "tool_called": "pricing.get_quote",
+                "args_match": {
+                  "sku": "SKU-AP-X"
+                }
+              }
+            },
+            "expected_outcome": {
+              "before": "cap_nhat_don",
+              "after": "khac"
+            }
+          },
+          "gt_status": "diagnostic_author_interpreted_pending_qa"
+        },
+        {
+          "call": "call_2",
+          "field_changes": {
+            "success_if": {
+              "before": {
+                "kind": "reply_matches_any",
+                "payload": {
+                  "messages": [
+                    "Tôi muốn biết tình trạng đơn hàng của mình",
+                    "Đơn hàng của tôi đã được giao chưa?"
+                  ]
+                }
+              },
+              "after": {
+                "tool_called": "order.status",
+                "args_match": {
+                  "order_id": "OD188213"
+                }
+              }
+            },
+            "expected_outcome": {
+              "before": "cap_nhat_don",
+              "after": "khac"
+            },
+            "must_carry_over": {
+              "before": [
+                "previous_order: OD188213",
+                "previous_sku: SKU-AP-X-2024",
+                "previous_price: 4490000"
+              ],
+              "after": [
+                "order_id"
+              ]
+            },
+            "must_not_ask": {
+              "before": null,
+              "after": [
+                "order_id"
+              ]
+            },
+            "ground_truth_facts/final_price_vnd": {
+              "before": 4490000,
+              "after": null
+            }
+          },
+          "gt_status": "diagnostic_author_interpreted_pending_qa"
+        }
+      ]
+    },
+    {
+      "source": "output (1)/scenarios/SCN-GEN-0002.json",
+      "source_sha256": "1e7c065549d64433bc1d53ab792ed0394453065383f675b63186a2a7e51b6fdc",
+      "derived": "scenarios/SCN-GEN-0002.json",
+      "calls": [
+        {
+          "call": "call_1",
+          "field_changes": {
+            "success_if": {
+              "before": {
+                "kind": "reply_matches_any",
+                "payload": {
+                  "messages": [
+                    "Tôi muốn biết tình trạng đơn hàng của mình",
+                    "Đơn hàng của tôi đã được giao chưa?"
+                  ]
+                }
+              },
+              "after": {
+                "tool_called": "pricing.get_quote",
+                "args_match": {
+                  "sku": "SKU-MB-PUMP1"
+                }
+              }
+            },
+            "expected_outcome": {
+              "before": "cap_nhat_don",
+              "after": "khac"
+            }
+          },
+          "gt_status": "diagnostic_author_interpreted_pending_qa"
+        },
+        {
+          "call": "call_2",
+          "field_changes": {
+            "success_if": {
+              "before": {
+                "kind": "reply_matches_any",
+                "payload": {
+                  "messages": [
+                    "Tôi muốn biết tình trạng đơn hàng của mình",
+                    "Đơn hàng của tôi đã được giao chưa?"
+                  ]
+                }
+              },
+              "after": {
+                "tool_called": "order.status",
+                "args_match": {
+                  "order_id": "OD301177"
+                }
+              }
+            },
+            "expected_outcome": {
+              "before": "cap_nhat_don",
+              "after": "khac"
+            },
+            "must_carry_over": {
+              "before": [
+                "order_id: OD301177",
+                "order_status: shipping",
+                "tracking: GHN7781234"
+              ],
+              "after": [
+                "tracking"
+              ]
+            },
+            "must_not_ask": {
+              "before": null,
+              "after": [
+                "order_id"
+              ]
+            }
+          },
+          "gt_status": "diagnostic_author_interpreted_pending_qa"
+        }
+      ]
+    },
+    {
+      "source": "output (1)/scenarios/SCN-GEN-0003.json",
+      "source_sha256": "530a4e77d2741a7ef332faf0cc111c3a02d41ba2db454009480db4216cd8dd31",
+      "derived": "scenarios/SCN-GEN-0003.json",
+      "calls": [
+        {
+          "call": "call_1",
+          "field_changes": {
+            "success_if": {
+              "before": {
+                "kind": "tool_not_called",
+                "payload": {
+                  "tool_called": "order.create"
+                }
+              },
+              "after": {
+                "tool_called": "inventory.check",
+                "args_match": {
+                  "sku": "SKU-AP-Y"
+                },
+                "must_not_call_tools": [
+                  "order.create"
+                ]
+              }
+            }
+          },
+          "gt_status": "diagnostic_author_interpreted_pending_qa"
+        },
+        {
+          "call": "call_2",
+          "field_changes": {
+            "success_if": {
+              "before": {
+                "tool_called": "order.create",
+                "args_match": {
+                  "sku": "SKU-AP-Y",
+                  "price_vnd": 5200000
+                }
+              },
+              "after": {
+                "must_say_any": [
+                  "mã đơn",
+                  "thông tin đơn"
+                ],
+                "must_not_call_tools": [
+                  "order.create"
+                ]
+              }
+            },
+            "expected_outcome": {
+              "before": "chot",
+              "after": "khac"
+            },
+            "must_carry_over": {
+              "before": [
+                "product_name",
+                "price"
+              ],
+              "after": null
+            },
+            "ground_truth_facts/order_date": {
+              "before": "2026-10-15",
+              "after": null
+            },
+            "ground_truth_facts/order_id": {
+              "before": "ORD-SCN-GEN-0003",
+              "after": null
+            },
+            "ground_truth_facts/order_status": {
+              "before": "processing",
+              "after": null
+            }
+          },
+          "gt_status": "diagnostic_author_interpreted_pending_qa"
+        },
+        {
+          "call": "call_3",
+          "field_changes": {
+            "success_if": {
+              "before": {
+                "kind": "reply_matches_any",
+                "payload": {
+                  "messages": [
+                    "Tôi muốn biết tình trạng đơn hàng của mình",
+                    "Đơn hàng của tôi đã được giao chưa?"
+                  ]
+                }
+              },
+              "after": {
+                "must_say_any": [
+                  "mã đơn",
+                  "thông tin đơn"
+                ],
+                "must_not_call_tools": [
+                  "order.create"
+                ]
+              }
+            },
+            "expected_outcome": {
+              "before": "cap_nhat_don",
+              "after": "khac"
+            },
+            "must_carry_over": {
+              "before": [
+                "order_status"
+              ],
+              "after": null
+            },
+            "ground_truth_facts/order_date": {
+              "before": "2026-10-15",
+              "after": null
+            },
+            "ground_truth_facts/order_id": {
+              "before": "ORD-SCN-GEN-0003",
+              "after": null
+            },
+            "ground_truth_facts/order_status": {
+              "before": "pending",
+              "after": null
+            }
+          },
+          "gt_status": "diagnostic_author_interpreted_pending_qa"
+        }
+      ]
+    },
+    {
+      "source": "output (1)/scenarios/SCN-GEN-0004.json",
+      "source_sha256": "ea7b5bf24d8f1f92eb15ef662912b03947867eb9ab62ba608a1fdd41563c1d18",
+      "derived": "scenarios/SCN-GEN-0004.json",
+      "calls": [
+        {
+          "call": "call_1",
+          "field_changes": {
+            "success_if": {
+              "before": {
+                "tool_called": "order.create",
+                "args_match": {
+                  "sku": "SKU-AP-MINI",
+                  "price_vnd": 2190000
+                }
+              },
+              "after": {
+                "must_say_any": [
+                  "xác nhận",
+                  "cho em biết tên"
+                ],
+                "must_not_call_tools": [
+                  "order.create",
+                  "order.status"
+                ]
+              }
+            },
+            "expected_outcome": {
+              "before": "thong_tin",
+              "after": "khac"
+            }
+          },
+          "gt_status": "diagnostic_author_interpreted_pending_qa"
+        },
+        {
+          "call": "call_2",
+          "field_changes": {
+            "success_if": {
+              "before": {
+                "tool_called": "order.create",
+                "args_match": {
+                  "sku": "SKU-AP-MINI",
+                  "price_vnd": 2190000
+                }
+              },
+              "after": {
+                "must_say_any": [
+                  "xác nhận",
+                  "cho em biết tên"
+                ],
+                "must_not_call_tools": [
+                  "order.create",
+                  "order.status"
+                ]
+              }
+            },
+            "expected_outcome": {
+              "before": "thong_tin",
+              "after": "khac"
+            },
+            "must_carry_over": {
+              "before": [
+                "product_name",
+                "location",
+                "waiting_for"
+              ],
+              "after": null
+            }
+          },
+          "gt_status": "diagnostic_author_interpreted_pending_qa"
+        },
+        {
+          "call": "call_3",
+          "field_changes": {
+            "success_if": {
+              "before": {
+                "kind": "reply_matches_any",
+                "payload": {
+                  "messages": [
+                    "Tôi muốn biết tình trạng đơn hàng của mình",
+                    "Đơn hàng của tôi đã được giao chưa?"
+                  ]
+                }
+              },
+              "after": {
+                "must_say_any": [
+                  "xác nhận",
+                  "cho em biết tên"
+                ],
+                "must_not_call_tools": [
+                  "order.create",
+                  "order.status"
+                ]
+              }
+            },
+            "expected_outcome": {
+              "before": "cap_nhat_don",
+              "after": "khac"
+            },
+            "must_carry_over": {
+              "before": [
+                "confirmed_order",
+                "payment_method",
+                "expected_delivery_date"
+              ],
+              "after": null
+            }
+          },
+          "gt_status": "diagnostic_author_interpreted_pending_qa"
+        }
+      ]
+    },
+    {
+      "source": "output (1)/scenarios/SCN-GEN-0005.json",
+      "source_sha256": "4a66092bf0124e0eee6f6ce86795173ad01e7285adde69cbc1648b6ba03e6211",
+      "derived": "scenarios/SCN-GEN-0005.json",
+      "calls": [
+        {
+          "call": "call_1",
+          "field_changes": {
+            "success_if": {
+              "before": {
+                "tool_called": "order.create",
+                "args_match": {
+                  "sku": "SKU-AP-PRO",
+                  "price_vnd": 7690000
+                }
+              },
+              "after": {
+                "must_say_any": [
+                  "xác nhận",
+                  "cho em biết tên"
+                ],
+                "must_not_call_tools": [
+                  "order.create",
+                  "order.status"
+                ]
+              }
+            },
+            "expected_outcome": {
+              "before": "thong_tin",
+              "after": "khac"
+            }
+          },
+          "gt_status": "diagnostic_author_interpreted_pending_qa"
+        },
+        {
+          "call": "call_2",
+          "field_changes": {
+            "success_if": {
+              "before": {
+                "kind": "reply_matches_any",
+                "payload": {
+                  "messages": [
+                    "Tôi muốn biết tình trạng đơn hàng của mình",
+                    "Đơn hàng của tôi đã được giao chưa?"
+                  ]
+                }
+              },
+              "after": {
+                "must_say_any": [
+                  "xác nhận",
+                  "cho em biết tên"
+                ],
+                "must_not_call_tools": [
+                  "order.create",
+                  "order.status"
+                ]
+              }
+            },
+            "expected_outcome": {
+              "before": "thong_tin",
+              "after": "khac"
+            },
+            "ground_truth_facts/order_id": {
+              "before": "Đơn hàng mới",
+              "after": null
+            },
+            "ground_truth_facts/tracking": {
+              "before": "Đang giao hàng",
+              "after": null
+            }
+          },
+          "gt_status": "diagnostic_author_interpreted_pending_qa"
+        }
+      ]
+    }
+  ]
+}

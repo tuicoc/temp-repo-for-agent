@@ -1,0 +1,46 @@
+{
+  "scenario_id": "FIXTURE-M1",
+  "level": "M1",
+  "persona": "fixture_only",
+  "hard_case": null,
+  "customer_phone": "0900000000",
+  "customer_name": "Khách mẫu",
+  "honorific": "chị",
+  "notes": "FIXTURE minh họa; không phải kết quả Agent",
+  "calls": {
+    "call_1": {
+      "call_date": "2026-10-15",
+      "customer_turns": [
+        "Chị cần máy cho phòng 25 m2."
+      ],
+      "facts_established": {
+        "room_area_m2": 25
+      },
+      "success_if": {
+        "must_not_call_tools": [
+          "order.create"
+        ]
+      }
+    },
+    "call_2": {
+      "days_later": 2,
+      "customer_turns": [
+        "Chị gọi lại nhé."
+      ],
+      "must_carry_over": [
+        "room_area_m2"
+      ],
+      "must_not_ask": [
+        "room_area_m2"
+      ],
+      "ground_truth_facts": {
+        "room_area_m2": 25
+      },
+      "success_if": {
+        "must_not_call_tools": [
+          "order.create"
+        ]
+      }
+    }
+  }
+}

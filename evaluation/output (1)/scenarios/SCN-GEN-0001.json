@@ -1,0 +1,222 @@
+{
+  "scenario_id": "SCN-GEN-0001",
+  "level": "M2",
+  "persona": "khach_quay_lai_sau_8_thang",
+  "hard_case": "stale_memory_ttl; owned SKU SKU-AP-X-2024 makes trade-in eligible",
+  "customer_phone": "0985003703",
+  "customer_name": "Oanh",
+  "honorific": "chị",
+  "notes": "coverage_case=stale_customer_memory; stale_memory_ttl; owned SKU SKU-AP-X-2024 makes trade-in eligible",
+  "calls": {
+    "call_1": {
+      "customer_goal": "Tôi muốn đặt hàng máy lọc không khí AirPure X.",
+      "customer_turns": [
+        "Chị muốn mua máy lọc không khí AirPure X.",
+        "Giá máy là bao nhiêu?",
+        "Tôi có đơn hàng trước rồi, có ưu đãi gì không?",
+        "Chị muốn đặt hàng ngay bây giờ."
+      ],
+      "facts_established": {
+        "previous_order": "OD188213",
+        "previous_sku": "SKU-AP-X-2024",
+        "previous_price": 4290000
+      },
+      "expected_outcome": "cap_nhat_don",
+      "success_if": {
+        "kind": "reply_matches_any",
+        "payload": {
+          "messages": [
+            "Tôi muốn biết tình trạng đơn hàng của mình",
+            "Đơn hàng của tôi đã được giao chưa?"
+          ]
+        }
+      },
+      "ground_truth_facts": {
+        "sku": "SKU-AP-X",
+        "list_price_vnd": 4890000,
+        "final_price_vnd": 4490000,
+        "order_id": "OD188213",
+        "order_date": "2026-02-17",
+        "applied_promos": [
+          {
+            "promo_code": "COD-0",
+            "type": "freecod",
+            "saving_vnd": 0,
+            "gift_sku": null,
+            "free_shipping": false,
+            "free_cod": true
+          },
+          {
+            "promo_code": "TRADE-IN-AP",
+            "type": "fixed",
+            "saving_vnd": 400000,
+            "gift_sku": null,
+            "free_shipping": false,
+            "free_cod": false
+          }
+        ],
+        "rejected_promos_with_reason": [
+          {
+            "promo_code": "AIR-OCT",
+            "reason": "sku_or_category_not_covered"
+          },
+          {
+            "promo_code": "XM-COMBO",
+            "reason": "sku_or_category_not_covered"
+          },
+          {
+            "promo_code": "RUN-10",
+            "reason": "sku_or_category_not_covered"
+          },
+          {
+            "promo_code": "AIR-2ND-50",
+            "reason": "minimum_quantity_not_met"
+          },
+          {
+            "promo_code": "NAM-SHIP0",
+            "reason": "region_not_eligible"
+          },
+          {
+            "promo_code": "MOM-FREESHIP",
+            "reason": "sku_or_category_not_covered"
+          },
+          {
+            "promo_code": "AP-SEP",
+            "reason": "outside_promotion_period"
+          },
+          {
+            "promo_code": "RUN2-SALE",
+            "reason": "outside_promotion_period"
+          },
+          {
+            "promo_code": "PUMP-GIFT",
+            "reason": "outside_promotion_period"
+          },
+          {
+            "promo_code": "11-11",
+            "reason": "outside_promotion_period"
+          },
+          {
+            "promo_code": "GIFT-FILTER",
+            "reason": "better_nonstackable_offer_selected"
+          }
+        ],
+        "in_stock": true,
+        "stock_qty": 40,
+        "product_name": "Máy lọc không khí AirPure X",
+        "category": "gia-dung/may-loc-khong-khi",
+        "date": "2026-10-15",
+        "order_status": "delivered",
+        "tracking": null,
+        "customer_id": "C031",
+        "session_index": 1
+      }
+    },
+    "call_2": {
+      "customer_goal": "Tôi muốn kiểm tra tình trạng đơn hàng máy lọc không khí đã đặt.",
+      "customer_turns": [
+        "Chị đã đặt hàng máy lọc không khí AirPure X, cho tôi biết tình trạng đơn hàng.",
+        "Đơn hàng của tôi đã được giao chưa?",
+        "Tôi muốn cập nhật đơn hàng của mình."
+      ],
+      "facts_established": {
+        "order_id": "OD188213",
+        "order_status": "delivered"
+      },
+      "expected_outcome": "cap_nhat_don",
+      "days_later": 2,
+      "must_carry_over": [
+        "previous_order: OD188213",
+        "previous_sku: SKU-AP-X-2024",
+        "previous_price: 4490000"
+      ],
+      "success_if": {
+        "kind": "reply_matches_any",
+        "payload": {
+          "messages": [
+            "Tôi muốn biết tình trạng đơn hàng của mình",
+            "Đơn hàng của tôi đã được giao chưa?"
+          ]
+        }
+      },
+      "ground_truth_facts": {
+        "sku": "SKU-AP-X-2024",
+        "list_price_vnd": 4890000,
+        "final_price_vnd": 4490000,
+        "applied_promos": [
+          {
+            "promo_code": "COD-0",
+            "type": "freecod",
+            "saving_vnd": 0,
+            "gift_sku": null,
+            "free_shipping": false,
+            "free_cod": true
+          },
+          {
+            "promo_code": "TRADE-IN-AP",
+            "type": "fixed",
+            "saving_vnd": 400000,
+            "gift_sku": null,
+            "free_shipping": false,
+            "free_cod": false
+          }
+        ],
+        "rejected_promos_with_reason": [
+          {
+            "promo_code": "AIR-OCT",
+            "reason": "sku_or_category_not_covered"
+          },
+          {
+            "promo_code": "XM-COMBO",
+            "reason": "sku_or_category_not_covered"
+          },
+          {
+            "promo_code": "RUN-10",
+            "reason": "sku_or_category_not_covered"
+          },
+          {
+            "promo_code": "AIR-2ND-50",
+            "reason": "minimum_quantity_not_met"
+          },
+          {
+            "promo_code": "NAM-SHIP0",
+            "reason": "region_not_eligible"
+          },
+          {
+            "promo_code": "MOM-FREESHIP",
+            "reason": "sku_or_category_not_covered"
+          },
+          {
+            "promo_code": "AP-SEP",
+            "reason": "outside_promotion_period"
+          },
+          {
+            "promo_code": "RUN2-SALE",
+            "reason": "outside_promotion_period"
+          },
+          {
+            "promo_code": "PUMP-GIFT",
+            "reason": "outside_promotion_period"
+          },
+          {
+            "promo_code": "11-11",
+            "reason": "outside_promotion_period"
+          },
+          {
+            "promo_code": "GIFT-FILTER",
+            "reason": "better_nonstackable_offer_selected"
+          }
+        ],
+        "in_stock": true,
+        "stock_qty": 40,
+        "product_name": "Máy lọc không khí AirPure X",
+        "category": "gia-dung/may-loc-khong-khi",
+        "date": "2026-10-15",
+        "order_id": "OD188213",
+        "order_status": "delivered",
+        "tracking": null,
+        "order_date": "2026-02-17"
+      }
+    }
+  }
+}

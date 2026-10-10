@@ -1,0 +1,14 @@
+{
+  "customer_phone": "0900000000",
+  "is_returning": true,
+  "n_previous_sessions": 1,
+  "last_session": null,
+  "products_advised": [],
+  "open_blockers": [],
+  "must_not_ask": [
+    "room_area_m2"
+  ],
+  "suggested_opening": "Chị gọi lại về máy lọc đúng không ạ?",
+  "generated_at": "2026-10-17T09:00:00+07:00",
+  "latency_ms": 100
+}

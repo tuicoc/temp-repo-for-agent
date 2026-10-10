@@ -1,0 +1,129 @@
+{
+  "conversation_id": "SCN-GEN-0003",
+  "customer_id": "C033",
+  "session_index": 1,
+  "channel": "hotline",
+  "date": "2026-10-15",
+  "region": "trung",
+  "category": "gia-dung/may-loc-khong-khi",
+  "persona": "khach_goi_lan_3_het_kien_nhan",
+  "turns": [
+    {
+      "speaker": "agent_ai",
+      "text": "Chào chị Loan, em là trợ lý ảo của shop. Chị có nhớ về máy lọc không khí AirPure Y mà chị đã hỏi trước đây không?",
+      "asks_slot": null,
+      "q_type": null,
+      "tool_called": null,
+      "tool_args": null,
+      "entities": [],
+      "pause_before_ms": 0,
+      "emotion": null,
+      "barge_in": false
+    },
+    {
+      "speaker": "customer",
+      "text": "Chị đã hỏi về máy lọc không khí AirPure Y rồi, bây giờ chị muốn đặt hàng.",
+      "facts_stated": {
+        "product_name": "Máy lọc không khí AirPure Y"
+      },
+      "entities": [],
+      "pause_before_ms": 500,
+      "emotion": null,
+      "barge_in": false
+    },
+    {
+      "speaker": "agent_ai",
+      "text": "Máy lọc không khí AirPure Y hiện đang có sẵn hàng và giá là 5.200.000đ. Chị có muốn đặt hàng ngay không?",
+      "asks_slot": "order",
+      "q_type": "confirm",
+      "tool_called": null,
+      "tool_args": null,
+      "entities": [],
+      "pause_before_ms": 0,
+      "emotion": null,
+      "barge_in": false
+    },
+    {
+      "speaker": "customer",
+      "text": "Chị muốn đặt hàng ngay bây giờ nếu còn hàng.",
+      "facts_stated": {
+        "product_name": "Máy lọc không khí AirPure Y",
+        "price": 5200000
+      },
+      "entities": [],
+      "pause_before_ms": 500,
+      "emotion": null,
+      "barge_in": false
+    },
+    {
+      "speaker": "agent_ai",
+      "text": "Em xác nhận lại đơn hàng cho chị nhé. Đơn hàng sẽ bao gồm máy lọc không khí AirPure Y với giá 5.200.000đ. Chị có muốn thêm thông tin gì không?",
+      "asks_slot": "order",
+      "q_type": "confirm",
+      "tool_called": null,
+      "tool_args": null,
+      "entities": [],
+      "pause_before_ms": 0,
+      "emotion": null,
+      "barge_in": false
+    },
+    {
+      "speaker": "customer",
+      "text": "Chị đã đặt hàng hôm trước, bây giờ chị muốn biết tình trạng đơn hàng.",
+      "facts_stated": {
+        "order_status": "pending"
+      },
+      "entities": [],
+      "pause_before_ms": 500,
+      "emotion": null,
+      "barge_in": false
+    },
+    {
+      "speaker": "agent_ai",
+      "text": "Đơn hàng của chị hiện vẫn đang chờ xử lý. Chị có muốn em cập nhật thêm thông tin gì không?",
+      "asks_slot": null,
+      "q_type": null,
+      "tool_called": null,
+      "tool_args": null,
+      "entities": [],
+      "pause_before_ms": 0,
+      "emotion": null,
+      "barge_in": false
+    },
+    {
+      "speaker": "customer",
+      "text": "Đơn hàng của chị đã được xác nhận chưa?",
+      "facts_stated": {
+        "order_status": "pending"
+      },
+      "entities": [],
+      "pause_before_ms": 500,
+      "emotion": null,
+      "barge_in": false
+    },
+    {
+      "speaker": "agent_ai",
+      "text": "Đơn hàng của chị vẫn đang trong trạng thái chờ xử lý. Em sẽ thông báo ngay khi có thông tin mới. Cảm ơn chị đã kiên nhẫn!",
+      "asks_slot": null,
+      "q_type": null,
+      "tool_called": null,
+      "tool_args": null,
+      "entities": [],
+      "pause_before_ms": 0,
+      "emotion": null,
+      "barge_in": false
+    }
+  ],
+  "gold": {
+    "intent": "consult_order_status_lifecycle",
+    "outcome": "chot",
+    "objection_type": null,
+    "objection_handling": null,
+    "sentiment": "neutral",
+    "decision_maker": "Loan",
+    "commitments": [],
+    "supersedes": [],
+    "callback": null,
+    "order": {}
+  }
+}

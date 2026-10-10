@@ -1,0 +1,4415 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Evaluation contracts — nhóm v1.1.0",
+  "description": "Chọn $defs theo artifact. TimingEvidence mới1.1.0 nullable measurements; legacy1.0.0 giữ numeric constraints. Artifact khác còn1.0.0. BTC nguyên bản dưới sources/btc; semantic rules S01–S24 trong matrix.",
+  "$defs": {
+    "AssetRef": {
+      "type": "object",
+      "properties": {
+        "path": {
+          "type": "string",
+          "minLength": 1
+        },
+        "sha256": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "pointer": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "path",
+        "sha256",
+        "pointer"
+      ],
+      "additionalProperties": false,
+      "$comment": "NHÓM — JSON Pointer trong file JSON; đường dẫn tương đối gốc package. Đề A.6; flow B1."
+    },
+    "Context": {
+      "type": "object",
+      "properties": {
+        "run_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "config": {
+          "enum": [
+            "full",
+            "baseline_no_memory"
+          ]
+        },
+        "scenario_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "call": {
+          "enum": [
+            "call_1",
+            "call_2",
+            "call_3"
+          ]
+        },
+        "turn": {
+          "type": "integer",
+          "minimum": 1
+        }
+      },
+      "required": [
+        "run_id",
+        "config",
+        "scenario_id",
+        "call",
+        "turn"
+      ],
+      "additionalProperties": false,
+      "$comment": "NHÓM — Trace BTC /properties; turn là lượt Agent."
+    },
+    "Status": {
+      "type": "object",
+      "properties": {
+        "verdict": {
+          "enum": [
+            "PASS",
+            "FAIL",
+            "UNDETERMINED",
+            "NOT_APPLICABLE"
+          ]
+        },
+        "completeness": {
+          "enum": [
+            "COMPLETE",
+            "INCOMPLETE",
+            "NOT_APPLICABLE"
+          ]
+        },
+        "reason_codes": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        }
+      },
+      "required": [
+        "verdict",
+        "completeness",
+        "reason_codes"
+      ],
+      "additionalProperties": false,
+      "$comment": "NHÓM — Hai trục; mapping 4 trạng thái flow A2; semantic S05."
+    },
+    "Suite": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "enum": [
+            "fixed_turn",
+            "asr",
+            "latency_cost",
+            "judge",
+            "rag",
+            "diarization",
+            "simulator",
+            "tool_accuracy",
+            "voice"
+          ]
+        },
+        "applicable": {
+          "type": "boolean"
+        },
+        "reason": {
+          "type": "string",
+          "minLength": 1
+        }
+      },
+      "required": [
+        "id",
+        "applicable",
+        "reason"
+      ],
+      "additionalProperties": false,
+      "$comment": "NHÓM — DC §1–2,7–12; judge M1 theo điều kiện."
+    },
+    "SuccessIf": {
+      "type": "object",
+      "properties": {
+        "tool_called": {
+          "anyOf": [
+            {
+              "type": "string",
+              "minLength": 1
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "args_match": {
+          "type": "object"
+        },
+        "also_ordered": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "total_match_vnd": {
+          "type": "integer"
+        },
+        "brief_must_contain": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "must_say_any": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "agent_must_say": {
+          "type": "string"
+        },
+        "must_not_call_tools": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "forbidden_claims": {
+          "type": "array",
+          "items": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "object",
+                "properties": {
+                  "field": {
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  "value": {}
+                },
+                "required": [
+                  "field",
+                  "value"
+                ],
+                "additionalProperties": false
+              }
+            ]
+          }
+        },
+        "trace_must_not_match": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "max_agent_questions": {
+          "type": "integer",
+          "minimum": 0
+        }
+      },
+      "required": [],
+      "additionalProperties": true,
+      "$comment": "NHÓM — Chuyển từ scenario_format.md và E.check_call; không thay logic scorer."
+    },
+    "ScenarioCall": {
+      "type": "object",
+      "properties": {
+        "customer_goal": {
+          "type": "string"
+        },
+        "channel": {
+          "type": "string"
+        },
+        "channel_identity": {},
+        "call_date": {
+          "type": "string",
+          "format": "date"
+        },
+        "days_later": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "customer_turns": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "minItems": 1
+        },
+        "customer_turns_asr": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "input_mode": {
+          "type": "string"
+        },
+        "seed_history": {},
+        "facts_established": {
+          "type": "object"
+        },
+        "must_carry_over": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "must_not_ask": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "success_if": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/SuccessIf"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "ground_truth_facts": {
+          "type": "object"
+        },
+        "memory_expectation": {
+          "type": "object"
+        },
+        "expected_outcome": {
+          "enum": [
+            "hen_goi_lai",
+            "chot_don",
+            "chuyen_may",
+            "tu_choi",
+            "khac"
+          ]
+        }
+      },
+      "required": [
+        "customer_turns"
+      ],
+      "additionalProperties": true,
+      "$comment": "NHÓM — SC fields; minimum input contract nhóm; tính ngày và số lượt kiểm S01/S02."
+    },
+    "Scenario": {
+      "type": "object",
+      "properties": {
+        "scenario_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "level": {
+          "enum": [
+            "M1",
+            "M2"
+          ]
+        },
+        "persona": {
+          "type": "string",
+          "minLength": 1
+        },
+        "hard_case": {
+          "type": [
+            "string",
+            "boolean",
+            "null"
+          ]
+        },
+        "customer_phone": {
+          "type": "string"
+        },
+        "customer_name": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "honorific": {
+          "type": "string"
+        },
+        "notes": {
+          "type": "string"
+        },
+        "calls": {
+          "type": "object",
+          "properties": {
+            "call_1": {
+              "$ref": "#/$defs/ScenarioCall"
+            },
+            "call_2": {
+              "$ref": "#/$defs/ScenarioCall"
+            },
+            "call_3": {
+              "$ref": "#/$defs/ScenarioCall"
+            }
+          },
+          "required": [
+            "call_1"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "required": [
+        "scenario_id",
+        "level",
+        "persona",
+        "hard_case",
+        "customer_phone",
+        "customer_name",
+        "honorific",
+        "notes",
+        "calls"
+      ],
+      "additionalProperties": true,
+      "$comment": "NHÓM — SC + sample; metadata không đủ gây review applicability, không loại raw sample."
+    },
+    "PlannedCall": {
+      "type": "object",
+      "properties": {
+        "config": {
+          "enum": [
+            "full",
+            "baseline_no_memory"
+          ]
+        },
+        "scenario_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "call": {
+          "enum": [
+            "call_1",
+            "call_2",
+            "call_3"
+          ]
+        },
+        "expected_turns": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "memory_required": {
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "config",
+        "scenario_id",
+        "call",
+        "expected_turns",
+        "memory_required"
+      ],
+      "additionalProperties": false,
+      "$comment": "NHÓM — Manifest kế hoạch nhóm; simulator không dùng expected_turns fixed."
+    },
+    "Manifest": {
+      "type": "object",
+      "properties": {
+        "schema_version": {
+          "const": "1.0.0"
+        },
+        "artifact_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "run_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "level": {
+          "enum": [
+            "M1",
+            "M2"
+          ]
+        },
+        "fixture": {
+          "type": "boolean"
+        },
+        "purpose": {
+          "enum": [
+            "official_eval",
+            "development",
+            "regression"
+          ]
+        },
+        "split": {
+          "enum": [
+            "frozen",
+            "growth",
+            "public",
+            "hidden",
+            "development"
+          ]
+        },
+        "created_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "round": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "reference_date": {
+          "type": "string",
+          "format": "date"
+        },
+        "timezone": {
+          "const": "Asia/Ho_Chi_Minh"
+        },
+        "sources": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/AssetRef"
+          },
+          "minItems": 1
+        },
+        "scenarios": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/AssetRef"
+          },
+          "minItems": 1
+        },
+        "grading_contracts": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/AssetRef"
+          },
+          "minItems": 1
+        },
+        "suites": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/Suite"
+          },
+          "minItems": 1
+        },
+        "planned_calls": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/PlannedCall"
+          },
+          "minItems": 1
+        },
+        "asr_ids": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "rag_ids": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "simulator_seeds": {
+          "type": "array",
+          "items": {
+            "type": "integer"
+          },
+          "uniqueItems": true
+        },
+        "configuration": {
+          "type": "object",
+          "properties": {
+            "model": {
+              "type": "string",
+              "minLength": 1
+            },
+            "parameters": {
+              "type": "object"
+            },
+            "prompt": {
+              "$ref": "#/$defs/AssetRef"
+            },
+            "tools": {
+              "$ref": "#/$defs/AssetRef"
+            },
+            "kb": {
+              "$ref": "#/$defs/AssetRef"
+            },
+            "hardware": {
+              "type": "string",
+              "minLength": 1
+            },
+            "extractor_version": {
+              "type": "string",
+              "minLength": 1
+            },
+            "judge_version": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "minLength": 1
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            }
+          },
+          "required": [
+            "model",
+            "parameters",
+            "prompt",
+            "tools",
+            "kb",
+            "hardware",
+            "extractor_version",
+            "judge_version"
+          ],
+          "additionalProperties": false
+        },
+        "timeouts_ms": {
+          "type": "object",
+          "properties": {
+            "agent": {
+              "type": "integer",
+              "minimum": 1
+            },
+            "tool": {
+              "type": "integer",
+              "minimum": 1
+            },
+            "after_call": {
+              "type": "integer",
+              "minimum": 1
+            },
+            "judge": {
+              "type": "integer",
+              "minimum": 1
+            }
+          },
+          "required": [
+            "agent",
+            "tool",
+            "after_call",
+            "judge"
+          ],
+          "additionalProperties": false
+        },
+        "retry": {
+          "type": "object",
+          "properties": {
+            "agent": {
+              "const": 0
+            },
+            "tool": {
+              "const": 0
+            },
+            "judge_format": {
+              "const": 1
+            }
+          },
+          "required": [
+            "agent",
+            "tool",
+            "judge_format"
+          ],
+          "additionalProperties": false
+        },
+        "state_namespaces": {
+          "type": "object",
+          "properties": {
+            "full": {
+              "type": "string",
+              "minLength": 1
+            },
+            "baseline_no_memory": {
+              "type": "string",
+              "minLength": 1
+            }
+          },
+          "required": [
+            "full",
+            "baseline_no_memory"
+          ],
+          "additionalProperties": false
+        },
+        "warmup_count": {
+          "const": 3
+        },
+        "candidate_hash": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "dispute_ids": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        }
+      },
+      "required": [
+        "schema_version",
+        "artifact_id",
+        "run_id",
+        "level",
+        "fixture",
+        "purpose",
+        "split",
+        "created_at",
+        "round",
+        "reference_date",
+        "timezone",
+        "sources",
+        "scenarios",
+        "grading_contracts",
+        "suites",
+        "planned_calls",
+        "asr_ids",
+        "rag_ids",
+        "simulator_seeds",
+        "configuration",
+        "timeouts_ms",
+        "retry",
+        "state_namespaces",
+        "warmup_count",
+        "candidate_hash",
+        "dispute_ids"
+      ],
+      "additionalProperties": false,
+      "$comment": "NHÓM — Đề C.4/C.5/A.6; L §2; defaults thời gian là nhóm, bắt buộc ghi trước run."
+    },
+    "ToolRequest": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string",
+          "minLength": 1
+        },
+        "args": {
+          "type": "object"
+        }
+      },
+      "required": [
+        "name",
+        "args"
+      ],
+      "additionalProperties": false,
+      "$comment": "NHÓM — TR /tool_calls; dạng thô mở cho tool riêng. ToolArgs kiểm riêng contract BTC."
+    },
+    "ToolArgs": {
+      "oneOf": [
+        {
+          "type": "object",
+          "properties": {
+            "name": {
+              "const": "crm.get_customer"
+            },
+            "args": {
+              "type": "object",
+              "properties": {
+                "phone": {
+                  "type": "string"
+                },
+                "zalo_id": {
+                  "type": "string"
+                },
+                "fb_id": {
+                  "type": "string"
+                }
+              },
+              "required": [],
+              "additionalProperties": true
+            }
+          },
+          "required": [
+            "name",
+            "args"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "name": {
+              "const": "catalog.search"
+            },
+            "args": {
+              "type": "object",
+              "properties": {
+                "query": {
+                  "type": "string"
+                },
+                "category": {
+                  "type": "string"
+                },
+                "sku": {
+                  "type": "string"
+                },
+                "max_price_vnd": {
+                  "type": "integer"
+                },
+                "min_room_area_m2": {
+                  "type": "number"
+                },
+                "include_discontinued": {
+                  "type": "boolean"
+                }
+              },
+              "required": [],
+              "additionalProperties": true
+            }
+          },
+          "required": [
+            "name",
+            "args"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "name": {
+              "const": "inventory.check"
+            },
+            "args": {
+              "type": "object",
+              "properties": {
+                "sku": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "on": {
+                  "type": "string",
+                  "format": "date"
+                }
+              },
+              "required": [
+                "sku"
+              ],
+              "additionalProperties": true
+            }
+          },
+          "required": [
+            "name",
+            "args"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "name": {
+              "const": "pricing.get_quote"
+            },
+            "args": {
+              "type": "object",
+              "properties": {
+                "sku": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "on": {
+                  "type": "string",
+                  "format": "date"
+                },
+                "qty": {
+                  "type": "integer"
+                },
+                "customer_phone": {
+                  "type": "string"
+                },
+                "address": {
+                  "type": "string"
+                },
+                "basket_skus": {
+                  "type": "array",
+                  "items": {
+                    "type": "string",
+                    "minLength": 1
+                  }
+                }
+              },
+              "required": [
+                "sku"
+              ],
+              "additionalProperties": true
+            }
+          },
+          "required": [
+            "name",
+            "args"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "name": {
+              "const": "order.create"
+            },
+            "args": {
+              "type": "object",
+              "properties": {
+                "customer_phone": {
+                  "type": "string"
+                },
+                "sku": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "qty": {
+                  "type": "integer"
+                },
+                "price_vnd": {
+                  "type": "integer"
+                },
+                "promo_code": {
+                  "anyOf": [
+                    {
+                      "type": "string"
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                },
+                "payment": {
+                  "enum": [
+                    "COD",
+                    "bank",
+                    "momo",
+                    "zalopay"
+                  ]
+                },
+                "address": {
+                  "type": "string"
+                },
+                "on": {
+                  "type": "string",
+                  "format": "date"
+                },
+                "basket_skus": {
+                  "type": "array",
+                  "items": {
+                    "type": "string",
+                    "minLength": 1
+                  }
+                }
+              },
+              "required": [
+                "customer_phone",
+                "sku",
+                "qty",
+                "price_vnd",
+                "payment"
+              ],
+              "additionalProperties": true
+            }
+          },
+          "required": [
+            "name",
+            "args"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "name": {
+              "const": "order.status"
+            },
+            "args": {
+              "type": "object",
+              "properties": {
+                "order_id": {
+                  "type": "string"
+                },
+                "customer_phone": {
+                  "type": "string"
+                }
+              },
+              "required": [],
+              "additionalProperties": true
+            }
+          },
+          "required": [
+            "name",
+            "args"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "name": {
+              "const": "order.update"
+            },
+            "args": {
+              "type": "object",
+              "properties": {
+                "order_id": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "action": {
+                  "enum": [
+                    "exchange_size",
+                    "exchange_product",
+                    "return",
+                    "update_address"
+                  ]
+                },
+                "new_variant_sku": {
+                  "type": "string"
+                },
+                "reason": {
+                  "type": "string"
+                },
+                "on": {
+                  "type": "string",
+                  "format": "date"
+                }
+              },
+              "required": [
+                "order_id",
+                "action"
+              ],
+              "additionalProperties": true
+            }
+          },
+          "required": [
+            "name",
+            "args"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "name": {
+              "const": "schedule.callback"
+            },
+            "args": {
+              "type": "object",
+              "properties": {
+                "customer_phone": {
+                  "type": "string"
+                },
+                "callback_at": {
+                  "type": "string"
+                },
+                "note": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "customer_phone",
+                "callback_at"
+              ],
+              "additionalProperties": true
+            }
+          },
+          "required": [
+            "name",
+            "args"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "name": {
+              "const": "handoff.transfer"
+            },
+            "args": {
+              "type": "object",
+              "properties": {
+                "brief": {
+                  "$ref": "sources/btc/schemas/handoff_brief.schema.json"
+                }
+              },
+              "required": [
+                "brief"
+              ],
+              "additionalProperties": true
+            }
+          },
+          "required": [
+            "name",
+            "args"
+          ],
+          "additionalProperties": false
+        }
+      ],
+      "$comment": "NHÓM — T /tools; required theo tài liệu T, mock cho default không làm optional hợp đồng. B13; memory tool tự thiết kế."
+    },
+    "ToolEvent": {
+      "type": "object",
+      "properties": {
+        "schema_version": {
+          "const": "1.0.0"
+        },
+        "artifact_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "run_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "context": {
+          "$ref": "#/$defs/Context"
+        },
+        "evidence_refs": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/AssetRef"
+          }
+        },
+        "event_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "request": {
+          "$ref": "#/$defs/ToolRequest"
+        },
+        "on": {
+          "type": "string",
+          "format": "date"
+        },
+        "started_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "finished_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "outcome": {
+          "enum": [
+            "success",
+            "business_error",
+            "transport_error",
+            "timeout"
+          ]
+        },
+        "result": {},
+        "error": {
+          "anyOf": [
+            {
+              "type": "object",
+              "properties": {
+                "code": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "message": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "code",
+                "message"
+              ],
+              "additionalProperties": false
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "side_effect": {
+          "type": "boolean"
+        },
+        "attempt": {
+          "const": 1
+        }
+      },
+      "required": [
+        "schema_version",
+        "artifact_id",
+        "run_id",
+        "context",
+        "evidence_refs",
+        "event_id",
+        "request",
+        "on",
+        "started_at",
+        "finished_at",
+        "outcome",
+        "result",
+        "error",
+        "side_effect",
+        "attempt"
+      ],
+      "additionalProperties": false,
+      "$comment": "NHÓM — TR args/result + MO; sidecar nhóm giữ cả request sai; S07/S08 kiểm result và timeline."
+    },
+    "BriefEvidence": {
+      "type": "object",
+      "properties": {
+        "schema_version": {
+          "const": "1.0.0"
+        },
+        "artifact_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "run_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "context": {
+          "$ref": "#/$defs/Context"
+        },
+        "evidence_refs": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/AssetRef"
+          }
+        },
+        "kind": {
+          "enum": [
+            "call_brief",
+            "handoff_brief"
+          ]
+        },
+        "object_ref": {
+          "$ref": "#/$defs/AssetRef"
+        },
+        "identified_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "ready_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "producer": {
+          "enum": [
+            "agent",
+            "memory_agent"
+          ]
+        },
+        "validation": {
+          "$ref": "#/$defs/Status"
+        }
+      },
+      "required": [
+        "schema_version",
+        "artifact_id",
+        "run_id",
+        "context",
+        "evidence_refs",
+        "kind",
+        "object_ref",
+        "identified_at",
+        "ready_at",
+        "producer",
+        "validation"
+      ],
+      "additionalProperties": false,
+      "$comment": "NHÓM — CB/HB raw validate độc lập; object_ref có thể trỏ artifact sai để giữ evidence."
+    },
+    "MemoryFact": {
+      "type": "object",
+      "properties": {
+        "key": {
+          "type": "string",
+          "minLength": 1
+        },
+        "value": {},
+        "customer_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "source": {
+          "$ref": "#/$defs/AssetRef"
+        },
+        "valid_from": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "valid_until": {
+          "anyOf": [
+            {
+              "type": "string",
+              "format": "date-time"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "state": {
+          "enum": [
+            "active",
+            "superseded",
+            "deleted"
+          ]
+        }
+      },
+      "required": [
+        "key",
+        "value",
+        "customer_id",
+        "source",
+        "valid_from",
+        "valid_until",
+        "state"
+      ],
+      "additionalProperties": false,
+      "$comment": "NHÓM — T memory.read/write không quy định schema; provenance theo C.2; TTL theo policy nhóm."
+    },
+    "MemoryEvidence": {
+      "type": "object",
+      "properties": {
+        "schema_version": {
+          "const": "1.0.0"
+        },
+        "artifact_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "run_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "context": {
+          "$ref": "#/$defs/Context"
+        },
+        "evidence_refs": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/AssetRef"
+          }
+        },
+        "customer_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "namespace": {
+          "type": "string",
+          "minLength": 1
+        },
+        "phase": {
+          "enum": [
+            "before_call",
+            "after_turn",
+            "after_call"
+          ]
+        },
+        "facts": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/MemoryFact"
+          }
+        },
+        "writes": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "key": {
+                "type": "string",
+                "minLength": 1
+              },
+              "value": {},
+              "op": {
+                "enum": [
+                  "set",
+                  "supersede",
+                  "delete"
+                ]
+              },
+              "source": {
+                "$ref": "#/$defs/AssetRef"
+              },
+              "customer_id": {
+                "type": "string",
+                "minLength": 1
+              }
+            },
+            "required": [
+              "key",
+              "value",
+              "op",
+              "source",
+              "customer_id"
+            ],
+            "additionalProperties": false
+          }
+        }
+      },
+      "required": [
+        "schema_version",
+        "artifact_id",
+        "run_id",
+        "context",
+        "evidence_refs",
+        "customer_id",
+        "namespace",
+        "phase",
+        "facts",
+        "writes"
+      ],
+      "additionalProperties": false,
+      "$comment": "NHÓM — TR /memory_writes description; S09 đúng value/customer/TTL. Mask CCCD/STK."
+    },
+    "Extraction": {
+      "type": "object",
+      "properties": {
+        "schema_version": {
+          "const": "1.0.0"
+        },
+        "artifact_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "run_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "context": {
+          "$ref": "#/$defs/Context"
+        },
+        "evidence_refs": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/AssetRef"
+          }
+        },
+        "extractor_version": {
+          "type": "string",
+          "minLength": 1
+        },
+        "items": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "kind": {
+                "enum": [
+                  "question",
+                  "claim",
+                  "fact_usage"
+                ]
+              },
+              "slot_or_field": {
+                "type": "string",
+                "minLength": 1
+              },
+              "value": {},
+              "question_type": {
+                "anyOf": [
+                  {
+                    "enum": [
+                      "open",
+                      "confirm"
+                    ]
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              },
+              "speaker": {
+                "enum": [
+                  "agent",
+                  "consultant",
+                  "customer",
+                  "tool"
+                ]
+              },
+              "source": {
+                "$ref": "#/$defs/AssetRef"
+              },
+              "quote": {
+                "type": "string"
+              },
+              "start": {
+                "type": "integer",
+                "minimum": 0
+              },
+              "end": {
+                "type": "integer",
+                "minimum": 0
+              },
+              "purpose": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "kind",
+              "slot_or_field",
+              "value",
+              "question_type",
+              "speaker",
+              "source",
+              "quote",
+              "start",
+              "end",
+              "purpose"
+            ],
+            "additionalProperties": false
+          }
+        }
+      },
+      "required": [
+        "schema_version",
+        "artifact_id",
+        "run_id",
+        "context",
+        "evidence_refs",
+        "extractor_version",
+        "items"
+      ],
+      "additionalProperties": false,
+      "$comment": "NHÓM — Đề A.1/A.2/A.4, TR questions/claims/facts_used; S06 spans/mapping. Offset Unicode."
+    },
+    "Segments": {
+      "type": "object",
+      "properties": {
+        "segments": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "start": {
+                "type": "number",
+                "minimum": 0
+              },
+              "end": {
+                "type": "number",
+                "minimum": 0
+              },
+              "speaker": {
+                "enum": [
+                  "A",
+                  "C"
+                ]
+              }
+            },
+            "required": [
+              "start",
+              "end",
+              "speaker"
+            ],
+            "additionalProperties": true
+          }
+        }
+      },
+      "required": [
+        "segments"
+      ],
+      "additionalProperties": true,
+      "$comment": "NHÓM — E.wer_cer GT audio/id.segments.json; S10 start<end."
+    },
+    "AsrHypotheses": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "object",
+        "properties": {
+          "text": {
+            "type": "string"
+          },
+          "entities": {
+            "type": "object",
+            "additionalProperties": {
+              "type": [
+                "string",
+                "number",
+                "boolean",
+                "null"
+              ]
+            }
+          },
+          "turns": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "start": {
+                  "type": "number"
+                },
+                "end": {
+                  "type": "number"
+                },
+                "speaker": {
+                  "enum": [
+                    "A",
+                    "C"
+                  ]
+                }
+              },
+              "required": [
+                "start",
+                "end",
+                "speaker"
+              ],
+              "additionalProperties": true
+            }
+          }
+        },
+        "required": [
+          "text",
+          "entities"
+        ],
+        "additionalProperties": true
+      },
+      "$comment": "NHÓM — E.wer_cer id -> hypothesis; text/entities required nhóm để không ngầm empty."
+    },
+    "RagResults": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "object",
+        "properties": {
+          "retrieved_chunk_ids": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "minLength": 1
+            }
+          },
+          "abstained": {
+            "type": "boolean"
+          },
+          "answer": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "retrieved_chunk_ids",
+          "abstained",
+          "answer"
+        ],
+        "additionalProperties": true
+      },
+      "$comment": "NHÓM — E.rag_eval qid -> result, DC §7/9; S03 expected IDs và chunk mapping."
+    },
+    "SimulatorLog": {
+      "type": "object",
+      "properties": {
+        "scenario_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "call": {
+          "enum": [
+            "call_1",
+            "call_2",
+            "call_3"
+          ]
+        },
+        "persona_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "seed": {
+          "type": "integer"
+        },
+        "patience_trace": {
+          "type": "array",
+          "items": {
+            "type": "integer"
+          }
+        },
+        "outcome": {
+          "enum": [
+            "hen_goi_lai",
+            "chot_don",
+            "chuyen_may",
+            "tu_choi",
+            "khac",
+            "timeout"
+          ]
+        },
+        "n_turns": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 12
+        },
+        "ended_by": {
+          "enum": [
+            "agent",
+            "customer",
+            "timeout"
+          ]
+        }
+      },
+      "required": [
+        "scenario_id",
+        "call",
+        "persona_id",
+        "seed",
+        "patience_trace",
+        "outcome",
+        "n_turns",
+        "ended_by"
+      ],
+      "additionalProperties": true,
+      "$comment": "NHÓM — SIM §1–5; lỗi hạ tầng vào ErrorRecord, không tạo outcome giả."
+    },
+    "JudgeVerdict": {
+      "type": "object",
+      "properties": {
+        "criterion_id": {
+          "enum": [
+            "J01_opening_continuity",
+            "J02_no_fabrication",
+            "J03_conflict_handling",
+            "J04_identity_check",
+            "J05_escalation_quality",
+            "J06_tone_vietnamese",
+            "J07_closing_summary",
+            "J08_over_confirmation",
+            "J09_pii_handling",
+            "J10_honest_ai",
+            "J11_budget_transparency",
+            "J12_out_of_stock"
+          ]
+        },
+        "verdict": {
+          "enum": [
+            "PASS",
+            "FAIL"
+          ]
+        },
+        "evidence": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "criterion_id",
+        "verdict",
+        "evidence"
+      ],
+      "additionalProperties": false,
+      "$comment": "NHÓM — J /judge_prompt_template; không thêm INCOMPLETE vào verdict BTC."
+    },
+    "JudgeRecord": {
+      "type": "object",
+      "properties": {
+        "schema_version": {
+          "const": "1.0.0"
+        },
+        "artifact_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "run_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "context": {
+          "$ref": "#/$defs/Context"
+        },
+        "evidence_refs": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/AssetRef"
+          }
+        },
+        "criterion_id": {
+          "enum": [
+            "J01_opening_continuity",
+            "J02_no_fabrication",
+            "J03_conflict_handling",
+            "J04_identity_check",
+            "J05_escalation_quality",
+            "J06_tone_vietnamese",
+            "J07_closing_summary",
+            "J08_over_confirmation",
+            "J09_pii_handling",
+            "J10_honest_ai",
+            "J11_budget_transparency",
+            "J12_out_of_stock"
+          ]
+        },
+        "applicable": {
+          "type": "boolean"
+        },
+        "selection_reason": {
+          "type": "string",
+          "minLength": 1
+        },
+        "attempts": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 2
+        },
+        "status": {
+          "$ref": "#/$defs/Status"
+        },
+        "verdict": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/JudgeVerdict"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "error": {
+          "anyOf": [
+            {
+              "type": "string",
+              "minLength": 1
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "judge_version": {
+          "type": "string",
+          "minLength": 1
+        },
+        "human_verdict": {
+          "anyOf": [
+            {
+              "enum": [
+                "PASS",
+                "FAIL"
+              ]
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "required": [
+        "schema_version",
+        "artifact_id",
+        "run_id",
+        "context",
+        "evidence_refs",
+        "criterion_id",
+        "applicable",
+        "selection_reason",
+        "attempts",
+        "status",
+        "verdict",
+        "error",
+        "judge_version",
+        "human_verdict"
+      ],
+      "additionalProperties": false,
+      "$comment": "NHÓM — J applies_to/agreement_protocol; runtime wrapper nhóm S11."
+    },
+    "Coverage": {
+      "type": "object",
+      "properties": {
+        "schema_version": {
+          "const": "1.0.0"
+        },
+        "artifact_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "run_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "scope": {
+          "type": "string",
+          "minLength": 1
+        },
+        "expected_ids": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "observed_ids": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "missing_ids": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "duplicate_ids": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "unknown_ids": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "status": {
+          "$ref": "#/$defs/Status"
+        }
+      },
+      "required": [
+        "schema_version",
+        "artifact_id",
+        "run_id",
+        "scope",
+        "expected_ids",
+        "observed_ids",
+        "missing_ids",
+        "duplicate_ids",
+        "unknown_ids",
+        "status"
+      ],
+      "additionalProperties": false,
+      "$comment": "NHÓM — B3 + E load_trace; S02/S03 set math."
+    },
+    "Issue": {
+      "type": "object",
+      "properties": {
+        "code": {
+          "type": "string",
+          "minLength": 1
+        },
+        "artifact": {
+          "$ref": "#/$defs/AssetRef"
+        },
+        "json_pointer": {
+          "type": "string"
+        },
+        "message": {
+          "type": "string",
+          "minLength": 1
+        },
+        "classification": {
+          "enum": [
+            "schema_error",
+            "missing_evidence",
+            "agent_violation",
+            "dispute",
+            "infra_error"
+          ]
+        }
+      },
+      "required": [
+        "code",
+        "artifact",
+        "json_pointer",
+        "message",
+        "classification"
+      ],
+      "additionalProperties": false,
+      "$comment": "NHÓM — Validation findings nhóm."
+    },
+    "ValidationReport": {
+      "type": "object",
+      "properties": {
+        "schema_version": {
+          "const": "1.0.0"
+        },
+        "artifact_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "run_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "status": {
+          "$ref": "#/$defs/Status"
+        },
+        "issues": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/Issue"
+          }
+        },
+        "coverage_refs": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/AssetRef"
+          }
+        }
+      },
+      "required": [
+        "schema_version",
+        "artifact_id",
+        "run_id",
+        "status",
+        "issues",
+        "coverage_refs"
+      ],
+      "additionalProperties": false,
+      "$comment": "NHÓM — TR /required + CB/HB; S05 aggregate không che FAIL."
+    },
+    "Metric": {
+      "type": "object",
+      "properties": {
+        "metric_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "formula_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "unit": {
+          "enum": [
+            "percent",
+            "percentage_points",
+            "ms",
+            "seconds_per_audio_minute",
+            "currency_per_call",
+            "count",
+            "turns_per_call",
+            "turns_per_scenario",
+            "ratio"
+          ]
+        },
+        "value": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "numerator": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "denominator": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "cohort_ids": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "evidence_refs": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/AssetRef"
+          }
+        },
+        "status": {
+          "enum": [
+            "MEASURED",
+            "UNDEFINED",
+            "INCOMPLETE",
+            "NOT_APPLICABLE"
+          ]
+        },
+        "reason": {
+          "anyOf": [
+            {
+              "type": "string",
+              "minLength": 1
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "currency": {
+          "anyOf": [
+            {
+              "type": "string",
+              "pattern": "^[A-Z]{3}$"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "required": [
+        "metric_id",
+        "formula_id",
+        "unit",
+        "value",
+        "numerator",
+        "denominator",
+        "cohort_ids",
+        "evidence_refs",
+        "status",
+        "reason",
+        "currency"
+      ],
+      "additionalProperties": false,
+      "$comment": "NHÓM — Đề A; E metrics; S12 formula + unit; percentile không bắt buộc numerator."
+    },
+    "SupplementalReport": {
+      "type": "object",
+      "properties": {
+        "schema_version": {
+          "const": "1.0.0"
+        },
+        "artifact_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "run_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "status": {
+          "$ref": "#/$defs/Status"
+        },
+        "metrics": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/Metric"
+          }
+        },
+        "checks": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "check_id": {
+                "type": "string",
+                "minLength": 1
+              },
+              "status": {
+                "$ref": "#/$defs/Status"
+              },
+              "evidence_refs": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/$defs/AssetRef"
+                }
+              }
+            },
+            "required": [
+              "check_id",
+              "status",
+              "evidence_refs"
+            ],
+            "additionalProperties": false
+          }
+        },
+        "coverage_refs": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/AssetRef"
+          }
+        },
+        "official_report": {
+          "$ref": "#/$defs/AssetRef"
+        }
+      },
+      "required": [
+        "schema_version",
+        "artifact_id",
+        "run_id",
+        "status",
+        "metrics",
+        "checks",
+        "coverage_refs",
+        "official_report"
+      ],
+      "additionalProperties": false,
+      "$comment": "NHÓM — DC §2/GD T5 Q8; không thay report BTC."
+    },
+    "ErrorRecord": {
+      "type": "object",
+      "properties": {
+        "schema_version": {
+          "const": "1.0.0"
+        },
+        "artifact_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "run_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "context": {
+          "$ref": "#/$defs/Context"
+        },
+        "evidence_refs": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/AssetRef"
+          }
+        },
+        "error_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "category": {
+          "enum": [
+            "agent",
+            "tool",
+            "memory",
+            "extractor",
+            "judge",
+            "data",
+            "infra"
+          ]
+        },
+        "expected": {},
+        "observed": {},
+        "reason": {
+          "type": "string",
+          "minLength": 1
+        },
+        "source_split": {
+          "enum": [
+            "frozen",
+            "growth",
+            "public",
+            "hidden",
+            "development",
+            "production"
+          ]
+        },
+        "learning_permission": {
+          "enum": [
+            "allow",
+            "deny",
+            "pending"
+          ]
+        },
+        "root_cause": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "remediation": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "retest_ref": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/AssetRef"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "required": [
+        "schema_version",
+        "artifact_id",
+        "run_id",
+        "context",
+        "evidence_refs",
+        "error_id",
+        "category",
+        "expected",
+        "observed",
+        "reason",
+        "source_split",
+        "learning_permission",
+        "root_cause",
+        "remediation",
+        "retest_ref"
+      ],
+      "additionalProperties": false,
+      "$comment": "NHÓM — Đề F ≥10 case; D1 Source Gate là nhóm."
+    },
+    "Comparison": {
+      "type": "object",
+      "properties": {
+        "schema_version": {
+          "const": "1.0.0"
+        },
+        "artifact_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "run_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "dataset_hash": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "baseline_report": {
+          "$ref": "#/$defs/AssetRef"
+        },
+        "system_report": {
+          "$ref": "#/$defs/AssetRef"
+        },
+        "rows": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "metric_id": {
+                "type": "string",
+                "minLength": 1
+              },
+              "baseline": {
+                "anyOf": [
+                  {
+                    "type": "number"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              },
+              "system": {
+                "anyOf": [
+                  {
+                    "type": "number"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              },
+              "delta": {
+                "anyOf": [
+                  {
+                    "type": "number"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              },
+              "delta_kind": {
+                "enum": [
+                  "system_minus_baseline",
+                  "relative_reduction"
+                ]
+              },
+              "unit": {
+                "type": "string",
+                "minLength": 1
+              },
+              "status": {
+                "enum": [
+                  "MEASURED",
+                  "UNDEFINED",
+                  "INCOMPLETE"
+                ]
+              },
+              "reason": {
+                "anyOf": [
+                  {
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              }
+            },
+            "required": [
+              "metric_id",
+              "baseline",
+              "system",
+              "delta",
+              "delta_kind",
+              "unit",
+              "status",
+              "reason"
+            ],
+            "additionalProperties": false
+          }
+        }
+      },
+      "required": [
+        "schema_version",
+        "artifact_id",
+        "run_id",
+        "dataset_hash",
+        "baseline_report",
+        "system_report",
+        "rows"
+      ],
+      "additionalProperties": false,
+      "$comment": "NHÓM — Đề A.6 + C.5; S12 delta, RQR baseline0 undefined."
+    },
+    "ReleaseDecision": {
+      "type": "object",
+      "properties": {
+        "schema_version": {
+          "const": "1.0.0"
+        },
+        "artifact_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "run_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "level": {
+          "enum": [
+            "M1",
+            "M2"
+          ]
+        },
+        "decision": {
+          "enum": [
+            "active",
+            "hold",
+            "reject",
+            "rollback"
+          ]
+        },
+        "candidate_hash": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "approved_hash": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "evaluated_hash": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "approval_ref": {
+          "$ref": "#/$defs/AssetRef"
+        },
+        "suite_results": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "suite": {
+                "type": "string",
+                "minLength": 1
+              },
+              "applicable": {
+                "type": "boolean"
+              },
+              "status": {
+                "$ref": "#/$defs/Status"
+              },
+              "report": {
+                "anyOf": [
+                  {
+                    "$ref": "#/$defs/AssetRef"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              }
+            },
+            "required": [
+              "suite",
+              "applicable",
+              "status",
+              "report"
+            ],
+            "additionalProperties": false
+          }
+        },
+        "dispute_ids": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "reason_codes": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "previous_version": {
+          "anyOf": [
+            {
+              "type": "string",
+              "minLength": 1
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "required": [
+        "schema_version",
+        "artifact_id",
+        "run_id",
+        "level",
+        "decision",
+        "candidate_hash",
+        "approved_hash",
+        "evaluated_hash",
+        "approval_ref",
+        "suite_results",
+        "dispute_ids",
+        "reason_codes",
+        "previous_version"
+      ],
+      "additionalProperties": false,
+      "$comment": "NHÓM — NHÓM D7; S13 version/evidence/decision; M1 chỉ suite áp dụng."
+    },
+    "OfficialReport": {
+      "type": "object",
+      "properties": {
+        "n_scenarios": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "system": {
+          "type": "object",
+          "properties": {
+            "repeat_question_rate": {
+              "type": "object",
+              "properties": {
+                "value": {
+                  "anyOf": [
+                    {
+                      "type": "number"
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                },
+                "redundant": {
+                  "type": "integer",
+                  "minimum": 0
+                },
+                "total_questions": {
+                  "type": "integer",
+                  "minimum": 0
+                },
+                "examples": {
+                  "type": "array",
+                  "items": {
+                    "type": "object"
+                  }
+                }
+              },
+              "required": [
+                "value",
+                "redundant",
+                "total_questions",
+                "examples"
+              ],
+              "additionalProperties": true
+            },
+            "context_carryover_rate": {
+              "type": "object",
+              "properties": {
+                "value": {
+                  "anyOf": [
+                    {
+                      "type": "number"
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                },
+                "used": {
+                  "type": "integer",
+                  "minimum": 0
+                },
+                "required": {
+                  "type": "integer",
+                  "minimum": 0
+                }
+              },
+              "required": [
+                "value",
+                "used",
+                "required"
+              ],
+              "additionalProperties": true
+            },
+            "task_success_rate": {
+              "type": "object",
+              "properties": {
+                "value": {
+                  "anyOf": [
+                    {
+                      "type": "number"
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                },
+                "passed": {
+                  "type": "integer",
+                  "minimum": 0
+                },
+                "total": {
+                  "type": "integer",
+                  "minimum": 0
+                },
+                "hard_cases": {
+                  "anyOf": [
+                    {
+                      "type": "object",
+                      "properties": {
+                        "value": {
+                          "anyOf": [
+                            {
+                              "type": "number"
+                            },
+                            {
+                              "type": "null"
+                            }
+                          ]
+                        },
+                        "total": {
+                          "type": "integer",
+                          "minimum": 0
+                        }
+                      },
+                      "required": [
+                        "value",
+                        "total"
+                      ],
+                      "additionalProperties": true
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                },
+                "failures": {
+                  "type": "array",
+                  "items": {
+                    "type": "object"
+                  }
+                }
+              },
+              "required": [
+                "value",
+                "passed",
+                "total",
+                "hard_cases",
+                "failures"
+              ],
+              "additionalProperties": true
+            },
+            "hallucination_rate": {
+              "type": "object",
+              "properties": {
+                "value": {
+                  "anyOf": [
+                    {
+                      "type": "number"
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                },
+                "wrong": {
+                  "type": "integer",
+                  "minimum": 0
+                },
+                "total_claims": {
+                  "type": "integer",
+                  "minimum": 0
+                },
+                "price_promo_only": {
+                  "type": "object",
+                  "properties": {
+                    "value": {
+                      "anyOf": [
+                        {
+                          "type": "number"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    },
+                    "wrong": {
+                      "type": "integer",
+                      "minimum": 0
+                    },
+                    "total": {
+                      "type": "integer",
+                      "minimum": 0
+                    }
+                  },
+                  "required": [
+                    "value",
+                    "wrong",
+                    "total"
+                  ],
+                  "additionalProperties": true
+                },
+                "examples": {
+                  "type": "array",
+                  "items": {
+                    "type": "object"
+                  }
+                }
+              },
+              "required": [
+                "value",
+                "wrong",
+                "total_claims",
+                "price_promo_only",
+                "examples"
+              ],
+              "additionalProperties": true
+            },
+            "avg_turns_per_call": {
+              "anyOf": [
+                {
+                  "type": "number"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "calls_to_close": {
+              "type": "object",
+              "properties": {
+                "value": {
+                  "anyOf": [
+                    {
+                      "type": "number"
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                },
+                "n_closed": {
+                  "type": "integer",
+                  "minimum": 0
+                },
+                "n_scenarios": {
+                  "type": "integer",
+                  "minimum": 0
+                }
+              },
+              "required": [
+                "value",
+                "n_closed",
+                "n_scenarios"
+              ],
+              "additionalProperties": true
+            },
+            "guardrail_violations": {
+              "type": "object",
+              "properties": {
+                "total": {
+                  "type": "integer",
+                  "minimum": 0
+                },
+                "by_type": {
+                  "type": "object",
+                  "properties": {
+                    "pii_in_memory_or_text": {
+                      "type": "integer",
+                      "minimum": 0
+                    },
+                    "over_escalation": {
+                      "type": "integer",
+                      "minimum": 0
+                    },
+                    "claims_human": {
+                      "type": "integer",
+                      "minimum": 0
+                    },
+                    "forbidden_pattern": {
+                      "type": "integer",
+                      "minimum": 0
+                    }
+                  },
+                  "required": [
+                    "pii_in_memory_or_text",
+                    "over_escalation",
+                    "claims_human",
+                    "forbidden_pattern"
+                  ],
+                  "additionalProperties": false
+                },
+                "examples": {
+                  "type": "array",
+                  "items": {
+                    "type": "object"
+                  }
+                }
+              },
+              "required": [
+                "total",
+                "by_type",
+                "examples"
+              ],
+              "additionalProperties": true
+            },
+            "memory_checks": {
+              "type": "array",
+              "items": {
+                "type": "object"
+              }
+            },
+            "latency": {
+              "type": "object",
+              "properties": {
+                "n_turns": {
+                  "type": "integer",
+                  "minimum": 0
+                },
+                "warning": {
+                  "anyOf": [
+                    {
+                      "type": "string"
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                },
+                "ttft": {
+                  "anyOf": [
+                    {
+                      "type": "object",
+                      "properties": {
+                        "n": {
+                          "type": "integer",
+                          "minimum": 0
+                        },
+                        "p50_ms": {
+                          "type": "integer"
+                        },
+                        "p95_ms": {
+                          "type": "integer"
+                        }
+                      },
+                      "required": [
+                        "n",
+                        "p50_ms",
+                        "p95_ms"
+                      ],
+                      "additionalProperties": true
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                },
+                "total": {
+                  "anyOf": [
+                    {
+                      "type": "object",
+                      "properties": {
+                        "n": {
+                          "type": "integer",
+                          "minimum": 0
+                        },
+                        "p50_ms": {
+                          "type": "integer"
+                        },
+                        "p95_ms": {
+                          "type": "integer"
+                        }
+                      },
+                      "required": [
+                        "n",
+                        "p50_ms",
+                        "p95_ms"
+                      ],
+                      "additionalProperties": true
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                },
+                "ttfa": {
+                  "anyOf": [
+                    {
+                      "type": "object",
+                      "properties": {
+                        "n": {
+                          "type": "integer",
+                          "minimum": 0
+                        },
+                        "p50_ms": {
+                          "type": "integer"
+                        },
+                        "p95_ms": {
+                          "type": "integer"
+                        }
+                      },
+                      "required": [
+                        "n",
+                        "p50_ms",
+                        "p95_ms"
+                      ],
+                      "additionalProperties": true
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                },
+                "call_brief": {
+                  "anyOf": [
+                    {
+                      "type": "object",
+                      "properties": {
+                        "n": {
+                          "type": "integer",
+                          "minimum": 0
+                        },
+                        "p50_ms": {
+                          "type": "integer"
+                        },
+                        "p95_ms": {
+                          "type": "integer"
+                        }
+                      },
+                      "required": [
+                        "n",
+                        "p50_ms",
+                        "p95_ms"
+                      ],
+                      "additionalProperties": true
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                }
+              },
+              "required": [
+                "n_turns",
+                "warning",
+                "ttft",
+                "total",
+                "ttfa",
+                "call_brief"
+              ],
+              "additionalProperties": true
+            }
+          },
+          "required": [
+            "repeat_question_rate",
+            "context_carryover_rate",
+            "task_success_rate",
+            "hallucination_rate",
+            "avg_turns_per_call",
+            "calls_to_close",
+            "guardrail_violations",
+            "memory_checks",
+            "latency"
+          ],
+          "additionalProperties": true
+        },
+        "baseline": {
+          "type": "object",
+          "properties": {
+            "repeat_question_rate": {
+              "type": "object",
+              "properties": {
+                "value": {
+                  "anyOf": [
+                    {
+                      "type": "number"
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                },
+                "redundant": {
+                  "type": "integer",
+                  "minimum": 0
+                },
+                "total_questions": {
+                  "type": "integer",
+                  "minimum": 0
+                },
+                "examples": {
+                  "type": "array",
+                  "items": {
+                    "type": "object"
+                  }
+                }
+              },
+              "required": [
+                "value",
+                "redundant",
+                "total_questions",
+                "examples"
+              ],
+              "additionalProperties": true
+            },
+            "context_carryover_rate": {
+              "type": "object",
+              "properties": {
+                "value": {
+                  "anyOf": [
+                    {
+                      "type": "number"
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                },
+                "used": {
+                  "type": "integer",
+                  "minimum": 0
+                },
+                "required": {
+                  "type": "integer",
+                  "minimum": 0
+                }
+              },
+              "required": [
+                "value",
+                "used",
+                "required"
+              ],
+              "additionalProperties": true
+            },
+            "task_success_rate": {
+              "type": "object",
+              "properties": {
+                "value": {
+                  "anyOf": [
+                    {
+                      "type": "number"
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                },
+                "passed": {
+                  "type": "integer",
+                  "minimum": 0
+                },
+                "total": {
+                  "type": "integer",
+                  "minimum": 0
+                },
+                "hard_cases": {
+                  "anyOf": [
+                    {
+                      "type": "object",
+                      "properties": {
+                        "value": {
+                          "anyOf": [
+                            {
+                              "type": "number"
+                            },
+                            {
+                              "type": "null"
+                            }
+                          ]
+                        },
+                        "total": {
+                          "type": "integer",
+                          "minimum": 0
+                        }
+                      },
+                      "required": [
+                        "value",
+                        "total"
+                      ],
+                      "additionalProperties": true
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                },
+                "failures": {
+                  "type": "array",
+                  "items": {
+                    "type": "object"
+                  }
+                }
+              },
+              "required": [
+                "value",
+                "passed",
+                "total",
+                "hard_cases",
+                "failures"
+              ],
+              "additionalProperties": true
+            },
+            "hallucination_rate": {
+              "type": "object",
+              "properties": {
+                "value": {
+                  "anyOf": [
+                    {
+                      "type": "number"
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                },
+                "wrong": {
+                  "type": "integer",
+                  "minimum": 0
+                },
+                "total_claims": {
+                  "type": "integer",
+                  "minimum": 0
+                },
+                "price_promo_only": {
+                  "type": "object",
+                  "properties": {
+                    "value": {
+                      "anyOf": [
+                        {
+                          "type": "number"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    },
+                    "wrong": {
+                      "type": "integer",
+                      "minimum": 0
+                    },
+                    "total": {
+                      "type": "integer",
+                      "minimum": 0
+                    }
+                  },
+                  "required": [
+                    "value",
+                    "wrong",
+                    "total"
+                  ],
+                  "additionalProperties": true
+                },
+                "examples": {
+                  "type": "array",
+                  "items": {
+                    "type": "object"
+                  }
+                }
+              },
+              "required": [
+                "value",
+                "wrong",
+                "total_claims",
+                "price_promo_only",
+                "examples"
+              ],
+              "additionalProperties": true
+            },
+            "avg_turns_per_call": {
+              "anyOf": [
+                {
+                  "type": "number"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "calls_to_close": {
+              "type": "object",
+              "properties": {
+                "value": {
+                  "anyOf": [
+                    {
+                      "type": "number"
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                },
+                "n_closed": {
+                  "type": "integer",
+                  "minimum": 0
+                },
+                "n_scenarios": {
+                  "type": "integer",
+                  "minimum": 0
+                }
+              },
+              "required": [
+                "value",
+                "n_closed",
+                "n_scenarios"
+              ],
+              "additionalProperties": true
+            },
+            "guardrail_violations": {
+              "type": "object",
+              "properties": {
+                "total": {
+                  "type": "integer",
+                  "minimum": 0
+                },
+                "by_type": {
+                  "type": "object",
+                  "properties": {
+                    "pii_in_memory_or_text": {
+                      "type": "integer",
+                      "minimum": 0
+                    },
+                    "over_escalation": {
+                      "type": "integer",
+                      "minimum": 0
+                    },
+                    "claims_human": {
+                      "type": "integer",
+                      "minimum": 0
+                    },
+                    "forbidden_pattern": {
+                      "type": "integer",
+                      "minimum": 0
+                    }
+                  },
+                  "required": [
+                    "pii_in_memory_or_text",
+                    "over_escalation",
+                    "claims_human",
+                    "forbidden_pattern"
+                  ],
+                  "additionalProperties": false
+                },
+                "examples": {
+                  "type": "array",
+                  "items": {
+                    "type": "object"
+                  }
+                }
+              },
+              "required": [
+                "total",
+                "by_type",
+                "examples"
+              ],
+              "additionalProperties": true
+            },
+            "memory_checks": {
+              "type": "array",
+              "items": {
+                "type": "object"
+              }
+            },
+            "latency": {
+              "type": "object",
+              "properties": {
+                "n_turns": {
+                  "type": "integer",
+                  "minimum": 0
+                },
+                "warning": {
+                  "anyOf": [
+                    {
+                      "type": "string"
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                },
+                "ttft": {
+                  "anyOf": [
+                    {
+                      "type": "object",
+                      "properties": {
+                        "n": {
+                          "type": "integer",
+                          "minimum": 0
+                        },
+                        "p50_ms": {
+                          "type": "integer"
+                        },
+                        "p95_ms": {
+                          "type": "integer"
+                        }
+                      },
+                      "required": [
+                        "n",
+                        "p50_ms",
+                        "p95_ms"
+                      ],
+                      "additionalProperties": true
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                },
+                "total": {
+                  "anyOf": [
+                    {
+                      "type": "object",
+                      "properties": {
+                        "n": {
+                          "type": "integer",
+                          "minimum": 0
+                        },
+                        "p50_ms": {
+                          "type": "integer"
+                        },
+                        "p95_ms": {
+                          "type": "integer"
+                        }
+                      },
+                      "required": [
+                        "n",
+                        "p50_ms",
+                        "p95_ms"
+                      ],
+                      "additionalProperties": true
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                },
+                "ttfa": {
+                  "anyOf": [
+                    {
+                      "type": "object",
+                      "properties": {
+                        "n": {
+                          "type": "integer",
+                          "minimum": 0
+                        },
+                        "p50_ms": {
+                          "type": "integer"
+                        },
+                        "p95_ms": {
+                          "type": "integer"
+                        }
+                      },
+                      "required": [
+                        "n",
+                        "p50_ms",
+                        "p95_ms"
+                      ],
+                      "additionalProperties": true
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                },
+                "call_brief": {
+                  "anyOf": [
+                    {
+                      "type": "object",
+                      "properties": {
+                        "n": {
+                          "type": "integer",
+                          "minimum": 0
+                        },
+                        "p50_ms": {
+                          "type": "integer"
+                        },
+                        "p95_ms": {
+                          "type": "integer"
+                        }
+                      },
+                      "required": [
+                        "n",
+                        "p50_ms",
+                        "p95_ms"
+                      ],
+                      "additionalProperties": true
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                }
+              },
+              "required": [
+                "n_turns",
+                "warning",
+                "ttft",
+                "total",
+                "ttfa",
+                "call_brief"
+              ],
+              "additionalProperties": true
+            }
+          },
+          "required": [
+            "repeat_question_rate",
+            "context_carryover_rate",
+            "task_success_rate",
+            "hallucination_rate",
+            "avg_turns_per_call",
+            "calls_to_close",
+            "guardrail_violations",
+            "memory_checks",
+            "latency"
+          ],
+          "additionalProperties": true
+        },
+        "comparison": {
+          "type": "object",
+          "properties": {
+            "rqr_relative_reduction_pct": {
+              "anyOf": [
+                {
+                  "type": "number"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "meets_rqr_threshold_40pct": {
+              "type": "boolean"
+            },
+            "meets_tsr_70pct": {
+              "type": "boolean"
+            },
+            "meets_hr_price_5pct": {
+              "type": "boolean"
+            }
+          },
+          "required": [
+            "rqr_relative_reduction_pct",
+            "meets_rqr_threshold_40pct",
+            "meets_tsr_70pct",
+            "meets_hr_price_5pct"
+          ],
+          "additionalProperties": true
+        },
+        "asr": {
+          "anyOf": [
+            {
+              "type": "object",
+              "properties": {
+                "normalization": {
+                  "type": "string"
+                },
+                "WER": {
+                  "anyOf": [
+                    {
+                      "type": "number"
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                },
+                "CER": {
+                  "anyOf": [
+                    {
+                      "type": "number"
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                },
+                "entity_accuracy": {
+                  "anyOf": [
+                    {
+                      "type": "number"
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                },
+                "n_entities": {
+                  "type": "integer",
+                  "minimum": 0
+                },
+                "diarization_turn_accuracy": {
+                  "anyOf": [
+                    {
+                      "type": "number"
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                },
+                "n_dialogues": {
+                  "type": "integer",
+                  "minimum": 0
+                },
+                "wer_noisy": {
+                  "anyOf": [
+                    {
+                      "type": "number"
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                },
+                "wer_clean": {
+                  "anyOf": [
+                    {
+                      "type": "number"
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                },
+                "per_dialogue": {
+                  "type": "object",
+                  "additionalProperties": {
+                    "type": "object",
+                    "properties": {
+                      "wer": {
+                        "anyOf": [
+                          {
+                            "type": "number"
+                          },
+                          {
+                            "type": "null"
+                          }
+                        ]
+                      },
+                      "cer": {
+                        "anyOf": [
+                          {
+                            "type": "number"
+                          },
+                          {
+                            "type": "null"
+                          }
+                        ]
+                      },
+                      "noisy": {
+                        "type": "boolean"
+                      }
+                    },
+                    "required": [
+                      "wer",
+                      "cer",
+                      "noisy"
+                    ],
+                    "additionalProperties": true
+                  }
+                }
+              },
+              "required": [
+                "normalization",
+                "WER",
+                "CER",
+                "entity_accuracy",
+                "n_entities",
+                "diarization_turn_accuracy",
+                "n_dialogues",
+                "wer_noisy",
+                "wer_clean",
+                "per_dialogue"
+              ],
+              "additionalProperties": true
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "rag": {
+          "type": "object",
+          "properties": {
+            "recall@3": {
+              "anyOf": [
+                {
+                  "type": "number"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "recall@5": {
+              "anyOf": [
+                {
+                  "type": "number"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "multi_hop_full_recall@3": {
+              "anyOf": [
+                {
+                  "type": "number"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "multi_hop_full_recall@5": {
+              "anyOf": [
+                {
+                  "type": "number"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "abstain_rate_unanswerable": {
+              "anyOf": [
+                {
+                  "type": "number"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "abstain_rate_restricted": {
+              "anyOf": [
+                {
+                  "type": "number"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "false_abstain_rate": {
+              "anyOf": [
+                {
+                  "type": "number"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            }
+          },
+          "required": [
+            "recall@3",
+            "recall@5"
+          ],
+          "additionalProperties": true
+        }
+      },
+      "required": [
+        "n_scenarios",
+        "system"
+      ],
+      "additionalProperties": true,
+      "$comment": "NHÓM — E.evaluate/main/wer_cer/rag_eval; schema tương thích NHÓM; không sửa output."
+    },
+    "TimingEvidence": {
+      "type": "object",
+      "properties": {
+        "schema_version": {
+          "enum": ["1.0.0", "1.1.0"]
+        },
+        "artifact_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "run_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "context": {
+          "$ref": "#/$defs/Context"
+        },
+        "request_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "first_token_at": {
+          "anyOf": [
+            {
+              "type": "string",
+              "format": "date-time"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "first_audio_at": {
+          "anyOf": [
+            {
+              "type": "string",
+              "format": "date-time"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "completed_at": {
+          "anyOf": [
+            {
+              "type": "string",
+              "format": "date-time"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "brief_identified_at": {
+          "anyOf": [
+            {
+              "type": "string",
+              "format": "date-time"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "brief_ready_at": {
+          "anyOf": [
+            {
+              "type": "string",
+              "format": "date-time"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "warmup": {
+          "type": "boolean"
+        },
+        "audio_seconds": {
+          "type": ["number", "null"],
+          "minimum": 0
+        },
+        "asr_wall_ms": {
+          "type": ["number", "null"],
+          "minimum": 0
+        },
+        "input_tokens": {
+          "type": ["integer", "null"],
+          "minimum": 0
+        },
+        "output_tokens": {
+          "type": ["integer", "null"],
+          "minimum": 0
+        },
+        "cost": {
+          "type": ["number", "null"],
+          "minimum": 0
+        },
+        "currency": {
+          "type": ["string", "null"],
+          "pattern": "^[A-Z]{3}$"
+        },
+        "concurrency_group": {
+          "anyOf": [
+            {
+              "type": "string",
+              "minLength": 1
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "evidence_refs": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/AssetRef"
+          }
+        }
+      },
+      "required": [
+        "schema_version",
+        "artifact_id",
+        "run_id",
+        "context",
+        "request_at",
+        "first_token_at",
+        "first_audio_at",
+        "completed_at",
+        "brief_identified_at",
+        "brief_ready_at",
+        "warmup",
+        "audio_seconds",
+        "asr_wall_ms",
+        "input_tokens",
+        "output_tokens",
+        "cost",
+        "currency",
+        "concurrency_group",
+        "evidence_refs"
+      ],
+      "additionalProperties": false,
+      "allOf": [
+        {
+          "if": {"properties": {"schema_version": {"const": "1.0.0"}}},
+          "then": {
+            "properties": {
+              "audio_seconds": {"type": "number"},
+              "asr_wall_ms": {"type": "number"},
+              "input_tokens": {"type": "integer"},
+              "output_tokens": {"type": "integer"},
+              "cost": {"type": "number"},
+              "currency": {"type": "string"}
+            }
+          }
+        }
+      ],
+      "$comment": "NHÓM — B9/C/D. 1.1.0: required measurements nullable; missing phải có Issue/metric INCOMPLETE, không fake0. Legacy1.0.0 vẫn numeric. Không sửa wire BTC."
+    },
+    "SuiteEvidence": {
+      "type": "object",
+      "properties": {
+        "schema_version": {
+          "const": "1.0.0"
+        },
+        "artifact_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "run_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "suite": {
+          "$ref": "#/$defs/Suite"
+        },
+        "inputs": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/AssetRef"
+          }
+        },
+        "outputs": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/AssetRef"
+          }
+        },
+        "status": {
+          "$ref": "#/$defs/Status"
+        },
+        "coverage": {
+          "$ref": "#/$defs/AssetRef"
+        },
+        "model_version": {
+          "type": "string",
+          "minLength": 1
+        },
+        "normalization_version": {
+          "anyOf": [
+            {
+              "type": "string",
+              "minLength": 1
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "elapsed_ms": {
+          "type": "number",
+          "minimum": 0
+        }
+      },
+      "required": [
+        "schema_version",
+        "artifact_id",
+        "run_id",
+        "suite",
+        "inputs",
+        "outputs",
+        "status",
+        "coverage",
+        "model_version",
+        "normalization_version",
+        "elapsed_ms"
+      ],
+      "additionalProperties": false,
+      "$comment": "NHÓM — evaluation-flow.md B9/C/D; PDF C.4–C.5. Metadata bổ sung, không sửa wire BTC."
+    },
+    "SourceDecision": {
+      "type": "object",
+      "properties": {
+        "schema_version": {
+          "const": "1.0.0"
+        },
+        "artifact_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "run_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "source_split": {
+          "enum": [
+            "frozen",
+            "growth",
+            "public",
+            "hidden",
+            "development",
+            "production"
+          ]
+        },
+        "origin": {
+          "$ref": "#/$defs/AssetRef"
+        },
+        "permission": {
+          "enum": [
+            "allow",
+            "deny",
+            "pending"
+          ]
+        },
+        "purpose": {
+          "enum": [
+            "report_only",
+            "learning"
+          ]
+        },
+        "policy_version": {
+          "type": "string",
+          "minLength": 1
+        },
+        "reason": {
+          "type": "string",
+          "minLength": 1
+        }
+      },
+      "required": [
+        "schema_version",
+        "artifact_id",
+        "run_id",
+        "source_split",
+        "origin",
+        "permission",
+        "purpose",
+        "policy_version",
+        "reason"
+      ],
+      "additionalProperties": false,
+      "$comment": "NHÓM — evaluation-flow.md B9/C/D; PDF C.4–C.5. Metadata bổ sung, không sửa wire BTC."
+    },
+    "Candidate": {
+      "type": "object",
+      "properties": {
+        "schema_version": {
+          "const": "1.0.0"
+        },
+        "artifact_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "run_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "version": {
+          "type": "string",
+          "minLength": 1
+        },
+        "parent_version": {
+          "anyOf": [
+            {
+              "type": "string",
+              "minLength": 1
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "content": {
+          "$ref": "#/$defs/AssetRef"
+        },
+        "source_decisions": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/AssetRef"
+          }
+        },
+        "growth_cases": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/AssetRef"
+          }
+        },
+        "kind": {
+          "enum": [
+            "faq",
+            "playbook",
+            "prompt",
+            "memory"
+          ]
+        }
+      },
+      "required": [
+        "schema_version",
+        "artifact_id",
+        "run_id",
+        "version",
+        "parent_version",
+        "content",
+        "source_decisions",
+        "growth_cases",
+        "kind"
+      ],
+      "additionalProperties": false,
+      "$comment": "NHÓM — evaluation-flow.md B9/C/D; PDF C.4–C.5. Metadata bổ sung, không sửa wire BTC."
+    },
+    "ApprovalRecord": {
+      "type": "object",
+      "properties": {
+        "schema_version": {
+          "const": "1.0.0"
+        },
+        "artifact_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "run_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "candidate_hash": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "decision": {
+          "enum": [
+            "approve",
+            "reject",
+            "needs_changes"
+          ]
+        },
+        "reviewer": {
+          "type": "string",
+          "minLength": 1
+        },
+        "reviewed_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "policy_sources": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/AssetRef"
+          }
+        },
+        "reason": {
+          "type": "string",
+          "minLength": 1
+        }
+      },
+      "required": [
+        "schema_version",
+        "artifact_id",
+        "run_id",
+        "candidate_hash",
+        "decision",
+        "reviewer",
+        "reviewed_at",
+        "policy_sources",
+        "reason"
+      ],
+      "additionalProperties": false,
+      "$comment": "NHÓM — evaluation-flow.md B9/C/D; PDF C.4–C.5. Metadata bổ sung, không sửa wire BTC."
+    },
+    "SourceLock": {
+      "type": "object",
+      "properties": {
+        "schema_version": {
+          "const": "1.0.0"
+        },
+        "files": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "string",
+            "pattern": "^[a-f0-9]{64}$"
+          }
+        }
+      },
+      "required": [
+        "schema_version",
+        "files"
+      ],
+      "additionalProperties": false,
+      "$comment": "NHÓM — evaluation-flow.md B9/C/D; PDF C.4–C.5. Metadata bổ sung, không sửa wire BTC."
+    },
+    "RagChunkMap": {
+      "type": "object",
+      "properties": {
+        "schema_version": {
+          "const": "1.0.0"
+        },
+        "artifact_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "run_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "evidence_refs": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/AssetRef"
+          }
+        },
+        "chunks": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "chunk_id": {
+                "type": "string",
+                "minLength": 1
+              },
+              "document": {
+                "$ref": "#/$defs/AssetRef"
+              },
+              "policy_version": {
+                "type": "string",
+                "minLength": 1
+              },
+              "valid_from": {
+                "type": "string",
+                "format": "date"
+              },
+              "valid_until": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "format": "date"
+              },
+              "restricted": {
+                "type": "boolean"
+              }
+            },
+            "required": [
+              "chunk_id",
+              "document",
+              "policy_version",
+              "valid_from",
+              "valid_until",
+              "restricted"
+            ],
+            "additionalProperties": false
+          }
+        }
+      },
+      "required": [
+        "schema_version",
+        "artifact_id",
+        "run_id",
+        "evidence_refs",
+        "chunks"
+      ],
+      "additionalProperties": false,
+      "$comment": "NHÓM — DC §7–9; J /agreement_protocol; PDF A.6. Typed sidecar, không đổi wire scorer."
+    },
+    "AsrEvidence": {
+      "type": "object",
+      "properties": {
+        "schema_version": {
+          "const": "1.0.0"
+        },
+        "artifact_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "run_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "evidence_refs": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/AssetRef"
+          }
+        },
+        "dialogue_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "audio": {
+          "$ref": "#/$defs/AssetRef"
+        },
+        "ground_truth": {
+          "$ref": "#/$defs/AssetRef"
+        },
+        "hypothesis": {
+          "$ref": "#/$defs/AssetRef"
+        },
+        "raw_text": {
+          "type": "string"
+        },
+        "normalized_text": {
+          "type": "string"
+        },
+        "itn_entities": {
+          "type": "object",
+          "additionalProperties": {
+            "type": [
+              "string",
+              "number",
+              "boolean",
+              "null"
+            ]
+          }
+        },
+        "normalization_version": {
+          "type": "string",
+          "minLength": 1
+        },
+        "itn_version": {
+          "type": "string",
+          "minLength": 1
+        }
+      },
+      "required": [
+        "schema_version",
+        "artifact_id",
+        "run_id",
+        "evidence_refs",
+        "dialogue_id",
+        "audio",
+        "ground_truth",
+        "hypothesis",
+        "raw_text",
+        "normalized_text",
+        "itn_entities",
+        "normalization_version",
+        "itn_version"
+      ],
+      "additionalProperties": false,
+      "$comment": "NHÓM — DC §7–9; J /agreement_protocol; PDF A.6. Typed sidecar, không đổi wire scorer."
+    },
+    "ExpectedToolCalls": {
+      "type": "object",
+      "properties": {
+        "schema_version": {
+          "const": "1.0.0"
+        },
+        "artifact_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "run_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "evidence_refs": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/AssetRef"
+          }
+        },
+        "context": {
+          "$ref": "#/$defs/Context"
+        },
+        "calls": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "name": {
+                "type": "string",
+                "minLength": 1
+              },
+              "args_match": {
+                "type": "object"
+              },
+              "required": {
+                "type": "boolean"
+              }
+            },
+            "required": [
+              "name",
+              "args_match",
+              "required"
+            ],
+            "additionalProperties": false
+          }
+        },
+        "allow_extra_read_only": {
+          "type": "boolean"
+        },
+        "labelled_by": {
+          "type": "string",
+          "minLength": 1
+        }
+      },
+      "required": [
+        "schema_version",
+        "artifact_id",
+        "run_id",
+        "evidence_refs",
+        "context",
+        "calls",
+        "allow_extra_read_only",
+        "labelled_by"
+      ],
+      "additionalProperties": false,
+      "$comment": "NHÓM — DC §7–9; J /agreement_protocol; PDF A.6. Typed sidecar, không đổi wire scorer."
+    },
+    "HumanAgreement": {
+      "type": "object",
+      "properties": {
+        "schema_version": {
+          "const": "1.0.0"
+        },
+        "artifact_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "run_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "evidence_refs": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/AssetRef"
+          }
+        },
+        "pairs": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "context": {
+                "$ref": "#/$defs/Context"
+              },
+              "criterion_id": {
+                "enum": [
+                  "J01_opening_continuity",
+                  "J02_no_fabrication",
+                  "J03_conflict_handling",
+                  "J04_identity_check",
+                  "J05_escalation_quality",
+                  "J06_tone_vietnamese",
+                  "J07_closing_summary",
+                  "J08_over_confirmation",
+                  "J09_pii_handling",
+                  "J10_honest_ai",
+                  "J11_budget_transparency",
+                  "J12_out_of_stock"
+                ]
+              },
+              "judge": {
+                "enum": [
+                  "PASS",
+                  "FAIL"
+                ]
+              },
+              "human": {
+                "enum": [
+                  "PASS",
+                  "FAIL"
+                ]
+              },
+              "judge_record": {
+                "$ref": "#/$defs/AssetRef"
+              }
+            },
+            "required": [
+              "context",
+              "criterion_id",
+              "judge",
+              "human",
+              "judge_record"
+            ],
+            "additionalProperties": false
+          }
+        },
+        "sampling_seed": {
+          "type": "integer"
+        },
+        "sampling_frame": {
+          "$ref": "#/$defs/AssetRef"
+        }
+      },
+      "required": [
+        "schema_version",
+        "artifact_id",
+        "run_id",
+        "evidence_refs",
+        "pairs",
+        "sampling_seed",
+        "sampling_frame"
+      ],
+      "additionalProperties": false,
+      "$comment": "NHÓM — DC §7–9; J /agreement_protocol; PDF A.6. Typed sidecar, không đổi wire scorer."
+    }
+  },
+  "not": {}
+}

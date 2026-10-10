@@ -1,0 +1,1933 @@
+{
+  "notice": "FIXTURE ONLY. Shapes are valid, not real Agent performance. Only fixtures/* are a linked M1 chain.",
+  "valid": {
+    "AssetRef": {
+      "schema": "contracts.schema.json#/$defs/AssetRef",
+      "data": {
+        "path": "sources/btc/eval/llm_judge_rubric.json",
+        "sha256": "33f3e6913e7668854443139727dc254016fc46451a2b594965cad8a852e9d235",
+        "pointer": ""
+      }
+    },
+    "Context": {
+      "schema": "contracts.schema.json#/$defs/Context",
+      "data": {
+        "run_id": "FIXTURE-R0",
+        "config": "full",
+        "scenario_id": "FIXTURE-M1",
+        "call": "call_1",
+        "turn": 1
+      }
+    },
+    "Status": {
+      "schema": "contracts.schema.json#/$defs/Status",
+      "data": {
+        "verdict": "PASS",
+        "completeness": "COMPLETE",
+        "reason_codes": []
+      }
+    },
+    "Suite": {
+      "schema": "contracts.schema.json#/$defs/Suite",
+      "data": {
+        "id": "fixed_turn",
+        "applicable": false,
+        "reason": "fixture"
+      }
+    },
+    "SuccessIf": {
+      "schema": "contracts.schema.json#/$defs/SuccessIf",
+      "data": {}
+    },
+    "ScenarioCall": {
+      "schema": "contracts.schema.json#/$defs/ScenarioCall",
+      "data": {
+        "customer_turns": [
+          "Câu mẫu."
+        ]
+      }
+    },
+    "Scenario": {
+      "schema": "contracts.schema.json#/$defs/Scenario",
+      "data": {
+        "scenario_id": "FIXTURE-M1",
+        "level": "M1",
+        "persona": "fixture_only",
+        "hard_case": null,
+        "customer_phone": "0900000000",
+        "customer_name": "Khách mẫu",
+        "honorific": "chị",
+        "notes": "FIXTURE minh họa; không phải kết quả Agent",
+        "calls": {
+          "call_1": {
+            "call_date": "2026-10-15",
+            "customer_turns": [
+              "Chị cần máy cho phòng 25 m2."
+            ],
+            "facts_established": {
+              "room_area_m2": 25
+            },
+            "success_if": {
+              "must_not_call_tools": [
+                "order.create"
+              ]
+            }
+          },
+          "call_2": {
+            "days_later": 2,
+            "customer_turns": [
+              "Chị gọi lại nhé."
+            ],
+            "must_carry_over": [
+              "room_area_m2"
+            ],
+            "must_not_ask": [
+              "room_area_m2"
+            ],
+            "ground_truth_facts": {
+              "room_area_m2": 25
+            },
+            "success_if": {
+              "must_not_call_tools": [
+                "order.create"
+              ]
+            }
+          }
+        }
+      }
+    },
+    "PlannedCall": {
+      "schema": "contracts.schema.json#/$defs/PlannedCall",
+      "data": {
+        "config": "full",
+        "scenario_id": "fixture",
+        "call": "call_1",
+        "expected_turns": 1,
+        "memory_required": false
+      }
+    },
+    "Manifest": {
+      "schema": "contracts.schema.json#/$defs/Manifest",
+      "data": {
+        "schema_version": "1.0.0",
+        "artifact_id": "FIXTURE-Manifest",
+        "run_id": "FIXTURE-R0",
+        "level": "M1",
+        "fixture": true,
+        "purpose": "development",
+        "split": "development",
+        "created_at": "2026-10-15T09:00:00+07:00",
+        "round": 0,
+        "reference_date": "2026-10-15",
+        "timezone": "Asia/Ho_Chi_Minh",
+        "sources": [
+          {
+            "path": "sources/btc/schemas/trace_log.schema.json",
+            "sha256": "312c5d1dad7ac79b51af637ca746a6de94f218d317202cf1448706b384688db3",
+            "pointer": ""
+          }
+        ],
+        "scenarios": [
+          {
+            "path": "fixtures/scenario.json",
+            "sha256": "bcd7ad24d316eb109acd9ce865ddf3289471901558b215164d32443abcae7c25",
+            "pointer": ""
+          }
+        ],
+        "grading_contracts": [
+          {
+            "path": "fixtures/grading.json",
+            "sha256": "62f2a28986c65710716307c31c58fa70146b70f4ef25de5b7182a2062b92370e",
+            "pointer": ""
+          }
+        ],
+        "suites": [
+          {
+            "id": "fixed_turn",
+            "applicable": true,
+            "reason": "Fixture conformance, not official run"
+          }
+        ],
+        "planned_calls": [
+          {
+            "config": "full",
+            "scenario_id": "FIXTURE-M1",
+            "call": "call_1",
+            "expected_turns": 1,
+            "memory_required": false
+          },
+          {
+            "config": "full",
+            "scenario_id": "FIXTURE-M1",
+            "call": "call_2",
+            "expected_turns": 1,
+            "memory_required": true
+          },
+          {
+            "config": "baseline_no_memory",
+            "scenario_id": "FIXTURE-M1",
+            "call": "call_1",
+            "expected_turns": 1,
+            "memory_required": false
+          },
+          {
+            "config": "baseline_no_memory",
+            "scenario_id": "FIXTURE-M1",
+            "call": "call_2",
+            "expected_turns": 1,
+            "memory_required": false
+          }
+        ],
+        "asr_ids": [],
+        "rag_ids": [],
+        "simulator_seeds": [],
+        "configuration": {
+          "model": "fixture-no-model",
+          "parameters": {
+            "temperature": 0
+          },
+          "prompt": {
+            "path": "sources/btc/policy/playbook-telesale.md",
+            "sha256": "ca74b496676a1bf88c7d0caf36cfaada69c9f9003045c98055426f259a0fae0d",
+            "pointer": ""
+          },
+          "tools": {
+            "path": "sources/btc/schemas/tools.schema.json",
+            "sha256": "4cc8935e3e7f1a37b43eab0d68d85e8383037e52423e9f7cc022da916c97d4e0",
+            "pointer": ""
+          },
+          "kb": {
+            "path": "sources/btc/policy/faq.md",
+            "sha256": "1c9874be840123bf19c30f87d29ab0ededdfd1b1a50c6d7417d1acadea4f1f60",
+            "pointer": ""
+          },
+          "hardware": "fixture",
+          "extractor_version": "fixture-v1",
+          "judge_version": null
+        },
+        "timeouts_ms": {
+          "agent": 60000,
+          "tool": 30000,
+          "after_call": 60000,
+          "judge": 60000
+        },
+        "retry": {
+          "agent": 0,
+          "tool": 0,
+          "judge_format": 1
+        },
+        "state_namespaces": {
+          "full": "fixture/full",
+          "baseline_no_memory": "fixture/baseline"
+        },
+        "warmup_count": 3,
+        "candidate_hash": "0000000000000000000000000000000000000000000000000000000000000000",
+        "dispute_ids": []
+      }
+    },
+    "ToolRequest": {
+      "schema": "contracts.schema.json#/$defs/ToolRequest",
+      "data": {
+        "name": "inventory.check",
+        "args": {
+          "sku": "FIXTURE-SKU",
+          "on": "2026-10-15"
+        }
+      }
+    },
+    "ToolArgs": {
+      "schema": "contracts.schema.json#/$defs/ToolArgs",
+      "data": {
+        "name": "order.create",
+        "args": {
+          "customer_phone": "0900000000",
+          "sku": "FIXTURE-SKU",
+          "qty": 1,
+          "price_vnd": 1000000,
+          "payment": "COD"
+        }
+      }
+    },
+    "ToolEvent": {
+      "schema": "contracts.schema.json#/$defs/ToolEvent",
+      "data": {
+        "schema_version": "1.0.0",
+        "artifact_id": "FIXTURE-ToolEvent",
+        "run_id": "FIXTURE-R0",
+        "context": {
+          "run_id": "FIXTURE-R0",
+          "config": "full",
+          "scenario_id": "FIXTURE-M1",
+          "call": "call_1",
+          "turn": 1
+        },
+        "evidence_refs": [
+          {
+            "path": "sources/btc/eval/llm_judge_rubric.json",
+            "sha256": "33f3e6913e7668854443139727dc254016fc46451a2b594965cad8a852e9d235",
+            "pointer": ""
+          }
+        ],
+        "event_id": "EVENT-1",
+        "request": {
+          "name": "inventory.check",
+          "args": {
+            "sku": "FIXTURE-SKU",
+            "on": "2026-10-15"
+          }
+        },
+        "on": "2026-10-15",
+        "started_at": "2026-10-15T09:00:00+07:00",
+        "finished_at": "2026-10-15T09:00:00.100+07:00",
+        "outcome": "success",
+        "result": {
+          "in_stock": true
+        },
+        "error": null,
+        "side_effect": false,
+        "attempt": 1
+      }
+    },
+    "BriefEvidence": {
+      "schema": "contracts.schema.json#/$defs/BriefEvidence",
+      "data": {
+        "schema_version": "1.0.0",
+        "artifact_id": "FIXTURE-BriefEvidence",
+        "run_id": "FIXTURE-R0",
+        "context": {
+          "run_id": "FIXTURE-R0",
+          "config": "full",
+          "scenario_id": "FIXTURE-M1",
+          "call": "call_1",
+          "turn": 1
+        },
+        "evidence_refs": [
+          {
+            "path": "sources/btc/eval/llm_judge_rubric.json",
+            "sha256": "33f3e6913e7668854443139727dc254016fc46451a2b594965cad8a852e9d235",
+            "pointer": ""
+          }
+        ],
+        "kind": "call_brief",
+        "object_ref": {
+          "path": "sources/btc/eval/llm_judge_rubric.json",
+          "sha256": "33f3e6913e7668854443139727dc254016fc46451a2b594965cad8a852e9d235",
+          "pointer": ""
+        },
+        "identified_at": "2026-10-15T09:00:00+07:00",
+        "ready_at": "2026-10-15T09:00:00+07:00",
+        "producer": "agent",
+        "validation": {
+          "verdict": "PASS",
+          "completeness": "COMPLETE",
+          "reason_codes": []
+        }
+      }
+    },
+    "MemoryFact": {
+      "schema": "contracts.schema.json#/$defs/MemoryFact",
+      "data": {
+        "key": "fixture",
+        "value": null,
+        "customer_id": "fixture",
+        "source": {
+          "path": "sources/btc/eval/llm_judge_rubric.json",
+          "sha256": "33f3e6913e7668854443139727dc254016fc46451a2b594965cad8a852e9d235",
+          "pointer": ""
+        },
+        "valid_from": "2026-10-15T09:00:00+07:00",
+        "valid_until": "2026-10-15T09:00:00+07:00",
+        "state": "active"
+      }
+    },
+    "MemoryEvidence": {
+      "schema": "contracts.schema.json#/$defs/MemoryEvidence",
+      "data": {
+        "schema_version": "1.0.0",
+        "artifact_id": "FIXTURE-MemoryEvidence",
+        "run_id": "FIXTURE-R0",
+        "context": {
+          "run_id": "FIXTURE-R0",
+          "config": "full",
+          "scenario_id": "FIXTURE-M1",
+          "call": "call_1",
+          "turn": 1
+        },
+        "evidence_refs": [
+          {
+            "path": "sources/btc/eval/llm_judge_rubric.json",
+            "sha256": "33f3e6913e7668854443139727dc254016fc46451a2b594965cad8a852e9d235",
+            "pointer": ""
+          }
+        ],
+        "customer_id": "0900000000",
+        "namespace": "fixture/full",
+        "phase": "after_call",
+        "facts": [
+          {
+            "key": "room_area_m2",
+            "value": 25,
+            "customer_id": "0900000000",
+            "source": {
+              "path": "sources/btc/eval/llm_judge_rubric.json",
+              "sha256": "33f3e6913e7668854443139727dc254016fc46451a2b594965cad8a852e9d235",
+              "pointer": ""
+            },
+            "valid_from": "2026-10-15T09:00:00+07:00",
+            "valid_until": null,
+            "state": "active"
+          }
+        ],
+        "writes": []
+      }
+    },
+    "Extraction": {
+      "schema": "contracts.schema.json#/$defs/Extraction",
+      "data": {
+        "schema_version": "1.0.0",
+        "artifact_id": "FIXTURE-Extraction",
+        "run_id": "FIXTURE-R0",
+        "context": {
+          "run_id": "FIXTURE-R0",
+          "config": "full",
+          "scenario_id": "FIXTURE-M1",
+          "call": "call_1",
+          "turn": 1
+        },
+        "evidence_refs": [
+          {
+            "path": "sources/btc/eval/llm_judge_rubric.json",
+            "sha256": "33f3e6913e7668854443139727dc254016fc46451a2b594965cad8a852e9d235",
+            "pointer": ""
+          }
+        ],
+        "extractor_version": "fixture-v1",
+        "items": [
+          {
+            "kind": "fact_usage",
+            "slot_or_field": "room_area_m2",
+            "value": 25,
+            "question_type": null,
+            "speaker": "agent",
+            "source": {
+              "path": "sources/btc/eval/llm_judge_rubric.json",
+              "sha256": "33f3e6913e7668854443139727dc254016fc46451a2b594965cad8a852e9d235",
+              "pointer": ""
+            },
+            "quote": "phòng 25 m2",
+            "start": 0,
+            "end": 11,
+            "purpose": "Minh họa cấu trúc; không dùng làm evidence thật"
+          }
+        ]
+      }
+    },
+    "Segments": {
+      "schema": "contracts.schema.json#/$defs/Segments",
+      "data": {
+        "segments": [
+          {
+            "start": 0,
+            "end": 1,
+            "speaker": "C"
+          }
+        ]
+      }
+    },
+    "AsrHypotheses": {
+      "schema": "contracts.schema.json#/$defs/AsrHypotheses",
+      "data": {
+        "FIXTURE-AUDIO-1": {
+          "text": "một triệu đồng",
+          "entities": {
+            "price_vnd": 1000000
+          },
+          "turns": [
+            {
+              "start": 0,
+              "end": 1,
+              "speaker": "C"
+            }
+          ]
+        }
+      }
+    },
+    "RagResults": {
+      "schema": "contracts.schema.json#/$defs/RagResults",
+      "data": {
+        "FIXTURE-Q1": {
+          "retrieved_chunk_ids": [
+            "FIXTURE-CHUNK#1"
+          ],
+          "abstained": false,
+          "answer": "Ví dụ minh họa."
+        }
+      }
+    },
+    "SimulatorLog": {
+      "schema": "contracts.schema.json#/$defs/SimulatorLog",
+      "data": {
+        "scenario_id": "FIXTURE-M2",
+        "call": "call_1",
+        "persona_id": "FIXTURE-PERSONA",
+        "seed": 0,
+        "patience_trace": [
+          3,
+          2
+        ],
+        "outcome": "hen_goi_lai",
+        "n_turns": 2,
+        "ended_by": "customer"
+      }
+    },
+    "JudgeVerdict": {
+      "schema": "contracts.schema.json#/$defs/JudgeVerdict",
+      "data": {
+        "criterion_id": "J02_no_fabrication",
+        "verdict": "PASS",
+        "evidence": "Ví dụ chấm giả lập, không phải nhãn thực."
+      }
+    },
+    "JudgeRecord": {
+      "schema": "contracts.schema.json#/$defs/JudgeRecord",
+      "data": {
+        "schema_version": "1.0.0",
+        "artifact_id": "FIXTURE-JudgeRecord",
+        "run_id": "FIXTURE-R0",
+        "context": {
+          "run_id": "FIXTURE-R0",
+          "config": "full",
+          "scenario_id": "FIXTURE-M1",
+          "call": "call_1",
+          "turn": 1
+        },
+        "evidence_refs": [
+          {
+            "path": "sources/btc/eval/llm_judge_rubric.json",
+            "sha256": "33f3e6913e7668854443139727dc254016fc46451a2b594965cad8a852e9d235",
+            "pointer": ""
+          }
+        ],
+        "criterion_id": "J02_no_fabrication",
+        "applicable": true,
+        "selection_reason": "all",
+        "attempts": 1,
+        "status": {
+          "verdict": "PASS",
+          "completeness": "COMPLETE",
+          "reason_codes": []
+        },
+        "verdict": {
+          "criterion_id": "J02_no_fabrication",
+          "verdict": "PASS",
+          "evidence": "Ví dụ chấm giả lập, không phải nhãn thực."
+        },
+        "error": null,
+        "judge_version": "fixture-judge-v1",
+        "human_verdict": null
+      }
+    },
+    "Coverage": {
+      "schema": "contracts.schema.json#/$defs/Coverage",
+      "data": {
+        "schema_version": "1.0.0",
+        "artifact_id": "FIXTURE-Coverage",
+        "run_id": "FIXTURE-R0",
+        "scope": "fixture",
+        "expected_ids": [
+          "one"
+        ],
+        "observed_ids": [
+          "one"
+        ],
+        "missing_ids": [],
+        "duplicate_ids": [],
+        "unknown_ids": [],
+        "status": {
+          "verdict": "PASS",
+          "completeness": "COMPLETE",
+          "reason_codes": []
+        }
+      }
+    },
+    "Issue": {
+      "schema": "contracts.schema.json#/$defs/Issue",
+      "data": {
+        "code": "fixture",
+        "artifact": {
+          "path": "sources/btc/eval/llm_judge_rubric.json",
+          "sha256": "33f3e6913e7668854443139727dc254016fc46451a2b594965cad8a852e9d235",
+          "pointer": ""
+        },
+        "json_pointer": "fixture",
+        "message": "fixture",
+        "classification": "schema_error"
+      }
+    },
+    "ValidationReport": {
+      "schema": "contracts.schema.json#/$defs/ValidationReport",
+      "data": {
+        "schema_version": "1.0.0",
+        "artifact_id": "FIXTURE-ValidationReport",
+        "run_id": "FIXTURE-R0",
+        "status": {
+          "verdict": "PASS",
+          "completeness": "COMPLETE",
+          "reason_codes": []
+        },
+        "issues": [],
+        "coverage_refs": []
+      }
+    },
+    "Metric": {
+      "schema": "contracts.schema.json#/$defs/Metric",
+      "data": {
+        "metric_id": "fixture_ratio",
+        "formula_id": "ratio.v1",
+        "unit": "ratio",
+        "value": 1,
+        "numerator": 1,
+        "denominator": 1,
+        "cohort_ids": [
+          "one"
+        ],
+        "evidence_refs": [
+          {
+            "path": "sources/btc/eval/llm_judge_rubric.json",
+            "sha256": "33f3e6913e7668854443139727dc254016fc46451a2b594965cad8a852e9d235",
+            "pointer": ""
+          }
+        ],
+        "status": "MEASURED",
+        "reason": null,
+        "currency": null
+      }
+    },
+    "SupplementalReport": {
+      "schema": "contracts.schema.json#/$defs/SupplementalReport",
+      "data": {
+        "schema_version": "1.0.0",
+        "artifact_id": "FIXTURE-SupplementalReport",
+        "run_id": "FIXTURE-R0",
+        "status": {
+          "verdict": "PASS",
+          "completeness": "COMPLETE",
+          "reason_codes": []
+        },
+        "metrics": [],
+        "checks": [],
+        "coverage_refs": [],
+        "official_report": {
+          "path": "sources/btc/eval/llm_judge_rubric.json",
+          "sha256": "33f3e6913e7668854443139727dc254016fc46451a2b594965cad8a852e9d235",
+          "pointer": ""
+        }
+      }
+    },
+    "ErrorRecord": {
+      "schema": "contracts.schema.json#/$defs/ErrorRecord",
+      "data": {
+        "schema_version": "1.0.0",
+        "artifact_id": "FIXTURE-ErrorRecord",
+        "run_id": "FIXTURE-R0",
+        "context": {
+          "run_id": "FIXTURE-R0",
+          "config": "full",
+          "scenario_id": "FIXTURE-M1",
+          "call": "call_1",
+          "turn": 1
+        },
+        "evidence_refs": [
+          {
+            "path": "sources/btc/eval/llm_judge_rubric.json",
+            "sha256": "33f3e6913e7668854443139727dc254016fc46451a2b594965cad8a852e9d235",
+            "pointer": ""
+          }
+        ],
+        "error_id": "fixture",
+        "category": "agent",
+        "expected": null,
+        "observed": null,
+        "reason": "fixture",
+        "source_split": "frozen",
+        "learning_permission": "allow",
+        "root_cause": "fixture",
+        "remediation": "fixture",
+        "retest_ref": {
+          "path": "sources/btc/eval/llm_judge_rubric.json",
+          "sha256": "33f3e6913e7668854443139727dc254016fc46451a2b594965cad8a852e9d235",
+          "pointer": ""
+        }
+      }
+    },
+    "Comparison": {
+      "schema": "contracts.schema.json#/$defs/Comparison",
+      "data": {
+        "schema_version": "1.0.0",
+        "artifact_id": "FIXTURE-Comparison",
+        "run_id": "FIXTURE-R0",
+        "dataset_hash": "0000000000000000000000000000000000000000000000000000000000000000",
+        "baseline_report": {
+          "path": "sources/btc/eval/llm_judge_rubric.json",
+          "sha256": "33f3e6913e7668854443139727dc254016fc46451a2b594965cad8a852e9d235",
+          "pointer": ""
+        },
+        "system_report": {
+          "path": "sources/btc/eval/llm_judge_rubric.json",
+          "sha256": "33f3e6913e7668854443139727dc254016fc46451a2b594965cad8a852e9d235",
+          "pointer": ""
+        },
+        "rows": []
+      }
+    },
+    "ReleaseDecision": {
+      "schema": "contracts.schema.json#/$defs/ReleaseDecision",
+      "data": {
+        "schema_version": "1.0.0",
+        "artifact_id": "FIXTURE-ReleaseDecision",
+        "run_id": "FIXTURE-R0",
+        "level": "M1",
+        "decision": "hold",
+        "candidate_hash": "0000000000000000000000000000000000000000000000000000000000000000",
+        "approved_hash": "0000000000000000000000000000000000000000000000000000000000000000",
+        "evaluated_hash": "0000000000000000000000000000000000000000000000000000000000000000",
+        "approval_ref": {
+          "path": "sources/btc/eval/llm_judge_rubric.json",
+          "sha256": "33f3e6913e7668854443139727dc254016fc46451a2b594965cad8a852e9d235",
+          "pointer": ""
+        },
+        "suite_results": [],
+        "dispute_ids": [],
+        "reason_codes": [
+          "FIXTURE_ONLY"
+        ],
+        "previous_version": null
+      }
+    },
+    "OfficialReport": {
+      "schema": "contracts.schema.json#/$defs/OfficialReport",
+      "data": {
+        "n_scenarios": 7,
+        "system": {
+          "repeat_question_rate": {
+            "value": 0,
+            "redundant": 0,
+            "total_questions": 6,
+            "examples": []
+          },
+          "context_carryover_rate": {
+            "value": 100,
+            "used": 21,
+            "required": 21
+          },
+          "task_success_rate": {
+            "value": 85.7,
+            "passed": 6,
+            "total": 7,
+            "hard_cases": {
+              "value": 66.7,
+              "total": 3
+            },
+            "failures": [
+              {
+                "scenario": "SAMPLE-07",
+                "call": "call_1",
+                "hard_case": "phien_ban_chinh_sach_cu",
+                "reasons": [
+                  "thiếu must_say_any: 7 ngày | bảy ngày"
+                ]
+              }
+            ]
+          },
+          "hallucination_rate": {
+            "value": 0,
+            "wrong": 0,
+            "total_claims": 22,
+            "price_promo_only": {
+              "value": 0,
+              "wrong": 0,
+              "total": 13
+            },
+            "examples": []
+          },
+          "avg_turns_per_call": 3,
+          "calls_to_close": {
+            "value": 2,
+            "n_closed": 5,
+            "n_scenarios": 7
+          },
+          "guardrail_violations": {
+            "total": 0,
+            "by_type": {
+              "pii_in_memory_or_text": 0,
+              "over_escalation": 0,
+              "claims_human": 0,
+              "forbidden_pattern": 0
+            },
+            "examples": []
+          },
+          "memory_checks": [],
+          "latency": {
+            "n_turns": 39,
+            "warning": "Cần ≥ 100 lượt để p95 có ý nghĩa",
+            "ttft": {
+              "n": 39,
+              "p50_ms": 1614,
+              "p95_ms": 2484
+            },
+            "total": {
+              "n": 39,
+              "p50_ms": 4380,
+              "p95_ms": 6991
+            },
+            "ttfa": null,
+            "call_brief": {
+              "n": 6,
+              "p50_ms": 2576,
+              "p95_ms": 3956
+            }
+          }
+        },
+        "baseline": {
+          "repeat_question_rate": {
+            "value": 100,
+            "redundant": 14,
+            "total_questions": 14,
+            "examples": [
+              {
+                "scenario": "SAMPLE-01",
+                "call": "call_2",
+                "turn": 1,
+                "slot": "room_area_m2",
+                "type": "open",
+                "text": "hỏi room_area_m2"
+              },
+              {
+                "scenario": "SAMPLE-01",
+                "call": "call_2",
+                "turn": 1,
+                "slot": "budget_vnd",
+                "type": "open",
+                "text": "hỏi budget_vnd"
+              },
+              {
+                "scenario": "SAMPLE-01",
+                "call": "call_2",
+                "turn": 1,
+                "slot": "has_children",
+                "type": "open",
+                "text": "hỏi has_children"
+              },
+              {
+                "scenario": "SAMPLE-02",
+                "call": "call_2",
+                "turn": 1,
+                "slot": "product_advised",
+                "type": "open",
+                "text": "hỏi product_advised"
+              },
+              {
+                "scenario": "SAMPLE-02",
+                "call": "call_2",
+                "turn": 1,
+                "slot": "competitor_price_vnd",
+                "type": "open",
+                "text": "hỏi competitor_price_vnd"
+              },
+              {
+                "scenario": "SAMPLE-03",
+                "call": "call_2",
+                "turn": 1,
+                "slot": "product_advised",
+                "type": "open",
+                "text": "hỏi product_advised"
+              },
+              {
+                "scenario": "SAMPLE-03",
+                "call": "call_2",
+                "turn": 1,
+                "slot": "order_id",
+                "type": "open",
+                "text": "hỏi order_id"
+              },
+              {
+                "scenario": "SAMPLE-03",
+                "call": "call_2",
+                "turn": 1,
+                "slot": "color",
+                "type": "open",
+                "text": "hỏi color"
+              },
+              {
+                "scenario": "SAMPLE-04",
+                "call": "call_2",
+                "turn": 1,
+                "slot": "product_advised",
+                "type": "open",
+                "text": "hỏi product_advised"
+              },
+              {
+                "scenario": "SAMPLE-04",
+                "call": "call_2",
+                "turn": 1,
+                "slot": "price_quoted_vnd",
+                "type": "open",
+                "text": "hỏi price_quoted_vnd"
+              },
+              {
+                "scenario": "SAMPLE-05",
+                "call": "call_2",
+                "turn": 1,
+                "slot": "product_advised",
+                "type": "open",
+                "text": "hỏi product_advised"
+              },
+              {
+                "scenario": "SAMPLE-06",
+                "call": "call_2",
+                "turn": 1,
+                "slot": "room_area_m2",
+                "type": "open",
+                "text": "hỏi room_area_m2"
+              },
+              {
+                "scenario": "SAMPLE-06",
+                "call": "call_2",
+                "turn": 1,
+                "slot": "budget_vnd",
+                "type": "open",
+                "text": "hỏi budget_vnd"
+              },
+              {
+                "scenario": "SAMPLE-06",
+                "call": "call_2",
+                "turn": 1,
+                "slot": "product_advised",
+                "type": "open",
+                "text": "hỏi product_advised"
+              }
+            ]
+          },
+          "context_carryover_rate": {
+            "value": 4.8,
+            "used": 1,
+            "required": 21
+          },
+          "task_success_rate": {
+            "value": 85.7,
+            "passed": 6,
+            "total": 7,
+            "hard_cases": {
+              "value": 66.7,
+              "total": 3
+            },
+            "failures": [
+              {
+                "scenario": "SAMPLE-07",
+                "call": "call_1",
+                "hard_case": "phien_ban_chinh_sach_cu",
+                "reasons": [
+                  "thiếu must_say_any: 7 ngày | bảy ngày"
+                ]
+              }
+            ]
+          },
+          "hallucination_rate": {
+            "value": 38.5,
+            "wrong": 5,
+            "total_claims": 13,
+            "price_promo_only": {
+              "value": 38.5,
+              "wrong": 5,
+              "total": 13
+            },
+            "examples": [
+              {
+                "scenario": "SAMPLE-01",
+                "call": "call_2",
+                "turn": 2,
+                "field": "price_vnd",
+                "claimed": 4700000,
+                "truth": 5200000
+              },
+              {
+                "scenario": "SAMPLE-05",
+                "call": "call_2",
+                "turn": 2,
+                "field": "promo_AP-SEP_active",
+                "claimed": true,
+                "truth": false
+              },
+              {
+                "scenario": "SAMPLE-06",
+                "call": "call_1",
+                "turn": 2,
+                "field": "price_vnd",
+                "claimed": 4990000,
+                "truth": 5490000
+              },
+              {
+                "scenario": "SAMPLE-06",
+                "call": "call_2",
+                "turn": 2,
+                "field": "price_vnd",
+                "claimed": 4990000,
+                "truth": 5490000
+              },
+              {
+                "scenario": "SAMPLE-06",
+                "call": "call_2",
+                "turn": 2,
+                "field": "promo_NAM-SHIP0_active",
+                "claimed": false,
+                "truth": true
+              }
+            ]
+          },
+          "avg_turns_per_call": 3,
+          "calls_to_close": {
+            "value": 2,
+            "n_closed": 5,
+            "n_scenarios": 7
+          },
+          "guardrail_violations": {
+            "total": 0,
+            "by_type": {
+              "pii_in_memory_or_text": 0,
+              "over_escalation": 0,
+              "claims_human": 0,
+              "forbidden_pattern": 0
+            },
+            "examples": []
+          },
+          "memory_checks": [],
+          "latency": {
+            "n_turns": 39,
+            "warning": "Cần ≥ 100 lượt để p95 có ý nghĩa",
+            "ttft": {
+              "n": 39,
+              "p50_ms": 1583,
+              "p95_ms": 2407
+            },
+            "total": {
+              "n": 39,
+              "p50_ms": 4878,
+              "p95_ms": 6614
+            },
+            "ttfa": null,
+            "call_brief": null
+          }
+        },
+        "comparison": {
+          "rqr_relative_reduction_pct": 100,
+          "meets_rqr_threshold_40pct": true,
+          "meets_tsr_70pct": true,
+          "meets_hr_price_5pct": true
+        }
+      }
+    },
+    "TimingEvidence": {
+      "schema": "contracts.schema.json#/$defs/TimingEvidence",
+      "data": {
+        "schema_version": "1.0.0",
+        "artifact_id": "FIXTURE-TimingEvidence",
+        "run_id": "FIXTURE-R0",
+        "context": {
+          "run_id": "FIXTURE-R0",
+          "config": "full",
+          "scenario_id": "FIXTURE-M1",
+          "call": "call_1",
+          "turn": 1
+        },
+        "request_at": "2026-10-15T09:00:00+07:00",
+        "first_token_at": "2026-10-15T09:00:00.500+07:00",
+        "first_audio_at": null,
+        "completed_at": "2026-10-15T09:00:01+07:00",
+        "brief_identified_at": null,
+        "brief_ready_at": null,
+        "warmup": true,
+        "audio_seconds": 0,
+        "asr_wall_ms": 0,
+        "input_tokens": 10,
+        "output_tokens": 10,
+        "cost": 0,
+        "currency": "VND",
+        "concurrency_group": null,
+        "evidence_refs": [
+          {
+            "path": "sources/btc/eval/llm_judge_rubric.json",
+            "sha256": "33f3e6913e7668854443139727dc254016fc46451a2b594965cad8a852e9d235",
+            "pointer": ""
+          }
+        ]
+      }
+    },
+    "SuiteEvidence": {
+      "schema": "contracts.schema.json#/$defs/SuiteEvidence",
+      "data": {
+        "schema_version": "1.0.0",
+        "artifact_id": "FIXTURE-SuiteEvidence",
+        "run_id": "FIXTURE-R0",
+        "suite": {
+          "id": "fixed_turn",
+          "applicable": false,
+          "reason": "fixture"
+        },
+        "inputs": [],
+        "outputs": [],
+        "status": {
+          "verdict": "PASS",
+          "completeness": "COMPLETE",
+          "reason_codes": []
+        },
+        "coverage": {
+          "path": "sources/btc/eval/llm_judge_rubric.json",
+          "sha256": "33f3e6913e7668854443139727dc254016fc46451a2b594965cad8a852e9d235",
+          "pointer": ""
+        },
+        "model_version": "fixture",
+        "normalization_version": "fixture",
+        "elapsed_ms": 0
+      }
+    },
+    "SourceDecision": {
+      "schema": "contracts.schema.json#/$defs/SourceDecision",
+      "data": {
+        "schema_version": "1.0.0",
+        "artifact_id": "FIXTURE-SourceDecision",
+        "run_id": "FIXTURE-R0",
+        "source_split": "frozen",
+        "origin": {
+          "path": "sources/btc/eval/llm_judge_rubric.json",
+          "sha256": "33f3e6913e7668854443139727dc254016fc46451a2b594965cad8a852e9d235",
+          "pointer": ""
+        },
+        "permission": "deny",
+        "purpose": "report_only",
+        "policy_version": "source-gate.v1",
+        "reason": "Không học tự động từ Frozen"
+      }
+    },
+    "Candidate": {
+      "schema": "contracts.schema.json#/$defs/Candidate",
+      "data": {
+        "schema_version": "1.0.0",
+        "artifact_id": "FIXTURE-Candidate",
+        "run_id": "FIXTURE-R0",
+        "version": "fixture",
+        "parent_version": "fixture",
+        "content": {
+          "path": "sources/btc/eval/llm_judge_rubric.json",
+          "sha256": "33f3e6913e7668854443139727dc254016fc46451a2b594965cad8a852e9d235",
+          "pointer": ""
+        },
+        "source_decisions": [],
+        "growth_cases": [],
+        "kind": "faq"
+      }
+    },
+    "ApprovalRecord": {
+      "schema": "contracts.schema.json#/$defs/ApprovalRecord",
+      "data": {
+        "schema_version": "1.0.0",
+        "artifact_id": "FIXTURE-ApprovalRecord",
+        "run_id": "FIXTURE-R0",
+        "candidate_hash": "0000000000000000000000000000000000000000000000000000000000000000",
+        "decision": "approve",
+        "reviewer": "fixture",
+        "reviewed_at": "2026-10-15T09:00:00+07:00",
+        "policy_sources": [],
+        "reason": "fixture"
+      }
+    },
+    "SourceLock": {
+      "schema": "contracts.schema.json#/$defs/SourceLock",
+      "data": {
+        "schema_version": "1.0.0",
+        "files": {
+          "sources/btc/DIEU-CHINH-DE.md": "00841d77cc03b2f30bb2f09bdbb73ced2da76e107b84454013fe5ef27b91bea8",
+          "sources/btc/README.md": "6e158d4d40632b28967d6b3664ca63d783124a432848e167f2ca10f867f994d8",
+          "sources/btc/GIAI-DAP-MENTOR.md": "d4337b44320d03ea6560f86c0300fc153a19f7b3a9a81dcc30cc8b46145e916a",
+          "sources/btc/catalog/products.csv": "ddf348c2dd76b5ffbb79146e8534b9b477ab091647dab06e59b69d385c891ecb",
+          "sources/btc/catalog/inventory_timeline.json": "aabaf8dc955ab93782a49d6a70526df0db77bd27fd8fbf8f37dbf6181474cf80",
+          "sources/btc/catalog/crm_seed.json": "468c0401ad406c2d1186314eac4afaaf17afe34f1fa654676bc13f818faf18e3",
+          "sources/btc/catalog/promotions.json": "e22d9bfa68e3b1d153324fad2de872061d632e518ff4f305a8c8d88e1c5c25be",
+          "sources/btc/catalog/products.json": "ba8f86b5bf80d6570d2cc84649c66d12a2a7050c4622458af942b41232adc2cd",
+          "sources/btc/rag/qa_labeled.json": "37f5b617bedb7377dd3398d12c8da45b347ed697909b159d13fb1482237dc323",
+          "sources/btc/schemas/trace_log.schema.json": "312c5d1dad7ac79b51af637ca746a6de94f218d317202cf1448706b384688db3",
+          "sources/btc/schemas/handoff_brief.schema.json": "d57546f15e5d18feece2d270794c99dea9dd74fdab02354cd49b3faabe7f6b8b",
+          "sources/btc/schemas/tools.schema.json": "4cc8935e3e7f1a37b43eab0d68d85e8383037e52423e9f7cc022da916c97d4e0",
+          "sources/btc/schemas/scenario_format.md": "91acb65f8164cd234e3d2dfc00865d92a9af15830e6841e0e77eb76db7ec4927",
+          "sources/btc/schemas/call_brief.schema.json": "cccd3f0399bd2b8ad643d8fb7a32bf8db5fc002671cf2acefc7593a99dfde660",
+          "sources/btc/simulator/customer_simulator_spec.md": "835ade7d5821bd4256d55d469b1eadb0a67b3f0546a1fda6d304f4d4921b81e9",
+          "sources/btc/simulator/personas.json": "c86b9d7c9988a12a7be8f01870de3c8c02813ea612df21c3b97bc12c37868857",
+          "sources/btc/asr/ground_truth.json": "b84f0bcf977a8e502e8299be202de65f54d0aaed4d85959f76b3a2a837288154",
+          "sources/btc/eval/llm_judge_rubric.json": "33f3e6913e7668854443139727dc254016fc46451a2b594965cad8a852e9d235",
+          "sources/btc/eval/mock_tools.py": "e1264037edeec98fb090b851061cc6e653ca8279752f899278e7ab057286f926",
+          "sources/btc/eval/make_example_trace.py": "f14a7a1678e45e62492c7a75670874c2804147670f003046f43c2b6780125794",
+          "sources/btc/eval/huong-dan-do-latency.md": "f3e0512a99ddc36f4123b993ad510102216fb120d06a9fbf86e7e37e5305c30a",
+          "sources/btc/eval/reference_eval.py": "818fc4900a18f9b92c1abb3adebcca997774dfc3da23083c9030bad2f7229ddc",
+          "sources/btc/policy/noi-quy-nhan-vien.md": "f34778d413098ac3609edb8ac968f0b990c7029f0347b2e73ff4c308a773c7f0",
+          "sources/btc/policy/dieu-khoan-khuyen-mai.md": "46f8b1e14cfd2194d0f5187f6fd8139b2f2290367102191fa87bd1427464c009",
+          "sources/btc/policy/chinh-sach-bao-hanh.md": "34c0cf79e532a45a3a3bc7fe97853d5b65e5f5e9d48606c13c2e2a27393e7d11",
+          "sources/btc/policy/changelog.md": "106960c3777e8995c5dcd84ea8e62c9593c2d74e2eff335e393f436ab71d0dfa",
+          "sources/btc/policy/chinh-sach-van-chuyen-thanh-toan.md": "6583a76c6c652a04584016cb5741b795b4f66a1ac6579a76e89cacc2b0af75c6",
+          "sources/btc/policy/quy-trinh-cod-hoan-hang.md": "554ebae8cc04c64821e8d4270c3b0b7a77da63e7610a8b1ad8a09f58807562e0",
+          "sources/btc/policy/chinh-sach-doi-tra-v2026-06-HET-HIEU-LUC.md": "47f5e80b5d62ad3ca6e2168e46c301347af234241f2771a9096b85cf34e23b85",
+          "sources/btc/policy/chinh-sach-doi-tra.md": "8177c41dd7f026623d5fe106cdb0d0cdaa85b1d7cbe2652d6efa07fafcdc2493",
+          "sources/btc/policy/faq.md": "1c9874be840123bf19c30f87d29ab0ededdfd1b1a50c6d7417d1acadea4f1f60",
+          "sources/btc/policy/spec-gia-dung.md": "cbeabdb642d817add4063a9b753b422ed710aebaca31a4a012163144aee3dd4b",
+          "sources/btc/policy/thong-bao-lich-nghi.md": "332bbaeb4f235e064d5d2fc5c14b7560e27aaf19127c8740487b49bc13da57e9",
+          "sources/btc/policy/playbook-telesale.md": "ca74b496676a1bf88c7d0caf36cfaada69c9f9003045c98055426f259a0fae0d",
+          "sources/btc/policy/ghi-chu-nhap-hang-NOI-BO.md": "de5bc8c3dcf00d35a25c284ae2c0249a3e58fd3c785caa14efe39b69035b90a4",
+          "sources/btc/policy/spec-thoi-trang-me-be.md": "2737addfdf13628f15649976e2e57b0b5e8ef2d7788b1bc3a4c9c5fd45ebb514",
+          "sources/btc/test_set/public_sample/SAMPLE-01.json": "1602366d3e268ee918ceee3cbb6ef61bb0fecbc45d524257b8d311bd7a90ad90",
+          "sources/btc/test_set/public_sample/SAMPLE-06.json": "b526a378610483d69baf31459ea9608d4b761843e63d817ef1eec47256e2da23",
+          "sources/btc/test_set/public_sample/SAMPLE-07.json": "cc2d28aec00ca598122a963f317a39fae5206264fa9d514432e91a79a7a01ec0",
+          "sources/btc/test_set/public_sample/SAMPLE-04.json": "35aa3a66c553797fa74ead57f67905caf1690b14d27d8448d8b9d2e81a6661ef",
+          "sources/btc/test_set/public_sample/SAMPLE-05.json": "900a664f527fa989c8e5e9e1015997e24a5ebeb418f0b44d993010175574e6fa",
+          "sources/btc/test_set/public_sample/SAMPLE-02.json": "119007d2e4812720f02ffbd5e0805303bc62ccffb5a11be87e88abcf1673767c",
+          "sources/btc/test_set/public_sample/SAMPLE-03.json": "b010471d5c0c9c034b8ef3151e0639ac5b411a08ca8987692b9492616d25260a",
+          "sources/btc/eval/runs/full.jsonl": "bb9335fa04c20f915df5197fbce770a0d19a691a56a0a1636bfdb08a08eb6e1e",
+          "sources/btc/eval/runs/baseline.jsonl": "6de93fab9e73219e19fd07616baac3cf01dd9dcb94ef2c9cbcd697992105ce08",
+          "sources/btc/eval/runs/report_example.json": "ad11edb53950dec7cc3791aca1a6e99635e0d5502e14621e032ad5968539f48a"
+        }
+      }
+    },
+    "CallBrief": {
+      "schema": "sources/btc/schemas/call_brief.schema.json",
+      "data": {
+        "customer_phone": "0900000000",
+        "is_returning": true,
+        "n_previous_sessions": 1,
+        "last_session": null,
+        "products_advised": [],
+        "open_blockers": [],
+        "must_not_ask": [
+          "room_area_m2"
+        ],
+        "suggested_opening": "Chị gọi lại về máy lọc đúng không ạ?",
+        "generated_at": "2026-10-17T09:00:00+07:00",
+        "latency_ms": 100
+      }
+    },
+    "HandoffBrief": {
+      "schema": "sources/btc/schemas/handoff_brief.schema.json",
+      "data": {
+        "customer_phone": "0900000000",
+        "customer_name": "Khách mẫu",
+        "escalation_reason": "cau_hoi_y_te",
+        "conversation_summary": "Khách đề nghị được chuyển sang nhân viên tư vấn.",
+        "product_advised": null,
+        "price_quoted_vnd": null,
+        "open_questions": [
+          "Cần gặp người tư vấn"
+        ],
+        "next_action": "Nhân viên tiếp nhận yêu cầu",
+        "generated_at": "2026-10-15T09:00:00+07:00"
+      }
+    },
+    "Trace": {
+      "schema": "sources/btc/schemas/trace_log.schema.json",
+      "data": {
+        "run_id": "FIXTURE-R0",
+        "config": "full",
+        "scenario_id": "FIXTURE-M1",
+        "call": "call_1",
+        "turn": 1,
+        "customer_text": "Chị cần máy cho phòng 25 m2.",
+        "agent_text": "Dạ em ghi nhận phòng 25 m2.",
+        "questions": [],
+        "facts_used": [],
+        "claims": [],
+        "tool_calls": [],
+        "latency": {
+          "ttft_ms": 500,
+          "total_ms": 1000
+        },
+        "memory_writes": [
+          {
+            "key": "room_area_m2",
+            "value": 25,
+            "op": "set",
+            "source": "call_1#turn1",
+            "customer_id": "0900000000"
+          }
+        ]
+      }
+    },
+    "GradingContract": {
+      "schema": "grading-contract.schema.json",
+      "data": {
+        "schema_version": "1.0.0",
+        "scenario": {
+          "path": "fixtures/scenario.json",
+          "sha256": "bcd7ad24d316eb109acd9ce865ddf3289471901558b215164d32443abcae7c25",
+          "pointer": ""
+        },
+        "scenario_id": "FIXTURE-M1",
+        "level": "M1",
+        "required_evidence": [
+          "trace",
+          "memory"
+        ],
+        "calls": [
+          {
+            "call": "call_1",
+            "official_success_if": {
+              "path": "fixtures/scenario.json",
+              "sha256": "bcd7ad24d316eb109acd9ce865ddf3289471901558b215164d32443abcae7c25",
+              "pointer": "/calls/call_1/success_if"
+            },
+            "mode": "assertion_only",
+            "suites": [
+              {
+                "id": "fixed_turn",
+                "applicable": true,
+                "reason": "M1 fixture"
+              }
+            ],
+            "checks": [],
+            "criteria": [],
+            "aggregation": "assertion",
+            "ground_truth": [
+              {
+                "path": "fixtures/scenario.json",
+                "sha256": "bcd7ad24d316eb109acd9ce865ddf3289471901558b215164d32443abcae7c25",
+                "pointer": ""
+              }
+            ],
+            "dispute_ids": []
+          },
+          {
+            "call": "call_2",
+            "official_success_if": {
+              "path": "fixtures/scenario.json",
+              "sha256": "bcd7ad24d316eb109acd9ce865ddf3289471901558b215164d32443abcae7c25",
+              "pointer": "/calls/call_2/success_if"
+            },
+            "mode": "assertion_only",
+            "suites": [
+              {
+                "id": "fixed_turn",
+                "applicable": true,
+                "reason": "M1 fixture"
+              }
+            ],
+            "checks": [],
+            "criteria": [],
+            "aggregation": "assertion",
+            "ground_truth": [
+              {
+                "path": "fixtures/scenario.json",
+                "sha256": "bcd7ad24d316eb109acd9ce865ddf3289471901558b215164d32443abcae7c25",
+                "pointer": ""
+              }
+            ],
+            "dispute_ids": []
+          }
+        ]
+      }
+    },
+    "RagChunkMap": {
+      "schema": "contracts.schema.json#/$defs/RagChunkMap",
+      "data": {
+        "schema_version": "1.0.0",
+        "artifact_id": "FIXTURE-chunks",
+        "run_id": "FIXTURE-R0",
+        "evidence_refs": [
+          {
+            "path": "sources/btc/eval/llm_judge_rubric.json",
+            "sha256": "33f3e6913e7668854443139727dc254016fc46451a2b594965cad8a852e9d235",
+            "pointer": ""
+          }
+        ],
+        "chunks": [
+          {
+            "chunk_id": "FIXTURE-CHUNK",
+            "document": {
+              "path": "sources/btc/eval/llm_judge_rubric.json",
+              "sha256": "33f3e6913e7668854443139727dc254016fc46451a2b594965cad8a852e9d235",
+              "pointer": ""
+            },
+            "policy_version": "fixture",
+            "valid_from": "2026-10-15",
+            "valid_until": null,
+            "restricted": false
+          }
+        ]
+      }
+    },
+    "AsrEvidence": {
+      "schema": "contracts.schema.json#/$defs/AsrEvidence",
+      "data": {
+        "schema_version": "1.0.0",
+        "artifact_id": "FIXTURE-asr-meta",
+        "run_id": "FIXTURE-R0",
+        "evidence_refs": [
+          {
+            "path": "sources/btc/eval/llm_judge_rubric.json",
+            "sha256": "33f3e6913e7668854443139727dc254016fc46451a2b594965cad8a852e9d235",
+            "pointer": ""
+          }
+        ],
+        "dialogue_id": "FIXTURE-AUDIO-1",
+        "audio": {
+          "path": "sources/btc/eval/llm_judge_rubric.json",
+          "sha256": "33f3e6913e7668854443139727dc254016fc46451a2b594965cad8a852e9d235",
+          "pointer": ""
+        },
+        "ground_truth": {
+          "path": "sources/btc/eval/llm_judge_rubric.json",
+          "sha256": "33f3e6913e7668854443139727dc254016fc46451a2b594965cad8a852e9d235",
+          "pointer": ""
+        },
+        "hypothesis": {
+          "path": "sources/btc/eval/llm_judge_rubric.json",
+          "sha256": "33f3e6913e7668854443139727dc254016fc46451a2b594965cad8a852e9d235",
+          "pointer": ""
+        },
+        "raw_text": "Một triệu đồng.",
+        "normalized_text": "một triệu đồng",
+        "itn_entities": {
+          "price_vnd": 1000000
+        },
+        "normalization_version": "btc-wer.v1",
+        "itn_version": "fixture-only"
+      }
+    },
+    "ExpectedToolCalls": {
+      "schema": "contracts.schema.json#/$defs/ExpectedToolCalls",
+      "data": {
+        "schema_version": "1.0.0",
+        "artifact_id": "FIXTURE-tool-labels",
+        "run_id": "FIXTURE-R0",
+        "evidence_refs": [
+          {
+            "path": "sources/btc/eval/llm_judge_rubric.json",
+            "sha256": "33f3e6913e7668854443139727dc254016fc46451a2b594965cad8a852e9d235",
+            "pointer": ""
+          }
+        ],
+        "context": {
+          "run_id": "FIXTURE-R0",
+          "config": "full",
+          "scenario_id": "FIXTURE-M1",
+          "call": "call_1",
+          "turn": 1
+        },
+        "calls": [
+          {
+            "name": "inventory.check",
+            "args_match": {
+              "sku": "FIXTURE-SKU"
+            },
+            "required": true
+          }
+        ],
+        "allow_extra_read_only": true,
+        "labelled_by": "fixture-author"
+      }
+    },
+    "HumanAgreement": {
+      "schema": "contracts.schema.json#/$defs/HumanAgreement",
+      "data": {
+        "schema_version": "1.0.0",
+        "artifact_id": "FIXTURE-human",
+        "run_id": "FIXTURE-R0",
+        "evidence_refs": [
+          {
+            "path": "sources/btc/eval/llm_judge_rubric.json",
+            "sha256": "33f3e6913e7668854443139727dc254016fc46451a2b594965cad8a852e9d235",
+            "pointer": ""
+          }
+        ],
+        "pairs": [
+          {
+            "context": {
+              "run_id": "FIXTURE-R0",
+              "config": "full",
+              "scenario_id": "FIXTURE-M1",
+              "call": "call_1",
+              "turn": 1
+            },
+            "criterion_id": "J02_no_fabrication",
+            "judge": "PASS",
+            "human": "PASS",
+            "judge_record": {
+              "path": "sources/btc/eval/llm_judge_rubric.json",
+              "sha256": "33f3e6913e7668854443139727dc254016fc46451a2b594965cad8a852e9d235",
+              "pointer": ""
+            }
+          }
+        ],
+        "sampling_seed": 0,
+        "sampling_frame": {
+          "path": "sources/btc/eval/llm_judge_rubric.json",
+          "sha256": "33f3e6913e7668854443139727dc254016fc46451a2b594965cad8a852e9d235",
+          "pointer": ""
+        }
+      }
+    },
+    "JudgeOnlyGrading": {
+      "schema": "grading-contract.schema.json",
+      "data": {
+        "schema_version": "1.0.0",
+        "scenario": {
+          "path": "fixtures/scenario.json",
+          "sha256": "bcd7ad24d316eb109acd9ce865ddf3289471901558b215164d32443abcae7c25",
+          "pointer": ""
+        },
+        "scenario_id": "FIXTURE-M1",
+        "level": "M2",
+        "required_evidence": [
+          "trace",
+          "memory"
+        ],
+        "calls": [
+          {
+            "call": "call_1",
+            "official_success_if": {
+              "path": "fixtures/scenario.json",
+              "sha256": "bcd7ad24d316eb109acd9ce865ddf3289471901558b215164d32443abcae7c25",
+              "pointer": "/calls/call_1/success_if"
+            },
+            "mode": "judge_only",
+            "suites": [
+              {
+                "id": "fixed_turn",
+                "applicable": true,
+                "reason": "M1 fixture"
+              }
+            ],
+            "checks": [],
+            "criteria": [
+              {
+                "criterion_id": "J02_no_fabrication",
+                "condition": "all",
+                "rubric_ref": {
+                  "path": "sources/btc/eval/llm_judge_rubric.json",
+                  "sha256": "33f3e6913e7668854443139727dc254016fc46451a2b594965cad8a852e9d235",
+                  "pointer": "/criteria/1"
+                }
+              }
+            ],
+            "aggregation": "judge",
+            "ground_truth": [
+              {
+                "path": "fixtures/scenario.json",
+                "sha256": "bcd7ad24d316eb109acd9ce865ddf3289471901558b215164d32443abcae7c25",
+                "pointer": ""
+              }
+            ],
+            "dispute_ids": []
+          },
+          {
+            "call": "call_2",
+            "official_success_if": {
+              "path": "fixtures/scenario.json",
+              "sha256": "bcd7ad24d316eb109acd9ce865ddf3289471901558b215164d32443abcae7c25",
+              "pointer": "/calls/call_2/success_if"
+            },
+            "mode": "judge_only",
+            "suites": [
+              {
+                "id": "fixed_turn",
+                "applicable": true,
+                "reason": "M1 fixture"
+              }
+            ],
+            "checks": [],
+            "criteria": [
+              {
+                "criterion_id": "J02_no_fabrication",
+                "condition": "all",
+                "rubric_ref": {
+                  "path": "sources/btc/eval/llm_judge_rubric.json",
+                  "sha256": "33f3e6913e7668854443139727dc254016fc46451a2b594965cad8a852e9d235",
+                  "pointer": "/criteria/1"
+                }
+              }
+            ],
+            "aggregation": "judge",
+            "ground_truth": [
+              {
+                "path": "fixtures/scenario.json",
+                "sha256": "bcd7ad24d316eb109acd9ce865ddf3289471901558b215164d32443abcae7c25",
+                "pointer": ""
+              }
+            ],
+            "dispute_ids": []
+          }
+        ]
+      }
+    },
+    "HybridGrading": {
+      "schema": "grading-contract.schema.json",
+      "data": {
+        "schema_version": "1.0.0",
+        "scenario": {
+          "path": "fixtures/scenario.json",
+          "sha256": "bcd7ad24d316eb109acd9ce865ddf3289471901558b215164d32443abcae7c25",
+          "pointer": ""
+        },
+        "scenario_id": "FIXTURE-M1",
+        "level": "M2",
+        "required_evidence": [
+          "trace",
+          "memory"
+        ],
+        "calls": [
+          {
+            "call": "call_1",
+            "official_success_if": {
+              "path": "fixtures/scenario.json",
+              "sha256": "bcd7ad24d316eb109acd9ce865ddf3289471901558b215164d32443abcae7c25",
+              "pointer": "/calls/call_1/success_if"
+            },
+            "mode": "hybrid",
+            "suites": [
+              {
+                "id": "fixed_turn",
+                "applicable": true,
+                "reason": "M1 fixture"
+              }
+            ],
+            "checks": [
+              {
+                "check_id": "HB_SCHEMA",
+                "kind": "schema",
+                "params": {
+                  "schema_ref": "sources/btc/schemas/handoff_brief.schema.json",
+                  "artifact_role": "handoff_brief"
+                },
+                "required_evidence": [
+                  "handoff_brief"
+                ]
+              }
+            ],
+            "criteria": [
+              {
+                "criterion_id": "J02_no_fabrication",
+                "condition": "all",
+                "rubric_ref": {
+                  "path": "sources/btc/eval/llm_judge_rubric.json",
+                  "sha256": "33f3e6913e7668854443139727dc254016fc46451a2b594965cad8a852e9d235",
+                  "pointer": "/criteria/1"
+                }
+              }
+            ],
+            "aggregation": "AND",
+            "ground_truth": [
+              {
+                "path": "fixtures/scenario.json",
+                "sha256": "bcd7ad24d316eb109acd9ce865ddf3289471901558b215164d32443abcae7c25",
+                "pointer": ""
+              }
+            ],
+            "dispute_ids": []
+          },
+          {
+            "call": "call_2",
+            "official_success_if": {
+              "path": "fixtures/scenario.json",
+              "sha256": "bcd7ad24d316eb109acd9ce865ddf3289471901558b215164d32443abcae7c25",
+              "pointer": "/calls/call_2/success_if"
+            },
+            "mode": "hybrid",
+            "suites": [
+              {
+                "id": "fixed_turn",
+                "applicable": true,
+                "reason": "M1 fixture"
+              }
+            ],
+            "checks": [
+              {
+                "check_id": "HB_SCHEMA",
+                "kind": "schema",
+                "params": {
+                  "schema_ref": "sources/btc/schemas/handoff_brief.schema.json",
+                  "artifact_role": "handoff_brief"
+                },
+                "required_evidence": [
+                  "handoff_brief"
+                ]
+              }
+            ],
+            "criteria": [
+              {
+                "criterion_id": "J02_no_fabrication",
+                "condition": "all",
+                "rubric_ref": {
+                  "path": "sources/btc/eval/llm_judge_rubric.json",
+                  "sha256": "33f3e6913e7668854443139727dc254016fc46451a2b594965cad8a852e9d235",
+                  "pointer": "/criteria/1"
+                }
+              }
+            ],
+            "aggregation": "AND",
+            "ground_truth": [
+              {
+                "path": "fixtures/scenario.json",
+                "sha256": "bcd7ad24d316eb109acd9ce865ddf3289471901558b215164d32443abcae7c25",
+                "pointer": ""
+              }
+            ],
+            "dispute_ids": []
+          }
+        ]
+      }
+    },
+    "JudgeError": {
+      "schema": "contracts.schema.json#/$defs/JudgeRecord",
+      "data": {
+        "schema_version": "1.0.0",
+        "artifact_id": "FIXTURE-judge-error",
+        "run_id": "FIXTURE-R0",
+        "context": {
+          "run_id": "FIXTURE-R0",
+          "config": "full",
+          "scenario_id": "FIXTURE-M1",
+          "call": "call_1",
+          "turn": 1
+        },
+        "evidence_refs": [
+          {
+            "path": "sources/btc/eval/llm_judge_rubric.json",
+            "sha256": "33f3e6913e7668854443139727dc254016fc46451a2b594965cad8a852e9d235",
+            "pointer": ""
+          }
+        ],
+        "criterion_id": "J02_no_fabrication",
+        "applicable": true,
+        "selection_reason": "all",
+        "attempts": 2,
+        "status": {
+          "verdict": "UNDETERMINED",
+          "completeness": "INCOMPLETE",
+          "reason_codes": [
+            "JUDGE_INVALID_OUTPUT"
+          ]
+        },
+        "verdict": null,
+        "error": "FIXTURE-ERROR-1",
+        "judge_version": "fixture-judge-v1",
+        "human_verdict": null
+      }
+    },
+    "TimingMissingUsage": {
+      "schema": "contracts.schema.json#/$defs/TimingEvidence",
+      "data": {
+        "schema_version": "1.1.0",
+        "artifact_id": "FIXTURE-TimingMissingUsage",
+        "run_id": "FIXTURE-R0",
+        "context": {
+          "run_id": "FIXTURE-R0",
+          "config": "full",
+          "scenario_id": "FIXTURE-M1",
+          "call": "call_1",
+          "turn": 1
+        },
+        "request_at": "2026-10-15T09:00:00+07:00",
+        "first_token_at": "2026-10-15T09:00:00.500+07:00",
+        "first_audio_at": null,
+        "completed_at": "2026-10-15T09:00:01+07:00",
+        "brief_identified_at": null,
+        "brief_ready_at": null,
+        "warmup": true,
+        "audio_seconds": null,
+        "asr_wall_ms": null,
+        "input_tokens": null,
+        "output_tokens": null,
+        "cost": null,
+        "currency": null,
+        "concurrency_group": null,
+        "evidence_refs": [
+          {
+            "path": "sources/btc/eval/llm_judge_rubric.json",
+            "sha256": "33f3e6913e7668854443139727dc254016fc46451a2b594965cad8a852e9d235",
+            "pointer": ""
+          }
+        ]
+      }
+    },
+    "ToolAccuracyMetric": {
+      "schema": "contracts.schema.json#/$defs/Metric",
+      "data": {
+        "metric_id": "tool_accuracy",
+        "formula_id": "tool-accuracy.v2",
+        "unit": "percent",
+        "value": 40,
+        "numerator": 2,
+        "denominator": 5,
+        "cohort_ids": [
+          "invocation-correct",
+          "invocation-correct-result-error",
+          "unauthorized-extra",
+          "missing-required-1",
+          "missing-required-2"
+        ],
+        "evidence_refs": [
+          {
+            "path": "sources/btc/eval/llm_judge_rubric.json",
+            "sha256": "33f3e6913e7668854443139727dc254016fc46451a2b594965cad8a852e9d235",
+            "pointer": ""
+          }
+        ],
+        "status": "MEASURED",
+        "reason": null,
+        "currency": null
+      }
+    },
+    "CostCompletedMetric": {
+      "schema": "contracts.schema.json#/$defs/Metric",
+      "data": {
+        "metric_id": "cost_per_completed_call",
+        "formula_id": "cost-call.v1",
+        "unit": "currency_per_call",
+        "value": 7,
+        "numerator": 14,
+        "denominator": 2,
+        "cohort_ids": [
+          "completed-cost-5",
+          "completed-cost-7",
+          "failed-cost-2"
+        ],
+        "evidence_refs": [
+          {
+            "path": "sources/btc/eval/llm_judge_rubric.json",
+            "sha256": "33f3e6913e7668854443139727dc254016fc46451a2b594965cad8a852e9d235",
+            "pointer": ""
+          }
+        ],
+        "status": "MEASURED",
+        "reason": null,
+        "currency": "USD"
+      }
+    }
+  },
+  "invalid": [
+    {
+      "name": "trace_required",
+      "base": "Trace",
+      "op": "remove",
+      "path": "/run_id"
+    },
+    {
+      "name": "trace_type",
+      "base": "Trace",
+      "op": "replace",
+      "path": "/turn",
+      "value": "1"
+    },
+    {
+      "name": "trace_enum",
+      "base": "Trace",
+      "op": "replace",
+      "path": "/config",
+      "value": "memory_on"
+    },
+    {
+      "name": "trace_nullability",
+      "base": "Trace",
+      "op": "replace",
+      "path": "/latency/total_ms",
+      "value": null
+    },
+    {
+      "name": "handoff_required_nullable",
+      "base": "HandoffBrief",
+      "op": "remove",
+      "path": "/customer_name"
+    },
+    {
+      "name": "timestamp_invalid",
+      "base": "TimingEvidence",
+      "op": "replace",
+      "path": "/request_at",
+      "value": "2026-99-99T25:00:00Z"
+    },
+    {
+      "name": "timestamp_without_zone",
+      "base": "TimingEvidence",
+      "op": "replace",
+      "path": "/request_at",
+      "value": "2026-10-15T09:00:00"
+    },
+    {
+      "name": "judge_raw_error",
+      "base": "JudgeVerdict",
+      "op": "replace",
+      "path": "/verdict",
+      "value": "ERROR"
+    },
+    {
+      "name": "unknown_criterion",
+      "base": "JudgeVerdict",
+      "op": "replace",
+      "path": "/criterion_id",
+      "value": "J99"
+    },
+    {
+      "name": "manifest_unbounded_retry",
+      "base": "Manifest",
+      "op": "replace",
+      "path": "/retry/tool",
+      "value": 1
+    },
+    {
+      "name": "rag_missing_answer",
+      "base": "RagResults",
+      "op": "remove",
+      "path": "/FIXTURE-Q1/answer"
+    },
+    {
+      "name": "asr_missing_text",
+      "base": "AsrHypotheses",
+      "op": "remove",
+      "path": "/FIXTURE-AUDIO-1/text"
+    },
+    {
+      "name": "simulator_over_12",
+      "base": "SimulatorLog",
+      "op": "replace",
+      "path": "/n_turns",
+      "value": 13
+    },
+    {
+      "name": "hybrid_no_criteria",
+      "base": "GradingContract",
+      "op": "replace",
+      "path": "/calls/0/mode",
+      "value": "hybrid"
+    },
+    {
+      "name": "timing_v1_null_measurements",
+      "base": "TimingMissingUsage",
+      "op": "replace",
+      "path": "/schema_version",
+      "value": "1.0.0"
+    },
+    {
+      "name": "timing_negative_usage",
+      "base": "TimingMissingUsage",
+      "op": "replace",
+      "path": "/input_tokens",
+      "value": -1
+    },
+    {
+      "name": "timing_negative_cost",
+      "base": "TimingMissingUsage",
+      "op": "replace",
+      "path": "/cost",
+      "value": -1
+    },
+    {
+      "name": "timing_missing_required_nullable",
+      "base": "TimingMissingUsage",
+      "op": "remove",
+      "path": "/cost"
+    }
+  ]
+}

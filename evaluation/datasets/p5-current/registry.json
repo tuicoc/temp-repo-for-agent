@@ -1,0 +1,281 @@
+{
+  "schema_version": "p5-inputs-v1",
+  "dataset_id": "P5-TEMP-20261004",
+  "version": "current-v1",
+  "provisional": true,
+  "review_policy": {
+    "required": false,
+    "reason": "USER_SKIP_REVIEW_TEMPORARY_DATASET_2026_10_04"
+  },
+  "scenario_sets": [
+    {
+      "id": "current-fixture",
+      "split": "development",
+      "asset_root": "evaluation-contracts",
+      "manifest": {
+        "path": "evaluation-contracts/fixtures/p3-manifest.json",
+        "sha256": "41c9120e8e6ee74511f39f57d440f84f7f38b35cc760028f6b2bcce2d35b2cd7",
+        "pointer": ""
+      }
+    }
+  ],
+  "asr": {
+    "runner": {
+      "path": "asr/run_eval.py",
+      "sha256": "15d86d7c356f430da80a221fba778a2c0ed60f41fb32afe861a21791a2cd2829",
+      "pointer": ""
+    },
+    "processor": {
+      "path": "asr/text_processing.py",
+      "sha256": "b14804067d1da6e0e053f5db8cc3e537d6e3b75524e0b40502aa4f294f5b2aaf",
+      "pointer": ""
+    },
+    "model_source": {
+      "path": "asr/model_source_medium.json",
+      "sha256": "c73bf2fbdd2642cc670d69f11c6578ccdc7ff1c15c45bc87919cb952a76282f5",
+      "pointer": ""
+    },
+    "model_dir": "asr/models/faster-whisper-medium",
+    "dev_lock": {
+      "path": "asr/runs/dev-whisper-medium-v1/config.lock.json",
+      "sha256": "1b3a7ab99967a333525677428616a06cb8513f4f1020dff84b2d05da8adfc48b",
+      "pointer": ""
+    },
+    "cohorts": {
+      "dev": {
+        "ground_truth": {
+          "path": "asr/datasets/synthetic-v1/dev/ground_truth.json",
+          "sha256": "38b480e1cb90e2cb1082d3e5150687c70445808568001bfa2a28b2b65be87d14",
+          "pointer": ""
+        },
+        "audio": [
+          {
+            "id": "TEAM-DEV-01",
+            "asset": {
+              "path": "asr/datasets/synthetic-v1/dev/audio/TEAM-DEV-01.wav",
+              "sha256": "33a796957f072310d1e5aa9db7a5632a2cea083eb0930e22770df11f3273e110",
+              "pointer": ""
+            }
+          },
+          {
+            "id": "TEAM-DEV-02",
+            "asset": {
+              "path": "asr/datasets/synthetic-v1/dev/audio/TEAM-DEV-02.wav",
+              "sha256": "6ec201ec456e85e1d070c02928ef67d915edbf9b41a3f184020549db754ff526",
+              "pointer": ""
+            }
+          },
+          {
+            "id": "TEAM-DEV-03",
+            "asset": {
+              "path": "asr/datasets/synthetic-v1/dev/audio/TEAM-DEV-03.wav",
+              "sha256": "b4d1c393333f1d639098c0f88d728b8645cd0dfd05ec428318d70d2936af7d5c",
+              "pointer": ""
+            }
+          },
+          {
+            "id": "TEAM-DEV-04",
+            "asset": {
+              "path": "asr/datasets/synthetic-v1/dev/audio/TEAM-DEV-04.wav",
+              "sha256": "fa7ae32b388c4271cbc7f49dea877c4371ab1fe6f2ae58edb6d1f0ff97ca10a0",
+              "pointer": ""
+            }
+          }
+        ],
+        "replay": {
+          "manifest": {
+            "path": "asr/runs/dev-whisper-medium-v1/manifest.json",
+            "sha256": "56e4d846adb38d601ad606f63893e8753ae7d4d1939967d847bd687e949ecae7",
+            "pointer": ""
+          },
+          "hypotheses": {
+            "path": "asr/runs/dev-whisper-medium-v1/hypotheses.json",
+            "sha256": "bf734b434e5f95e8c5012c58428435865a54979d8aacebb43a2b029fc6afb4d0",
+            "pointer": ""
+          }
+        }
+      },
+      "eval": {
+        "ground_truth": {
+          "path": "asr/datasets/synthetic-v1/eval/ground_truth.json",
+          "sha256": "3002196bd2a729f47b12ebb65f1b6ddb58ec3750f216bc8a46e08bdceab0776a",
+          "pointer": ""
+        },
+        "audio": [
+          {
+            "id": "TEAM-EVAL-05",
+            "asset": {
+              "path": "asr/datasets/synthetic-v1/eval/audio/TEAM-EVAL-05.wav",
+              "sha256": "fdce9aaf20a068890ef54d651e2da861178190d7c0ade3b28ebc1aa10e3b7d05",
+              "pointer": ""
+            }
+          },
+          {
+            "id": "TEAM-EVAL-06",
+            "asset": {
+              "path": "asr/datasets/synthetic-v1/eval/audio/TEAM-EVAL-06.wav",
+              "sha256": "c32545fd2e4e94e56d7e43d9664bac5e98611a3a94e4f943d35f0cb9f2d415b2",
+              "pointer": ""
+            }
+          },
+          {
+            "id": "TEAM-EVAL-07",
+            "asset": {
+              "path": "asr/datasets/synthetic-v1/eval/audio/TEAM-EVAL-07.wav",
+              "sha256": "c53b4cac992eb1bfd6a8e3070ff58b5af334946e19c1b02a1a157f2a4a2ef5eb",
+              "pointer": ""
+            }
+          },
+          {
+            "id": "TEAM-EVAL-08",
+            "asset": {
+              "path": "asr/datasets/synthetic-v1/eval/audio/TEAM-EVAL-08.wav",
+              "sha256": "c1bed4d3071c71626947aa2cef7af23f857f43a3f59c291429e78aac4e8ab751",
+              "pointer": ""
+            }
+          },
+          {
+            "id": "TEAM-EVAL-09",
+            "asset": {
+              "path": "asr/datasets/synthetic-v1/eval/audio/TEAM-EVAL-09.wav",
+              "sha256": "098322231dc77043e61e2bf135e607fdbff644444b2ea71282d56968d3de7a33",
+              "pointer": ""
+            }
+          },
+          {
+            "id": "TEAM-EVAL-10",
+            "asset": {
+              "path": "asr/datasets/synthetic-v1/eval/audio/TEAM-EVAL-10.wav",
+              "sha256": "d201c41affa7ecd606f07095224cf26d368296fce762e5d33b4aae491e084014",
+              "pointer": ""
+            }
+          },
+          {
+            "id": "TEAM-EVAL-11",
+            "asset": {
+              "path": "asr/datasets/synthetic-v1/eval/audio/TEAM-EVAL-11.wav",
+              "sha256": "7a88fdb4742de6914a8c7ba7be31619ab29c338a0c9ac6f7a1958d2454d9a77b",
+              "pointer": ""
+            }
+          },
+          {
+            "id": "TEAM-EVAL-12",
+            "asset": {
+              "path": "asr/datasets/synthetic-v1/eval/audio/TEAM-EVAL-12.wav",
+              "sha256": "a936163b53b0727d155a3887d16ebd06807c8ff4b2e9d6a1bc58dddd93ed41c8",
+              "pointer": ""
+            }
+          },
+          {
+            "id": "TEAM-EVAL-13",
+            "asset": {
+              "path": "asr/datasets/synthetic-v1/eval/audio/TEAM-EVAL-13.wav",
+              "sha256": "7c7865c2445dc0356727e19a601c403291c7ee26a850623205d5a5958c55d342",
+              "pointer": ""
+            }
+          },
+          {
+            "id": "TEAM-EVAL-14",
+            "asset": {
+              "path": "asr/datasets/synthetic-v1/eval/audio/TEAM-EVAL-14.wav",
+              "sha256": "ed25e06de2349a315b0d0e457502b91632f7c56cef33658346157cffa9c7ab71",
+              "pointer": ""
+            }
+          },
+          {
+            "id": "TEAM-EVAL-15",
+            "asset": {
+              "path": "asr/datasets/synthetic-v1/eval/audio/TEAM-EVAL-15.wav",
+              "sha256": "aac00c10d1a18360ba04a7fa7dc1ee2bcc5ba0b7eb618d95a1aae86255a6a50e",
+              "pointer": ""
+            }
+          },
+          {
+            "id": "TEAM-EVAL-16",
+            "asset": {
+              "path": "asr/datasets/synthetic-v1/eval/audio/TEAM-EVAL-16.wav",
+              "sha256": "93d23986d64ad207686a11bf08a4d099858ddef5b39c282a1c4362cd102b6afc",
+              "pointer": ""
+            }
+          },
+          {
+            "id": "TEAM-EVAL-17",
+            "asset": {
+              "path": "asr/datasets/synthetic-v1/eval/audio/TEAM-EVAL-17.wav",
+              "sha256": "946e7f638718b7322067601fcdee1c08aaa87cd94e1f63c4bdee308734713f5b",
+              "pointer": ""
+            }
+          },
+          {
+            "id": "TEAM-EVAL-18",
+            "asset": {
+              "path": "asr/datasets/synthetic-v1/eval/audio/TEAM-EVAL-18.wav",
+              "sha256": "7adc795be756958a6ac82936c254b102100516b8764b729b6727865e8a62a149",
+              "pointer": ""
+            }
+          },
+          {
+            "id": "TEAM-EVAL-19",
+            "asset": {
+              "path": "asr/datasets/synthetic-v1/eval/audio/TEAM-EVAL-19.wav",
+              "sha256": "2131fbbd044d09b5196a3383d435342a9214278ddd5ffafe5dac751d1e30c7b7",
+              "pointer": ""
+            }
+          },
+          {
+            "id": "TEAM-EVAL-20",
+            "asset": {
+              "path": "asr/datasets/synthetic-v1/eval/audio/TEAM-EVAL-20.wav",
+              "sha256": "7c613589bdf79c8861c7aee9ad1d3ef39a1e04a65d027eda013c86fa09f3d240",
+              "pointer": ""
+            }
+          },
+          {
+            "id": "TEAM-EVAL-21",
+            "asset": {
+              "path": "asr/datasets/synthetic-v1/eval/audio/TEAM-EVAL-21.wav",
+              "sha256": "06987574b465815bc9e6ff23d5681557d38b09f4565b92602c40081708d46012",
+              "pointer": ""
+            }
+          },
+          {
+            "id": "TEAM-EVAL-22",
+            "asset": {
+              "path": "asr/datasets/synthetic-v1/eval/audio/TEAM-EVAL-22.wav",
+              "sha256": "aef412be52917b0b8cc86a415cbcb79cdc052c2994fba345c6ff5368d6aa568f",
+              "pointer": ""
+            }
+          },
+          {
+            "id": "TEAM-EVAL-23",
+            "asset": {
+              "path": "asr/datasets/synthetic-v1/eval/audio/TEAM-EVAL-23.wav",
+              "sha256": "390773d149f4535a7688d5f0fb4822c9f97887a15e16c84f143eaf6845dfab0c",
+              "pointer": ""
+            }
+          },
+          {
+            "id": "TEAM-EVAL-24",
+            "asset": {
+              "path": "asr/datasets/synthetic-v1/eval/audio/TEAM-EVAL-24.wav",
+              "sha256": "5468e2a47e747234fcab52da62fc8ebf57e6e1cc6e23bf08b52b852cb61958fd",
+              "pointer": ""
+            }
+          }
+        ],
+        "replay": {
+          "manifest": {
+            "path": "asr/runs/eval-whisper-medium-v1/manifest.json",
+            "sha256": "14bf9c071fc45df46896326b7b29fba5d9affa7a6efc6db631a1aef618d81ae2",
+            "pointer": ""
+          },
+          "hypotheses": {
+            "path": "asr/runs/eval-whisper-medium-v1/hypotheses.json",
+            "sha256": "a4ad11d58a35f89888add1ab5579e9874f9b91ca37d72ffd8c0335992de9dfa9",
+            "pointer": ""
+          }
+        }
+      }
+    }
+  }
+}

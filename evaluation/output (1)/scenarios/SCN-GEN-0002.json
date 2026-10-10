@@ -1,0 +1,218 @@
+{
+  "scenario_id": "SCN-GEN-0002",
+  "level": "M2",
+  "persona": "khach_da_mua_doi_size",
+  "hard_case": "shipping order GHN7781234; changes after dispatch are not allowed",
+  "customer_phone": "0965384535",
+  "customer_name": "Tâm",
+  "honorific": "chị",
+  "notes": "coverage_case=purchase_history_order_status; shipping order GHN7781234; changes after dispatch are not allowed",
+  "calls": {
+    "call_1": {
+      "customer_goal": "Tôi muốn mua máy hút sữa điện đôi Spectra S1.",
+      "customer_turns": [
+        "Chị muốn đặt hàng máy hút sữa điện đôi Spectra S1.",
+        "Chị đã xem qua và thấy sản phẩm này rất phù hợp."
+      ],
+      "facts_established": {
+        "order_id": null,
+        "order_status": null
+      },
+      "expected_outcome": "cap_nhat_don",
+      "success_if": {
+        "kind": "reply_matches_any",
+        "payload": {
+          "messages": [
+            "Tôi muốn biết tình trạng đơn hàng của mình",
+            "Đơn hàng của tôi đã được giao chưa?"
+          ]
+        }
+      },
+      "ground_truth_facts": {
+        "sku": "SKU-MB-PUMP1",
+        "list_price_vnd": 4290000,
+        "final_price_vnd": 4290000,
+        "applied_promos": [
+          {
+            "promo_code": "COD-0",
+            "type": "freecod",
+            "saving_vnd": 0,
+            "gift_sku": null,
+            "free_shipping": false,
+            "free_cod": true
+          },
+          {
+            "promo_code": "MOM-FREESHIP",
+            "type": "freeship",
+            "saving_vnd": 0,
+            "gift_sku": null,
+            "free_shipping": true,
+            "free_cod": false
+          }
+        ],
+        "rejected_promos_with_reason": [
+          {
+            "promo_code": "GIFT-FILTER",
+            "reason": "sku_or_category_not_covered"
+          },
+          {
+            "promo_code": "AIR-OCT",
+            "reason": "sku_or_category_not_covered"
+          },
+          {
+            "promo_code": "XM-COMBO",
+            "reason": "sku_or_category_not_covered"
+          },
+          {
+            "promo_code": "RUN-10",
+            "reason": "sku_or_category_not_covered"
+          },
+          {
+            "promo_code": "AIR-2ND-50",
+            "reason": "sku_or_category_not_covered"
+          },
+          {
+            "promo_code": "NAM-SHIP0",
+            "reason": "sku_or_category_not_covered"
+          },
+          {
+            "promo_code": "TRADE-IN-AP",
+            "reason": "sku_or_category_not_covered"
+          },
+          {
+            "promo_code": "AP-SEP",
+            "reason": "outside_promotion_period"
+          },
+          {
+            "promo_code": "RUN2-SALE",
+            "reason": "outside_promotion_period"
+          },
+          {
+            "promo_code": "PUMP-GIFT",
+            "reason": "outside_promotion_period"
+          },
+          {
+            "promo_code": "11-11",
+            "reason": "outside_promotion_period"
+          }
+        ],
+        "in_stock": true,
+        "stock_qty": 6,
+        "product_name": "Máy hút sữa điện đôi Spectra S1",
+        "category": "me-be",
+        "date": "2026-10-15",
+        "order_id": "OD301177",
+        "order_status": "shipping",
+        "tracking": "GHN7781234",
+        "order_date": "2026-10-03",
+        "customer_id": "C032",
+        "session_index": 1
+      }
+    },
+    "call_2": {
+      "customer_goal": "Chị muốn kiểm tra tình trạng đơn hàng của mình.",
+      "customer_turns": [
+        "Cho chị hỏi tình trạng đơn hàng OD301177 của chị.",
+        "Đơn hàng của chị đã được giao chưa?"
+      ],
+      "facts_established": {
+        "order_id": "OD301177",
+        "order_status": "shipping"
+      },
+      "expected_outcome": "cap_nhat_don",
+      "days_later": 1,
+      "must_carry_over": [
+        "order_id: OD301177",
+        "order_status: shipping",
+        "tracking: GHN7781234"
+      ],
+      "success_if": {
+        "kind": "reply_matches_any",
+        "payload": {
+          "messages": [
+            "Tôi muốn biết tình trạng đơn hàng của mình",
+            "Đơn hàng của tôi đã được giao chưa?"
+          ]
+        }
+      },
+      "ground_truth_facts": {
+        "sku": "SKU-MB-PUMP1",
+        "list_price_vnd": 4290000,
+        "final_price_vnd": 4290000,
+        "applied_promos": [
+          {
+            "promo_code": "COD-0",
+            "type": "freecod",
+            "saving_vnd": 0,
+            "gift_sku": null,
+            "free_shipping": false,
+            "free_cod": true
+          },
+          {
+            "promo_code": "MOM-FREESHIP",
+            "type": "freeship",
+            "saving_vnd": 0,
+            "gift_sku": null,
+            "free_shipping": true,
+            "free_cod": false
+          }
+        ],
+        "rejected_promos_with_reason": [
+          {
+            "promo_code": "GIFT-FILTER",
+            "reason": "sku_or_category_not_covered"
+          },
+          {
+            "promo_code": "AIR-OCT",
+            "reason": "sku_or_category_not_covered"
+          },
+          {
+            "promo_code": "XM-COMBO",
+            "reason": "sku_or_category_not_covered"
+          },
+          {
+            "promo_code": "RUN-10",
+            "reason": "sku_or_category_not_covered"
+          },
+          {
+            "promo_code": "AIR-2ND-50",
+            "reason": "sku_or_category_not_covered"
+          },
+          {
+            "promo_code": "NAM-SHIP0",
+            "reason": "sku_or_category_not_covered"
+          },
+          {
+            "promo_code": "TRADE-IN-AP",
+            "reason": "sku_or_category_not_covered"
+          },
+          {
+            "promo_code": "AP-SEP",
+            "reason": "outside_promotion_period"
+          },
+          {
+            "promo_code": "RUN2-SALE",
+            "reason": "outside_promotion_period"
+          },
+          {
+            "promo_code": "PUMP-GIFT",
+            "reason": "outside_promotion_period"
+          },
+          {
+            "promo_code": "11-11",
+            "reason": "outside_promotion_period"
+          }
+        ],
+        "in_stock": true,
+        "stock_qty": 6,
+        "product_name": "Máy hút sữa điện đôi Spectra S1",
+        "category": "me-be",
+        "date": "2026-10-15",
+        "order_id": "OD301177",
+        "order_status": "shipping",
+        "tracking": "GHN7781234",
+        "order_date": "2026-10-03"
+      }
+    }
+  }
+}

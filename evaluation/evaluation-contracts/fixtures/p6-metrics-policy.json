@@ -1,0 +1,11 @@
+{
+  "schema_version": "p6-metrics-policy-v1",
+  "currency": null,
+  "prices": {
+    "llm_input": null,
+    "llm_output": null,
+    "asr": null,
+    "tts": null,
+    "tool": null
+  }
+}

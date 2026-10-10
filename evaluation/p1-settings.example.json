@@ -1,0 +1,5 @@
+{
+  "asset_root": "evaluation-contracts",
+  "manifest": "fixtures/manifest.json",
+  "scope": "fixtures/p1-scope.json"
+}

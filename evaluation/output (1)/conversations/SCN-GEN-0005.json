@@ -1,0 +1,114 @@
+{
+  "conversation_id": "SCN-GEN-0005",
+  "customer_id": "C035",
+  "session_index": 1,
+  "channel": "hotline",
+  "date": "2026-10-15",
+  "region": "nam",
+  "category": "gia-dung/may-loc-khong-khi",
+  "persona": "hai_nguoi_chung_sdt",
+  "turns": [
+    {
+      "speaker": "customer",
+      "text": "Chị muốn mua máy lọc không khí AirPure Pro.",
+      "facts_stated": {},
+      "entities": [],
+      "pause_before_ms": 0,
+      "emotion": null,
+      "barge_in": false
+    },
+    {
+      "speaker": "agent_ai",
+      "text": "Xin chào chị Dung, máy lọc không khí AirPure Pro hiện có giá 7.690.000đ và đang có khuyến mãi giảm 300.000đ. Chị có muốn đặt hàng không?",
+      "asks_slot": null,
+      "q_type": null,
+      "tool_called": null,
+      "tool_args": null,
+      "entities": [],
+      "pause_before_ms": 0,
+      "emotion": null,
+      "barge_in": false
+    },
+    {
+      "speaker": "customer",
+      "text": "Có khuyến mãi gì không?",
+      "facts_stated": {},
+      "entities": [],
+      "pause_before_ms": 0,
+      "emotion": null,
+      "barge_in": false
+    },
+    {
+      "speaker": "agent_ai",
+      "text": "Máy lọc không khí AirPure Pro hiện có các khuyến mãi như miễn phí thu hộ và miễn phí vận chuyển cho đơn hàng từ 2 triệu đồng. Chị có muốn đặt hàng không?",
+      "asks_slot": "order",
+      "q_type": "confirm",
+      "tool_called": null,
+      "tool_args": null,
+      "entities": [],
+      "pause_before_ms": 0,
+      "emotion": null,
+      "barge_in": false
+    },
+    {
+      "speaker": "customer",
+      "text": "Giá cuối là bao nhiêu?",
+      "facts_stated": {},
+      "entities": [],
+      "pause_before_ms": 0,
+      "emotion": null,
+      "barge_in": false
+    },
+    {
+      "speaker": "agent_ai",
+      "text": "Giá cuối là 7.690.000đ sau khi áp dụng khuyến mãi. Chị có muốn đặt hàng không?",
+      "asks_slot": "order",
+      "q_type": "confirm",
+      "tool_called": "order.create",
+      "tool_args": {
+        "sku": "SKU-AP-PRO",
+        "price_vnd": 7690000
+      },
+      "entities": [],
+      "pause_before_ms": 0,
+      "emotion": null,
+      "barge_in": false
+    },
+    {
+      "speaker": "customer",
+      "text": "Ừ, chị muốn đặt hàng.",
+      "facts_stated": {},
+      "entities": [],
+      "pause_before_ms": 0,
+      "emotion": null,
+      "barge_in": false
+    },
+    {
+      "speaker": "agent_ai",
+      "text": "Cảm ơn chị, em đã tạo đơn hàng cho máy lọc không khí AirPure Pro với giá 7.690.000đ. Đơn hàng của chị sẽ được giao trong 1-2 ngày làm việc. Chị có cần thêm thông tin gì không?",
+      "asks_slot": null,
+      "q_type": null,
+      "tool_called": "order.create",
+      "tool_args": {
+        "sku": "SKU-AP-PRO",
+        "price_vnd": 7690000
+      },
+      "entities": [],
+      "pause_before_ms": 0,
+      "emotion": null,
+      "barge_in": false
+    }
+  ],
+  "gold": {
+    "intent": "order.create",
+    "outcome": "thong_tin",
+    "objection_type": null,
+    "objection_handling": null,
+    "sentiment": "positive",
+    "decision_maker": null,
+    "commitments": [],
+    "supersedes": [],
+    "callback": null,
+    "order": {}
+  }
+}

@@ -1,0 +1,46 @@
+# Direct dependencies, pinned to the versions this project was developed
+# against. Transitive dependencies are resolved by pip and are not pinned here.
+#
+#     python -m venv .venv && source .venv/bin/activate
+#     pip install -r requirements.txt
+
+# Model access. init_chat_model dispatches to whichever of these matches the
+# provider named in config/models.yaml, so adding a provider is a config line
+# plus one package here.
+langchain==1.4.0
+langchain-google-genai==4.4.0
+langchain-groq==1.1.3
+langchain-nvidia-ai-endpoints==1.4.3
+fastmcp==2.12.5
+mcp==1.16.0
+langchain-mcp-adapters==0.2.2
+
+# Configuration. pydantic-settings types the settings and fails at startup
+# when a key is missing; python-dotenv loads .env once.
+pydantic-settings==2.15.0
+python-dotenv==1.2.3
+PyYAML==6.0.3
+
+# Plain HTTP, used to ask each provider which models the key can reach.
+httpx==0.28.1
+
+# Tracing. Optional at runtime: with no keys set the handler is never built.
+langfuse==4.15.4
+
+# Web service. FastAPI serves both the API and the built single-page app, so
+# one Azure App Service instance runs the whole thing. gunicorn supervises
+# uvicorn workers because App Service expects a process that survives a worker
+# dying.
+fastapi==0.141.1
+uvicorn[standard]==0.53.0
+gunicorn==26.2.0
+
+# Auth and storage.
+PyJWT==2.14.0
+bcrypt==5.0.0
+psycopg[binary,pool]==3.3.5
+
+# Tests. Kept in this file rather than a second one: at this size a separate
+# dev file is more to remember than it saves. A deployment does not need these.
+pytest==9.1.1
+pytest-asyncio==1.4.0

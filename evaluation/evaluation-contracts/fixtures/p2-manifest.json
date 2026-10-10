@@ -1,0 +1,131 @@
+{
+  "schema_version": "1.0.0",
+  "artifact_id": "FIXTURE-P2-Manifest",
+  "run_id": "FIXTURE-R0",
+  "level": "M1",
+  "fixture": true,
+  "purpose": "development",
+  "split": "development",
+  "created_at": "2026-10-15T09:00:00+07:00",
+  "round": 0,
+  "reference_date": "2026-10-15",
+  "timezone": "Asia/Ho_Chi_Minh",
+  "sources": [
+    {
+      "path": "fixtures/p1-scope.json",
+      "sha256": "a13d45792f07003f5287189c7b8583f9072ecb41408088402a813015aca087bd",
+      "pointer": ""
+    },
+    {
+      "path": "sources/btc/schemas/trace_log.schema.json",
+      "sha256": "312c5d1dad7ac79b51af637ca746a6de94f218d317202cf1448706b384688db3",
+      "pointer": ""
+    },
+    {
+      "path": "fixtures/p2-adapter.json",
+      "sha256": "724028e4bea15778551e9cd830cbbfce5ae5fc2ea0a63da6f90a3c637713a3fc",
+      "pointer": ""
+    },
+    {
+      "path": "fixtures/p2-adapter.py",
+      "sha256": "17089d34d727e48f3189d2f87bb330c792cb4612bab67ad4f40c2ae142012ad1",
+      "pointer": ""
+    }
+  ],
+  "scenarios": [
+    {
+      "path": "fixtures/scenario.json",
+      "sha256": "bcd7ad24d316eb109acd9ce865ddf3289471901558b215164d32443abcae7c25",
+      "pointer": ""
+    }
+  ],
+  "grading_contracts": [
+    {
+      "path": "fixtures/grading.json",
+      "sha256": "62f2a28986c65710716307c31c58fa70146b70f4ef25de5b7182a2062b92370e",
+      "pointer": ""
+    }
+  ],
+  "suites": [
+    {
+      "id": "fixed_turn",
+      "applicable": true,
+      "reason": "Fixture conformance, not official run"
+    }
+  ],
+  "planned_calls": [
+    {
+      "config": "full",
+      "scenario_id": "FIXTURE-M1",
+      "call": "call_1",
+      "expected_turns": 1,
+      "memory_required": false
+    },
+    {
+      "config": "full",
+      "scenario_id": "FIXTURE-M1",
+      "call": "call_2",
+      "expected_turns": 1,
+      "memory_required": true
+    },
+    {
+      "config": "baseline_no_memory",
+      "scenario_id": "FIXTURE-M1",
+      "call": "call_1",
+      "expected_turns": 1,
+      "memory_required": false
+    },
+    {
+      "config": "baseline_no_memory",
+      "scenario_id": "FIXTURE-M1",
+      "call": "call_2",
+      "expected_turns": 1,
+      "memory_required": false
+    }
+  ],
+  "asr_ids": [],
+  "rag_ids": [],
+  "simulator_seeds": [],
+  "configuration": {
+    "model": "fixture-no-model",
+    "parameters": {
+      "temperature": 0
+    },
+    "prompt": {
+      "path": "sources/btc/policy/playbook-telesale.md",
+      "sha256": "ca74b496676a1bf88c7d0caf36cfaada69c9f9003045c98055426f259a0fae0d",
+      "pointer": ""
+    },
+    "tools": {
+      "path": "sources/btc/schemas/tools.schema.json",
+      "sha256": "4cc8935e3e7f1a37b43eab0d68d85e8383037e52423e9f7cc022da916c97d4e0",
+      "pointer": ""
+    },
+    "kb": {
+      "path": "sources/btc/policy/faq.md",
+      "sha256": "1c9874be840123bf19c30f87d29ab0ededdfd1b1a50c6d7417d1acadea4f1f60",
+      "pointer": ""
+    },
+    "hardware": "fixture",
+    "extractor_version": "fixture-v1",
+    "judge_version": null
+  },
+  "timeouts_ms": {
+    "agent": 60000,
+    "tool": 30000,
+    "after_call": 60000,
+    "judge": 60000
+  },
+  "retry": {
+    "agent": 0,
+    "tool": 0,
+    "judge_format": 1
+  },
+  "state_namespaces": {
+    "full": "fixture/full",
+    "baseline_no_memory": "fixture/baseline"
+  },
+  "warmup_count": 3,
+  "candidate_hash": "0000000000000000000000000000000000000000000000000000000000000000",
+  "dispute_ids": []
+}
