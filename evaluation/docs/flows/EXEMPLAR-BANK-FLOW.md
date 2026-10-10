@@ -43,4 +43,4 @@ Evaluation kiểm candidate, redaction, nguồn hai cuộc độc lập, khớp 
 
 ## Phần bàn giao cho thầy và phần evaluation
 
-Product cần kho exemplar/audit, cổng QA, chọn hai mẫu trong hot pipeline, context budget, trace usage và revoke. `evaluation/` có thể làm kiểm tra nguồn/PII, coverage 0/1/2 mẫu và báo cáo so sánh. Chưa có hai mẫu thắng sạch, độc lập và active cho cùng playbook thì cơ chế ở trạng thái **chờ dữ liệu**, không báo đã đạt yêu cầu few-shot. Chi tiết schema và giới hạn xem [kế hoạch triển khai](EXEMPLAR-BANK-PLAN-FOR-TEACHER.md).
+Product cần kho exemplar/audit, cổng QA, chọn hai mẫu trong hot pipeline, context budget, trace usage và revoke. `evaluation/` có thể làm kiểm tra nguồn/PII, coverage 0/1/2 mẫu và báo cáo so sánh. Chưa có hai mẫu thắng sạch, độc lập và active cho cùng playbook thì cơ chế ở trạng thái **chờ dữ liệu**, không báo đã đạt yêu cầu few-shot. File kế hoạch bàn giao cho thầy được giữ local, không nằm trong repo này.

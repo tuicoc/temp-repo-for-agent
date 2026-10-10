@@ -4,6 +4,8 @@
 
 Điểm vào: `run_eval.py` → `eval_harness/__main__.py`. Code chấm ở `eval_harness/`; [đề bài](requirements/project-brief.pdf) và contract/nguồn BTC pin ở `evaluation-contracts/`; dữ liệu JSON 5 scenario hiện dùng ở `datasets/output1-btc-diagnostic-v2/` (quyết định duyệt tại [review-decisions.md](datasets/output1-btc-diagnostic-v2/review-decisions.md)), nguồn bất biến ở `output (1)/` và revision v1 được giữ nguyên.
 
+Thư mục chính: `eval_harness/` là code chấm; `datasets/` là các revision; `tests/` là kiểm tra offline; `docs/` là yêu cầu dataset, nhãn và luồng cải tiến; `evaluation-contracts/` là contract và BTC được pin. `BTC-Data-Vong1-TEAMS/` là bản BTC gốc được giữ nguyên cho các đường dẫn bảo vệ cũ, không phải bộ test thứ hai. `runs/` là output local theo từng lần chạy và không đưa lên Git.
+
 Khi thêm hoặc sửa dữ liệu/ground truth, đọc [skill duyệt GT](datasets/ground-truth-review/SKILL.md) trước. `AGENTS.md` trong folder này nhắc lại quy tắc đó cho những lần làm việc sau.
 
 Bộ source-only này có unit tests trong `tests/`, nhưng không kèm run lịch sử, ASR audio/model hay virtualenv.
@@ -20,7 +22,7 @@ backend/.venv/bin/python evaluation/run_eval.py evaluate
 
 Output: `runs/<date-time>/` (or `--out`), with `inputs/`, `raw/`, `evidence/` and `scored/`; the table is `scored/scorer.stdout.txt`, the summary `execution-report.json`. The root README, Getting started section 5, says what each folder holds. P6 (`report`) is not run: it implements level M1 and these scenarios are M2.
 
-Mỗi run mới tạo nhãn Tool-Call Accuracy cho đủ 5 scenario ở `inputs/expected-tools/` và chấm cùng nhãn cho full/baseline. Xem [TOOL-CALL-LABELS.md](TOOL-CALL-LABELS.md) để biết từng kỳ vọng, giới hạn và trạng thái QA. Run cũ không bị chấm lại.
+Mỗi run mới tạo nhãn Tool-Call Accuracy cho đủ 5 scenario ở `inputs/expected-tools/` và chấm cùng nhãn cho full/baseline. Xem [nhãn tool](docs/TOOL-CALL-LABELS.md) để biết từng kỳ vọng, giới hạn và trạng thái QA. Run cũ không bị chấm lại.
 
 Xem log tổng hợp mọi lần chạy (kể cả lần lỗi hoặc thiếu bằng chứng), không gọi model/API:
 
@@ -34,7 +36,7 @@ Trong mỗi run mới, `scored/claim-adjudication.json` giải thích riêng cá
 
 ## Knowledge Gap Loop trong evaluation
 
-Xem [KNOWLEDGE-GAP-LOOP.md](KNOWLEDGE-GAP-LOOP.md) để biết luồng đầy đủ, phần evaluation đã có và điểm nối product còn thiếu.
+Xem [luồng Knowledge Gap](docs/flows/KNOWLEDGE-GAP-LOOP.md) để biết phần evaluation đã có và điểm nối product còn thiếu.
 
 Mỗi lần `score` tạo `scored/knowledge-gap-candidates.json` từ các lượt `handoff.transfer` thành công **hoặc** agent nói rõ không có/không đủ thông tin ở cấu hình full. Đây là **danh sách cần duyệt**, không mặc định là thiếu FAQ: chuyển máy vì an toàn, thông tin đơn riêng, giá/tồn kho hiện thời hay khách từ chối không tạo FAQ chung. Nếu transcript có câu trả lời của consultant, file giữ nó làm bằng chứng; nếu chưa có thì phải bổ sung bằng chứng ngoài run trước khi duyệt. Không lấy outcome `từ chối` làm tín hiệu “agent không biết”.
 
@@ -69,7 +71,7 @@ backend/.venv/bin/python evaluation/run_eval.py gap-check \
 
 ## Reflection và playbook
 
-Xem [REFLECTION-FLOW.md](REFLECTION-FLOW.md) để biết luồng từ QA chấm cuộc gọi, lesson, đối chiếu thắng/thua đến playbook trong KB và cách evaluation kiểm chứng. File phân biệt rõ thiết kế với phần product hiện đã chạy.
+Xem [luồng Reflection](docs/flows/REFLECTION-FLOW.md) để biết luồng từ QA chấm cuộc gọi đến playbook trong KB và cách evaluation kiểm chứng. [Luồng Exemplar](docs/flows/EXEMPLAR-BANK-FLOW.md) là thiết kế đang hoãn. [Yêu cầu dataset](docs/DATASET-REQUIREMENTS-FOR-IMPROVEMENT.md) phân biệt số lượng theo đề và số case thử nghiệm đề xuất.
 
 ## RAG Recall@3/@5 trên 60 câu BTC
 

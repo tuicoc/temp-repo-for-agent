@@ -54,7 +54,7 @@ KB của product chứa **chính sách, FAQ và playbook**. Chính sách lấy t
 
 Evaluation kiểm chứng outcome/tool, QA evidence, tính nhất quán của nhãn, nguồn lesson, kết quả regression và sự thay đổi R0 → R2 trên golden set đóng băng. Dữ liệu golden chỉ để đo, không làm nguồn sinh lesson. Growth cases mới dùng để kiểm tra lỗi/tình huống phát sinh; báo riêng với điểm golden.
 
-Exemplar Bank là nhánh **tuỳ chọn khác**: sau khi đã có nhiều cuộc thắng sạch cùng tình huống, QA có thể chọn các đoạn đối thoại tiêu biểu. Lesson không tự biến thành exemplar. `sample_line` hoặc một exemplar đơn lẻ **không phải few-shot**; đề xuất chỉ kích hoạt few-shot khi có hai mẫu đã duyệt từ hai cuộc độc lập cho cùng phiên bản playbook. Xem [kế hoạch Exemplar Bank cho thầy](EXEMPLAR-BANK-PLAN-FOR-TEACHER.md). Không cần xây bank riêng để hoàn thành Reflection.
+Exemplar Bank là nhánh **tuỳ chọn khác**: sau khi đã có nhiều cuộc thắng sạch cùng tình huống, QA có thể chọn các đoạn đối thoại tiêu biểu. Lesson không tự biến thành exemplar. `sample_line` hoặc một exemplar đơn lẻ **không phải few-shot**; đề xuất chỉ kích hoạt few-shot khi có hai mẫu đã duyệt từ hai cuộc độc lập cho cùng phiên bản playbook. Xem [luồng Exemplar](EXEMPLAR-BANK-FLOW.md). Không cần xây bank riêng để hoàn thành Reflection.
 
 ## Trạng thái triển khai và ranh giới trách nhiệm
 

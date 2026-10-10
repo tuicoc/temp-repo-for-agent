@@ -1,6 +1,6 @@
 # Yêu cầu dataset để chạy và chứng minh vòng cải tiến
 
-Tài liệu bàn giao cho người tạo dataset. **Không huấn luyện/fine-tune model.** Cải tiến chỉ được thay đổi memory, KB/FAQ, prompt/playbook hoặc điều phối; mỗi thay đổi phải có feedback và bằng chứng sử dụng ở R1. Đọc `datasets/ground-truth-review/SKILL.md` trước khi thêm case/nhãn.
+Tài liệu bàn giao cho người tạo dataset. **Không huấn luyện/fine-tune model.** Cải tiến chỉ được thay đổi memory, KB/FAQ, prompt/playbook hoặc điều phối; mỗi thay đổi phải có feedback và bằng chứng sử dụng ở R1. Đọc [`ground-truth-review/SKILL.md`](../datasets/ground-truth-review/SKILL.md) trước khi thêm case/nhãn.
 
 ## 1. Số lượng: yêu cầu đề và mục tiêu thử nghiệm là hai việc khác nhau
 
@@ -14,7 +14,7 @@ Tài liệu bàn giao cho người tạo dataset. **Không huấn luyện/fine-t
 | Vòng cải tiến tối thiểu | **R0 và R1**, cùng một frozen set | Không có ngưỡng số scenario riêng chỉ cho hai vòng; chọn bộ đủ phủ tình huống định cải tiến. |
 | Bộ thử nhanh đề xuất | **5 scenario hiện có + 3–5 case mới theo cơ chế**, nếu cần | Chỉ là mục tiêu diagnostic nhỏ, **không thay** ngưỡng M2 hay bằng chứng thống kê. |
 
-Nguồn ngưỡng toàn dataset: `output (1)/reports/validation_report.md`; chuẩn rubric và so chéo: `evaluation-contracts/sources/btc/DIEU-CHINH-DE.md`, `eval/llm_judge_rubric.json`. Bộ test ẩn 41 scenario của BTC **không phải** số case team phải tự tạo.
+Nguồn ngưỡng toàn dataset: [`output (1)/reports/validation_report.md`](<../output (1)/reports/validation_report.md>); chuẩn rubric và so chéo: [`DIEU-CHINH-DE.md`](../evaluation-contracts/sources/btc/DIEU-CHINH-DE.md), [`llm_judge_rubric.json`](../evaluation-contracts/sources/btc/eval/llm_judge_rubric.json). Bộ test ẩn 41 scenario của BTC **không phải** số case team phải tự tạo.
 
 ## 2. Mỗi scenario/call phải giao những nhãn gì
 
@@ -52,7 +52,7 @@ Tối thiểu trong hồ sơ hai vòng: ID/hash frozen set và grading giống n
 | **Memory** | 1 call tạo fact và call sau cần dùng; 1 biến thể fact đổi/TTL hoặc chung SĐT | Đề xuất **3–5 scenario đa phiên**: dùng đúng fact, không hỏi lại, không lộ nhầm hồ sơ. Gắn `must_carry_over`, `memory_expectation`, identity, nguồn fact và expected tool/answer. R1 phải đổi đúng quy tắc memory, không đổi GT. |
 | **Knowledge Gap → FAQ** | Ít nhất **1 gap thật** ngoài frozen: câu hỏi, câu consultant trả lời, nguồn chính sách, quyết định lưu/revoke | Đề xuất **3–5 case**: hỏi được FAQ mới, câu hỏi tương đương, câu ngoài phạm vi/riêng tư không trả lời bằng FAQ. Gắn FAQ ID/version, expected grounding/abstention, judge nếu chất lượng giải thích quyết định đạt. Growth case từ gap báo riêng. |
 | **Reflection → playbook** | Nhiều cuộc độc lập cùng `situation`, có **thắng sạch và không thắng** để đối chiếu; không suy luận từ 1 cuộc | Đề xuất **3–5 case** cùng tình huống và một case khác để kiểm không áp dụng nhầm. Gắn `situation`, verified outcome, hành vi `when/do/dont`, playbook ID/version đã đưa vào context, guardrail và TSR. Chưa đủ bằng chứng hai phía thì chỉ tạo lesson candidate. |
-| **Exemplar Bank (đang hoãn)** | Theo thiết kế hiện tại: đề xuất **≥3 thắng sạch + ≥2 không chốt** cùng tình huống, từ cuộc/khách độc lập; QA chọn 2 exemplar sạch gắn một playbook version | Chỉ làm khi được duyệt triển khai: case 0/1/2 mẫu và tình huống không khớp; log **hai** exemplar ID thực sự vào context mới gọi là few-shot. Không tuyển mẫu từ frozen/golden. Xem `EXEMPLAR-BANK-FLOW.md`. |
+| **Exemplar Bank (đang hoãn)** | Theo thiết kế hiện tại: đề xuất **≥3 thắng sạch + ≥2 không chốt** cùng tình huống, từ cuộc/khách độc lập; QA chọn 2 exemplar sạch gắn một playbook version | Chỉ làm khi được duyệt triển khai: case 0/1/2 mẫu và tình huống không khớp; log **hai** exemplar ID thực sự vào context mới gọi là few-shot. Không tuyển mẫu từ frozen/golden. Xem [luồng Exemplar](flows/EXEMPLAR-BANK-FLOW.md). |
 
 **Feedback tối thiểu theo yêu cầu M1:** thu ít nhất **2 loại nguồn** trong: outcome cuộc gọi, điểm evaluator, 👍/👎 trên gợi ý, hoặc khách phải nhắc lại thông tin. Dataset nên có `feedback_type`, `source_call_id/turn_id`, thời gian, người/nguồn chấm và evidence ref; không đánh đồng “khách từ chối” với “agent không biết”.
 
