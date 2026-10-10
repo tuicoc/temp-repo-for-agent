@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Checks, preflight, raw execution, offline collection and BTC wire export."""
+"""Preflight, raw execution, offline collection and BTC wire export."""
 from eval_harness.__main__ import main
 
 

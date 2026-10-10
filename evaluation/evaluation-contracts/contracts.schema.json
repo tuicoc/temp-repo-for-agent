@@ -3892,7 +3892,7 @@
         "elapsed_ms"
       ],
       "additionalProperties": false,
-      "$comment": "NHÓM — evaluation-flow.md B9/C/D; PDF C.4–C.5. Metadata bổ sung, không sửa wire BTC."
+      "$comment": "NHÓM — PDF C.4–C.5; docs/design.md. Metadata bổ sung, không sửa wire BTC."
     },
     "SourceDecision": {
       "type": "object",
@@ -3955,7 +3955,7 @@
         "reason"
       ],
       "additionalProperties": false,
-      "$comment": "NHÓM — evaluation-flow.md B9/C/D; PDF C.4–C.5. Metadata bổ sung, không sửa wire BTC."
+      "$comment": "NHÓM — PDF C.4–C.5; docs/design.md. Metadata bổ sung, không sửa wire BTC."
     },
     "Candidate": {
       "type": "object",
@@ -4022,7 +4022,7 @@
         "kind"
       ],
       "additionalProperties": false,
-      "$comment": "NHÓM — evaluation-flow.md B9/C/D; PDF C.4–C.5. Metadata bổ sung, không sửa wire BTC."
+      "$comment": "NHÓM — PDF C.4–C.5; docs/design.md. Metadata bổ sung, không sửa wire BTC."
     },
     "ApprovalRecord": {
       "type": "object",
@@ -4080,7 +4080,7 @@
         "reason"
       ],
       "additionalProperties": false,
-      "$comment": "NHÓM — evaluation-flow.md B9/C/D; PDF C.4–C.5. Metadata bổ sung, không sửa wire BTC."
+      "$comment": "NHÓM — PDF C.4–C.5; docs/design.md. Metadata bổ sung, không sửa wire BTC."
     },
     "SourceLock": {
       "type": "object",
@@ -4101,7 +4101,7 @@
         "files"
       ],
       "additionalProperties": false,
-      "$comment": "NHÓM — evaluation-flow.md B9/C/D; PDF C.4–C.5. Metadata bổ sung, không sửa wire BTC."
+      "$comment": "NHÓM — PDF C.4–C.5; docs/design.md. Metadata bổ sung, không sửa wire BTC."
     },
     "RagChunkMap": {
       "type": "object",

@@ -1,8 +1,8 @@
 # Contract triển khai Evaluation Harness — v1.1.0
 
-Đọc [README — quyết định hiện hành](../README.md#1-quyết-định-hiện-hành--04102026) trước. Tool Accuracy dùng tool-accuracy.v2 theo invocation TP/(TP+FP+FN), cost/call chia completed. TimingEvidence mới có version1.1.0 nullable measurements, legacy1.0.0 vẫn giữ kiểu cũ; các artifact/grading khác còn1.0.0. Không đổi wire/source BTC. Validator và audio/segments BTC đầy đủ deferred theo user, không chặn scope team hiện tại; báo rõ chưa nghiệm thu toàn bộ BTC audio.
+Đọc [README evaluation](../README.md) trước. Tool Accuracy dùng tool-accuracy.v2 theo invocation TP/(TP+FP+FN), cost/call chia completed. TimingEvidence mới có version1.1.0 nullable measurements, legacy1.0.0 vẫn giữ kiểu cũ; các artifact/grading khác còn1.0.0. Không đổi wire/source BTC. Validator và audio/segments BTC đầy đủ deferred theo user, không chặn scope team hiện tại; báo rõ chưa nghiệm thu toàn bộ BTC audio.
 
-Đọc cùng [flow](../evaluation-flow.md). M1 trước, M2 sau. Đây là **đặc tả + fixture minh họa**; P2 raw runner đã có và được kiểm fixture/fault, chưa có extractor/judge/benchmark Agent thật hoặc full evaluation pipeline. Theo Ponytail, dùng lại schema BTC; một thư viện JSON Schema, một lệnh kiểm tra; không dựng framework mới.
+Đọc cùng [thiết kế product hiện hành](../../docs/design.md) và [bàn giao evaluator](../CODE-HANDOFF.md). Đây là **đặc tả + fixture minh họa**; runner/evaluator offline không chứng minh benchmark Agent thật đã đạt. Dùng lại schema BTC và checker hiện có.
 
 ## 1. Cài và kiểm tra
 
@@ -24,7 +24,7 @@ Hai schema nhóm: [contracts](contracts.schema.json) và [grading contract](grad
 
 | Mã | Nguồn chính xác |
 |---|---|
-| Đ | [Đề PDF](<../temp-repo-for-agent/docs/SUDO CODE 2026 - Đề Bài Dự Án Cuối Kì.pdf>), C.4–C.5 tr.6–7; F tr.9; A tr.11–13; B tr.14 |
+| Đ | [Đề PDF](../requirements/project-brief.pdf), C.4–C.5 tr.6–7; F tr.9; A tr.11–13; B tr.14 |
 | DC | [Điều chỉnh](sources/btc/DIEU-CHINH-DE.md), §1 latency, §3 tools, §4 handoff, §5 RQR, §6 Call Brief, §7–9 RAG/ASR, §10 ngày, §11 hard case, §12 simulator/judge |
 | GD | [Giải đáp mentor](sources/btc/GIAI-DAP-MENTOR.md), Team 5 câu 11 RQR; Team 8 câu 3 CTC |
 | SC | [Scenario format](sources/btc/schemas/scenario_format.md), bảng call_n và success_if |
@@ -144,7 +144,7 @@ Release [NHÓM]: approval đồng ý, candidate_hash=approved_hash=evaluated_has
 
 ## 9. Chờ BTC — không để implementation tự chọn đáp án
 
-Các ID kế thừa E3 trong [flow](../evaluation-flow.md); file nguồn nằm trong sources/btc. Tranh chấp chưa có evidence BTC vẫn **OPEN**; B14 có scheduling **DEFERRED** theo user, không phải resolved. B01 count đã xác định từ file, chênh README chưa có changelog. Không tự sửa GT hoặc coi deferred là BTC đã thống nhất.
+Các ID tranh chấp được giữ để đối chiếu tài liệu BTC ở `sources/btc/`. Tranh chấp chưa có evidence BTC vẫn **OPEN**; scheduling **DEFERRED** không có nghĩa là BTC đã thống nhất. Không tự sửa GT.
 
 | ID | Hai nguồn/điểm chưa khớp | Phạm vi và hành động |
 |---|---|---|

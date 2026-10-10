@@ -1,55 +1,25 @@
-# Bàn giao phần đã phát triển trong `evaluation/`
+# Bàn giao code evaluation trên nhánh `dai`
 
-Cập nhật 10/10/2026. Nhánh `dai` có **hai cây code khác nhau**: product đang chạy trong `../backend/src/`, evaluator đã phát triển trong `evaluation/eval_harness/`. Code product ở [product-integration-reference](product-integration-reference/README.md) là **bridge cũ, chỉ tham khảo**, không phải nơi code tiếp hoặc bản cần port nguyên trạng.
+Chỉ có **một kiến trúc product đang dùng**: [docs/design.md](../docs/design.md), agent ở `../backend/src/agents/`, luồng hot/cold ở `../backend/src/pipeline/`, MCP ở `../backend/src/mcp/`. Không dùng flow, bridge hay prompt của kiến trúc cũ: chúng đã được xóa khỏi cây hiện tại và còn khôi phục được qua Git commit `6987aa3` nếu cần truy vết.
 
-## Mở repo rồi code ở đâu?
+## Đã có trong `evaluation/`
 
-| Việc | Source active cần mở | Trạng thái |
+| Mảng | Code chính | Trạng thái |
 |---|---|---|
-| Prompt/model của từng agent | `../backend/src/agents/{advisor,memory,policy,qa,simulator}.py` | Source product hiện hành. Router là luật tại `../backend/src/components/orchestration/rules.py`, không có OrchestratorAgent riêng. |
-| Một lượt và sau cuộc gọi | `../backend/src/pipeline/hot/{graph,nodes,state}.py`, `../backend/src/pipeline/cold/after_call.py` | Luồng product hiện hành; API dùng `../backend/src/api/harness.py`. |
-| MCP, memory, guard, cải tiến | `../backend/src/mcp/`, `../backend/src/components/{memory,guardrails,improvement}/` | Source product hiện hành; đối chiếu `../docs/design.md`. |
-| Chấm BTC và báo cáo | `eval_harness/`, `run_eval.py`, `evaluation-contracts/` | Code evaluator đã có; dữ liệu 5 scenario ở `datasets/output1-btc-diagnostic-v1/`. |
-| Nối evaluator vào product mới | `../backend/src/pipeline/eval/runner.py` cùng `product_adapter.py` | **Chưa xong:** product runner hiện còn `NotImplementedError`; adapter evaluator cũ kỳ vọng bridge IPC cũ. Đây là điểm nối cần làm trước khi chạy full/baseline thật. |
+| Nguồn/contract BTC | `evaluation-contracts/`, `eval_harness/contracts.py`, `assets.py` | Checker khóa 46 source hashes, schema và fixture; không sửa BTC để đạt điểm. |
+| Nhận input và chạy fixed-turn | `eval_harness/preflight.py`, `runner.py`, `environment.py` | Có preflight, full/baseline và mock tools theo adapter contract; **chưa có adapter tới product hiện hành**. |
+| Trace và chấm | `eval_harness/collector.py`, `extractor.py`, `model_extractor.py`, `scoring.py`, `judging.py` | Thu/kiểm evidence và gọi scorer BTC; thiếu trace thật thì kết quả INCOMPLETE. |
+| Dataset, ASR, metric M1 | `eval_harness/datasets.py`, `asr_suite.py`, `benchmark.py`, `metrics.py`, `reporting.py`, `p6_evidence.py`, `asr/` | Có registry/adapter, phép đo và báo cáo; gói push không kèm audio/runs, lượt 5 scenario trước mắt chỉ chấm JSON. |
+| R0/R1 và M2 | `eval_harness/rounds.py`, `release.py`, `rag_corpus.py`, `rag_runner.py`, `rag_review.py`, `simulation.py`, `reflection.py`, `suite_bundle.py`, `package.py` | Có component/contract offline và recommendation; chưa đủ producer/evidence live để release hay nghiệm thu M2. |
+| Dữ liệu 5 scenario | `normalize_output1.py`, `output (1)/`, `datasets/output1-btc-diagnostic-v1/` | 5 scenario, 12 call JSON dẫn xuất; GT do nhóm diễn giải, chờ QA duyệt, chỉ diagnostic. |
 
-Thứ tự đề xuất: (1) đọc `../docs/design.md` và API `../backend/src/api/harness.py`; (2) chốt contract giữa product runner mới với hooks của `eval_harness/runner.py`; (3) implement một đường chạy 5 scenario full/baseline qua cùng hot/cold path, state tách biệt; (4) cho collector/scorer chấm JSON và kiểm missing evidence; (5) mới mở M2 từng module. Không chép `product-integration-reference/` lên `../backend/src/`: base product đã thay đổi lớn và có sẵn agent/MCP khác.
+CLI chung: `run_eval.py`. Ví dụ contract check không gọi model: `python evaluation/evaluation-contracts/check_contracts.py` từ repo root sau khi cài requirements. Các command `preflight`, `run`, `collect`, `score`, `report`, `benchmark` cần đầu vào/adapter đã pin; không chạy API khi chưa có ngân sách và run mới.
 
-## Đọc trước khi code
+## Việc cần code tiếp — đúng chỗ
 
-1. `../docs/design.md` là thiết kế product hiện hành; `evaluation-flow.md` là flow chấm. `temp-repo-for-agent/docs/flow.md` là bối cảnh lịch sử, không override thiết kế hiện hành.
-2. `evaluation-contracts/schema-contract-matrix.md`, `report-schemas.md`, `harness-acceptance-tests.md`; BTC chuẩn được pin ở `evaluation-contracts/sources/btc/`.
-3. Bảng code dưới đây, rồi `architecture-status.md` và `LIMITATIONS.md` để thấy phần còn thiếu. `evaluation-implementation-plan.md` chỉ dùng tra gate P0–P10.
+1. Đọc `../backend/src/api/harness.py` và `../backend/src/pipeline/eval/runner.py`: runner product hiện còn stub. Chọn **một** adapter nối hooks `eval_harness/runner.py` với hot/cold path hiện hành; không dựng CallRuntime thứ hai.
+2. Chạy 5 scenario cùng controls, full/baseline chỉ khác quyền đọc memory phiên trước; tách state, đợi after-call barrier và xuất tool/turn/memory evidence đúng schema.
+3. Đưa evidence qua collector → scorer → report. Missing usage, GT chưa duyệt hay module chưa chạy phải là INCOMPLETE/UNDETERMINED, không điền 0/PASS.
+4. Khi M1 functional chạy được mới nối M2 từng module theo `../docs/design.md` và contract BTC. Không coi code component hiện có là producer/live acceptance.
 
-## Code evaluator đang có
-
-| Phần | File chính | Đã làm được | Giới hạn hiện tại |
-|---|---|---|---|
-| Contract/nguồn | `evaluation-contracts/check_contracts.py`, `eval_harness/contracts.py`, `assets.py` | Khóa hash nguồn BTC, kiểm schema/fixture và AssetRef; đọc đầu vào đã pin. | Không được sửa nguồn/lock để hợp kết quả. |
-| P1 input | `eval_harness/preflight.py` | Kiểm manifest/scenario/controls trước khi chạy. | PASS preflight không phải chất lượng Agent PASS. |
-| P2 runner | `eval_harness/runner.py`, `environment.py` | Fixed-turn full/baseline, tool sandbox BTC, raw run bất biến và barrier theo adapter contract. | Cần adapter tới product hiện hành; `../backend/src/pipeline/eval/runner.py` vẫn là stub. |
-| P3 collector | `eval_harness/collector.py`, `extractor.py`, `model_extractor.py` | Validate raw/evidence, trích facts/trace, audit và xuất BTC wire cohort. | Model extractor chỉ chạy khi cấu hình/chấp thuận API; không bịa evidence thiếu. |
-| P4 scorer | `eval_harness/scoring.py`, `judging.py` | Gọi scorer BTC nguyên bản, thêm hard checks và chọn rubric/judge evidence. | Không có QA human labels đủ cỡ hoặc producer Judge live thì chưa nghiệm thu. |
-| P5 dataset/ASR | `eval_harness/datasets.py`, `asr_suite.py`, `asr/` | Inventory dataset provisional, replay/infer ASR riêng, coverage/ITN/entity và lock cấu hình. | Lượt 5 scenario JSON hiện tại **không chấm ASR**; full BTC audio/validator vẫn deferred. |
-| P6 báo cáo | `eval_harness/benchmark.py`, `metrics.py`, `reporting.py`, `p6_evidence.py` | Một pipeline P2→P6, tính full/baseline, latency/cost khi có evidence, nhập billing/casebook đã đóng. | Usage/timing/review thiếu phải INCOMPLETE; fixture không chứng minh ngưỡng M1. |
-| P7 cải tiến | `eval_harness/rounds.py`, `release.py`, `prepare_product_pair.py` | So R0/R1 với controls, hash/approval/consumption/release recommendation. | Diagnostic/hold; không tự active FAQ hay thay production pointer. |
-| M2 RAG | `eval_harness/rag_corpus.py`, `rag_runner.py`, `rag_review.py`, `run_m2_rag.py` | Catalog chunk BTC, PostgreSQL FTS/public-only producer, QA import cho answer/version. | 60 câu live/QA chưa hoàn tất; Q20/Q57 vẫn cần xử lý tranh chấp. |
-| M2 khác | `eval_harness/simulation.py`, `reflection.py`, `suite_bundle.py`, `package.py` | Rule kernel simulator, Reflection draft, adapter evidence P8–P10, gói handoff/readiness. | Chưa có đủ customer-model 3 seeds, playbook active/R2, producer/evidence acceptance thật. |
-| Product bridge cũ | `product_adapter.py`, `prepare_product.py`, `product_smoke.py`, `run_product_full.py`, `web_tool_worker.py` | Chuẩn bị bundle/snapshot, IPC cô lập và BTC mock tools cho kiến trúc trước. | Chưa nối product mới; dùng contract và ý tưởng, không dùng nguyên trạng để công bố run thật. |
-
-CLI chung là `run_eval.py` (`preflight`, `run`, `collect`, `score`, `report`, `benchmark`, `compare-rounds`, `release-gate`, `suite-bundle`, `package`). Theo yêu cầu bàn giao chỉ source, nhánh `dai` **không kèm bộ unit tests**; `check` cần bộ đó nên không dùng ở checkout này. Kết quả test offline trước đây không chứng minh model thật đạt điểm.
-
-## Dữ liệu và kết quả đã tạo
-
-- `normalize_output1.py` tạo `datasets/output1-btc-diagnostic-v1/` từ `output (1)/` với source hash và conversion report. Đây là 5 scenario/12 call JSON; GT do nhóm diễn giải, **chưa được QA duyệt**. Gói bàn giao chỉ giữ JSON nguồn, không kèm audio nguồn.
-- `datasets/p5-current/` là bộ tạm/provisional. Nhánh `dai` không kèm `integration/`, `runs/`, ASR audio/model/virtualenv hay báo cáo chạy lịch sử; đây là source handoff, không phải evidence archive. Registry ASR cần audio được bổ sung sau mới chạy inference/replay.
-- BTC ở `BTC-Data-Vong1-TEAMS/`, `evaluation-contracts/sources/btc/` và `output (1)/` là nguồn. Sửa GT phải tạo revision mới, ghi lý do/hash và xin QA duyệt.
-
-## Phụ thuộc vào code product đã lưu
-
-[Bản tham chiếu lịch sử](product-integration-reference/README.md) chứa bridge cũ để tránh mất quyết định/provenance, nhưng product hiện hành đã có agent, MCP và LangGraph riêng. Chỉ lấy một chi tiết từ đó sau khi so với `../backend/src/` và `../docs/design.md`; **không port cả bản tham chiếu**. Nó không kèm tests.
-
-## Kiểm tối thiểu, không gọi model
-
-Cài dependencies từ `evaluation/evaluation-contracts/requirements.txt`, rồi chạy `python evaluation/evaluation-contracts/check_contracts.py` từ root repo để xác minh 46 hash BTC. Bộ unit tests đã bỏ theo yêu cầu và cần bổ sung lại khi tiếp tục phát triển. Không chạy product PostgreSQL bằng source chưa port rồi coi lỗi thiếu module là lỗi evaluator.
-
-Không công bố M1/M2 PASS từ bộ diagnostic hoặc test offline. Cần GT/QA, product bridge tương thích, model run có ngân sách mới và benchmark đủ quy mô.
+Giữ nguyên `evaluation-contracts/sources/btc/`, `BTC-Data-Vong1-TEAMS/`, `output (1)/` và revision dataset đã pin. Gói này cố ý không mang tests, historical runs, ASR audio/model hay môi trường cục bộ. Nếu cần kiểm hồi quy, viết lại test tối thiểu bên cạnh thay đổi mới; đừng sửa evidence cũ.

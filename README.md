@@ -1,6 +1,6 @@
 # Agent Core
 
-> **Bàn giao nhánh `dai`:** [Bắt đầu phát triển evaluation tại đây](evaluation/CODE-HANDOFF.md). Agent đang chạy nằm trong `backend/src/agents/`, hot/cold flow trong `backend/src/pipeline/`. `evaluation/product-integration-reference/` là mã bridge **cũ để tham khảo**, không phải source active và không được chép đè vào backend.
+> **Bàn giao nhánh `dai`:** [Bắt đầu phát triển evaluation tại đây](evaluation/CODE-HANDOFF.md). Kiến trúc product hiện hành nằm trong `backend/src/agents/` và `backend/src/pipeline/`; evaluator nằm trong `evaluation/eval_harness/`. Điểm nối product–evaluator vẫn cần hoàn thiện tại `backend/src/pipeline/eval/runner.py`.
 
 > **The project has no final name yet.** "Agent Core" is a placeholder used in
 > the badges, the licence and the documentation so that nothing has to stay

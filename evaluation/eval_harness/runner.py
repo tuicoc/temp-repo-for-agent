@@ -217,7 +217,7 @@ def _output_path(path, assets):
     base = ROOT.parent
     protected = [assets.root, ROOT / "sources/btc", base / "BTC-Data-Vong1-TEAMS",
                  base.parent / "BTC-Data-Vong1-TEAMS", base / ".archive", base / "output",
-                 base / "asr", base.parent / "temp-repo-for-agent",
+                 base / "asr",
                  base.parent / "backend", base.parent / "frontend"]
     if path.exists() or any(path.is_relative_to(p.resolve()) for p in protected):
         raise ValueError("Choose a new run directory outside input/protected/historical assets")

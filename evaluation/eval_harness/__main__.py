@@ -2,8 +2,6 @@
 import argparse
 import json
 from pathlib import Path
-import unittest
-import sys
 
 
 class Parser(argparse.ArgumentParser):
@@ -15,7 +13,6 @@ class Parser(argparse.ArgumentParser):
 def main(argv=None):
     parser = Parser(description="P0 offline checks / P1 preflight / P2 execution / P3 replay / P4 scoring / P5 ASR / P6 metrics")
     commands = parser.add_subparsers(dest="command", required=True, parser_class=Parser)
-    commands.add_parser("check", help="Run offline P0–P10 component tests (some phases partial); not real acceptance")
     suite=commands.add_parser("suite-bundle",help="P8–P10 closed producer evidence adapters; no live inference/production activation")
     suite.add_argument("--inputs",required=True,type=Path)
     suite.add_argument("--out",required=True,type=Path)
@@ -189,15 +186,7 @@ def main(argv=None):
         except (OSError, ValueError, KeyError, TypeError, AssertionError) as exception:
             print(f"Preflight config/infra error: {exception}")
             return 3
-    tests = Path(__file__).resolve().parents[1] / "tests"
-    sys.path.insert(0,str(tests.parent.parent))
-    suite = unittest.defaultTestLoader.discover(str(tests), pattern="test_*.py")
-    if suite.countTestCases() == 0:
-        print("FAIL: no evaluator tests discovered")
-        return 1
-    result = unittest.TextTestRunner(verbosity=2).run(suite)
-    print("NOT RUN: real Agent/model extraction, judge, acceptance A01–A18; full BTC audio deferred.")
-    return 0 if result.wasSuccessful() else 1
+    raise AssertionError("Unhandled evaluation command")
 
 
 if __name__ == "__main__":

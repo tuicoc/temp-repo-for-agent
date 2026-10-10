@@ -1,10 +1,27 @@
 """M2 Reflection drafts. Nothing here changes the active playbook."""
 from collections import defaultdict
 import json
+import re
 
 from .assets import parse_json_block
 from .contracts import validate
 from .extractor import digest
+
+
+def customer_visible(value):
+    """Keep internal fields and common PII out of external Reflection prompts."""
+    if isinstance(value, dict):
+        hidden_terms = ("internal", "supplier_cost", "margin", "floor", "cost_price", "cost_vnd", "wholesale", "secret")
+        return {key: customer_visible(item) for key, item in value.items()
+                if not key.startswith("_") and not any(term in key.lower() for term in hidden_terms)}
+    if isinstance(value, list):
+        return [customer_visible(item) for item in value]
+    if isinstance(value, str):
+        for pattern in (re.compile(r"(?<![\w.+-])[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}(?![\w.-])", re.I),
+                        re.compile(r"(?<!\d)(?:\+?84|0)(?:[ .()-]*\d){8,10}(?!\d)"),
+                        re.compile(r"(?<!\d)\d{12}(?!\d)"), re.compile(r"(?<!\d)\d{16,19}(?!\d)")):
+            value = pattern.sub(lambda match: "█" * len(match.group(0)), value)
+    return value
 
 
 def reflection_record(assets, source_ref, run_id, call_id, outcome, failures, evidence):
@@ -57,7 +74,6 @@ def draft_lesson(records, code, evidence_notes, policy_excerpts, invoke):
     keys={item["run_id"]+"/"+item["call_id"] for item in support["support"]}
     if not policy_excerpts or not keys<=set(evidence_notes):
         return {"status":"pending_source","support":support,"draft":None,"raw":None}
-    from evaluation.product_adapter import customer_visible
     source={key:customer_visible(evidence_notes[key]) for key in sorted(keys)}
     policy={key:customer_visible(value) for key,value in policy_excerpts.items()}
     if any(not isinstance(value,str) or not value.strip() for value in [*source.values(),*policy.values()]):
