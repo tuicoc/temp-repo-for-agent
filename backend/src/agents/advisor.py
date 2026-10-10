@@ -302,21 +302,26 @@ class AdvisorAgent(BaseAgent):
         model: str | None = None,
         tools: Sequence[BaseTool] | None = None,
         generation: Mapping[str, Any] | None = None,
+        retries: int = 1,
     ) -> None:
+        """``retries`` is the one retry of a failed model call and of a
+        retryable tool failure (sections 4.9 and 6.1). An evaluation harness
+        that must see every attempt sets it to 0."""
         super().__init__("advisor", provider=provider, model=model, generation=generation)
         self._tools = list(tools or ())
         names = [tool.name for tool in self._tools]
+        retry = [ModelRetryMiddleware(max_retries=retries, initial_delay=1.0, on_failure="error")] if retries else []
         self._graph = create_agent(
             model=self.llm,
             tools=self._tools,
             middleware=[
                 ContextPromptMiddleware(),
-                ModelRetryMiddleware(max_retries=1, initial_delay=1.0, on_failure="error"),
+                *retry,
                 ModelCallLimitMiddleware(run_limit=self.MODEL_CALLS_PER_RUN, exit_behavior="error"),
                 ToolCallLimitMiddleware(run_limit=self.TOOL_CALLS_PER_RUN, exit_behavior="continue"),
                 LaneToolsMiddleware(get_lanes(), names),
                 ActionGuardMiddleware(),
-                ToolGuardMiddleware(names),
+                ToolGuardMiddleware(names, retries=retries),
             ],
             context_schema=AgentContext,
             name=self.name,

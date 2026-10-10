@@ -98,9 +98,10 @@ def render(
             lines.append((f"Khách cũng từng liên hệ qua {names}.", False, ()))
 
     for product in products:
-        ids = tuple(product.get("fact_ids") or ())
+        # Each line rests on the facts it states, and only those (section 5.5).
+        ids = product.get("fact_ids") or {}
         label = product.get("name") or product["sku"]
-        lines.append((f"Đã tư vấn {label} ({product['sku']}).", False, ids))
+        lines.append((f"Đã tư vấn {label} ({product['sku']}).", False, _ids(ids, "product_advised")))
         if product.get("price_quoted_vnd"):
             promo = f", kèm khuyến mãi {product['promo_code']}" if product.get("promo_code") else ""
             quoted = f" ngày {day_label(product['quoted_on'])}" if product.get("quoted_on") else ""
@@ -108,7 +109,7 @@ def render(
                 f"Đã báo giá {product['sku']}: {format_vnd(product['price_quoted_vnd'])}{quoted}{promo}. "
                 "Đây là lịch sử; giá hôm nay phải lấy lại bằng pricing_get_quote.",
                 True,
-                ids,
+                _ids(ids, "price_quoted_vnd", "quoted_on", "promo_code", "promo_expiry"),
             ))
 
     needs = [(n, f) for n, f in held.items() if n in NEEDS]
@@ -184,6 +185,11 @@ def render(
         "precomputed_parts": ["episodic_summary"] if episodes else [],
     }
     return brief, numbered
+
+
+def _ids(by_slot: Mapping[str, str], *slots: str) -> tuple[str, ...]:
+    """The fact ids behind *slots*, in that order, for the ones the product has."""
+    return tuple(by_slot[name] for name in slots if name in by_slot)
 
 
 def opening(who: str, products: Sequence[Mapping[str, Any]], blockers: Sequence[Mapping[str, Any]], returning: bool) -> str:

@@ -7,6 +7,10 @@ import subprocess
 from .assets import parse_json, parse_json_block
 from .extractor import extractor_input
 
+#: The product's extraction command, relative to its backend directory.
+COMMAND = "src/pipeline/eval/extract_command.py"
+MODULE = "src.pipeline.eval.extract_command"
+
 
 class ModelExtractor:
     def __init__(self, assets, ref, manifest, recorder):
@@ -20,9 +24,13 @@ class ModelExtractor:
         for source in [descriptor["code"],descriptor["prompt"],*descriptor["files"]]:
             if source not in manifest["sources"]:raise ValueError("Extractor dependencies/prompt must be pinned")
             assets.resolve(source,json_content=False)
-        backend=(assets.root/descriptor["backend"]).resolve()
-        if not backend.is_relative_to(assets.root) or assets.path(descriptor["code"]["path"])!=backend/"src/agents/evaluation_model.py":
-            raise ValueError("Extractor backend/code path mismatch")
+        # The command runs from the product's backend; the run pins a copy, and
+        # the live file must be that copy byte for byte.
+        backend=Path(descriptor["backend"])
+        live=backend/COMMAND
+        if (not backend.is_absolute() or not live.is_file()
+                or live.read_bytes()!=assets.path(descriptor["code"]["path"]).read_bytes()):
+            raise ValueError("Extractor command differs from the pinned copy, or the backend path is wrong")
         self.assets,self.descriptor,self.descriptor_ref,self.version=assets,descriptor,ref,descriptor["version"]
         self.backend,self.recorder,self.calls=backend,recorder,0
 
@@ -38,9 +46,9 @@ class ModelExtractor:
             env_path=Path(self.descriptor["python"]).parent.parent.parent/".env"
             bootstrap=("from dotenv import load_dotenv; import runpy; "
                        "load_dotenv("+repr(str(env_path))+",override=False); "
-                       "runpy.run_module('src.agents.evaluation_model',run_name='__main__')")
+                       "runpy.run_module("+repr(MODULE)+",run_name='__main__')")
             result=subprocess.run([self.descriptor["python"],"-B","-c",bootstrap],cwd=self.backend,
-                                  input=json.dumps(payload,ensure_ascii=False),text=True,capture_output=True,timeout=60,env=env)
+                                  input=json.dumps(payload,ensure_ascii=False),text=True,capture_output=True,timeout=150,env=env)  # room for the command's pacing under the provider's minute
             raw={"returncode":result.returncode,"stdout":result.stdout,"stderr":result.stderr}
             self.recorder(self.calls,raw)
             obj=parse_json(result.stdout)

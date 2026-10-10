@@ -13,6 +13,10 @@ class Parser(argparse.ArgumentParser):
 def main(argv=None):
     parser = Parser(description="P0 offline checks / P1 preflight / P2 execution / P3 replay / P4 scoring / P5 ASR / P6 metrics")
     commands = parser.add_subparsers(dest="command", required=True, parser_class=Parser)
+    product = commands.add_parser("evaluate", help="The team's agent through prepare, run, collect and score; output in --out")
+    product.add_argument("--out", type=Path, help="A new run directory (default: evaluation/runs/<date-time>)")
+    product.add_argument("--only", action="append", default=[], metavar="SCENARIO_ID", help="Run one scenario; repeat for more")
+    product.add_argument("--extractor-calls", type=int, default=64, help="Budget of extraction calls, 1-64")
     suite=commands.add_parser("suite-bundle",help="P8–P10 closed producer evidence adapters; no live inference/production activation")
     suite.add_argument("--inputs",required=True,type=Path)
     suite.add_argument("--out",required=True,type=Path)
@@ -73,6 +77,20 @@ def main(argv=None):
     scoring.add_argument("--run", required=True, type=Path)
     scoring.add_argument("--out", required=True, type=Path)
     args = parser.parse_args(argv)
+    if args.command == "evaluate":
+        from datetime import datetime
+        from product import evaluate  # beside run_eval.py; it drives the backend's agent
+        out = args.out or Path(__file__).resolve().parents[1] / "runs" / datetime.now().strftime("%Y%m%d-%H%M%S")
+        report = evaluate(out, only=set(args.only), extractor_calls=args.extractor_calls)
+        print(json.dumps(report, ensure_ascii=False, allow_nan=False, indent=2))
+        print("Run written to", out.resolve())
+        table = out / "scored" / "scorer.stdout.txt"
+        if table.is_file():
+            print(table.read_text(encoding="utf-8"))
+        if report["pipeline_error"]:
+            return 3
+        status = report["stages"][-1].get("status") or {}
+        return 1 if status.get("verdict") == "FAIL" else 2 if status.get("completeness") == "INCOMPLETE" else 0
     if args.command in ("suite-bundle","release-gate","package"):
         from .suite_bundle import evaluate_bundle
         from .release import release_gate

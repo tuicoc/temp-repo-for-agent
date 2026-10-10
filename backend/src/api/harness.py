@@ -191,9 +191,10 @@ async def run_turn(
         "phase": "opening" if content is None else "turn",
         "turn_id": turn_id,
         "turn_no": turn_no,
+        # Every turn, None included, so a mode one turn detected (teencode)
+        # does not stay in the checkpoint and label the turns after it.
+        "input_mode": input_mode,
     }
-    if input_mode:
-        turn_input["input_mode"] = input_mode
     try:
         state = await built.graph.ainvoke(turn_input, config=thread(call_id), context=context)
     except Exception as error:  # noqa: BLE001 - the page and the call both need to hear about it

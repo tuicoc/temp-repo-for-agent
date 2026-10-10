@@ -1,15 +1,12 @@
-"""The offline test: scenarios through the real graph. ``docs/design.md`` section 9, figure H.
+"""The agent under evaluation. ``docs/design.md`` section 9, figure H.
 
-Its own composition root. It reads the organisers' scenario format as is,
-drives the hot graph turn by turn with the scenario's written customer turns
-(the ASR version when there is one), runs ``after_call`` synchronously
-between calls (call 2 needs what call 1 wrote), moves the virtual clock by
-``days_later``, resets the organisers' mock per scenario, and writes one
-trace line per turn in their schema. The same run with the memory switch
-off is the baseline.
+The evaluation itself is in ``evaluation/`` (its dataset, grading contracts,
+checks and the organisers' grader) and runs with one command,
+``evaluation/run_eval.py evaluate`` (README, section 5). This package is what
+it drives:
 
-- :mod:`.runner`: ``run`` (one command), ``compare`` (refuses different
-  manifests), ``replay`` (no API call).
-
-Status: not built.
+- :mod:`.bridge`: the agent behind the harness's adapter, one process per
+  scenario and configuration, JSON lines over a pipe;
+- :mod:`.runner`: the agent assembled for a run, and its database;
+- :mod:`.extract_command`: the extraction call the harness makes per turn.
 """

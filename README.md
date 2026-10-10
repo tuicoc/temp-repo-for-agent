@@ -1,6 +1,9 @@
 # Agent Core
 
-> **Bàn giao nhánh `dai`:** [Bắt đầu phát triển evaluation tại đây](evaluation/CODE-HANDOFF.md). Kiến trúc product hiện hành nằm trong `backend/src/agents/` và `backend/src/pipeline/`; evaluator nằm trong `evaluation/eval_harness/`. Điểm nối product–evaluator vẫn cần hoàn thiện tại `backend/src/pipeline/eval/runner.py`.
+> **Evaluation.** One command, `backend/.venv/bin/python evaluation/run_eval.py evaluate`,
+> runs the agent through [`evaluation/`](evaluation/README.md) and writes the run to
+> `evaluation/runs/<date-time>/`; the table is `scored/scorer.stdout.txt`.
+> What each folder holds: [section 5](#5-evaluation).
 
 > **The project has no final name yet.** "Agent Core" is a placeholder used in
 > the badges, the licence and the documentation so that nothing has to stay
@@ -47,9 +50,11 @@ backend/
     config/config_manager.py  Loads .env once, parses the YAML, fails fast
     llm/                      Factory, rate limiter, token ledger, tracing, Jev client
     components/               One package per function: intake, identity, memory,
-                              orchestration, context, guardrails, handoff, voice
+                              orchestration, context, guardrails, handoff, voice,
+                              evaluation
     agents/                   Advisor, Policy, Memory, QA; none holds state
-    pipeline/                 hot/: the seven-node graph of one turn; cold/: after the call
+    pipeline/                 hot/: the seven-node graph of one turn; cold/: after the call;
+                              eval/: the agent as the evaluation drives it
     mcp/                      Server skeleton, client per role, and the five servers
     api/                      FastAPI: calls (chat over SSE), voice (WebSocket), admin
   lab/                        Where design ideas are tried before they reach src/ (voice, Jev)
@@ -65,6 +70,12 @@ frontend/
     components/               Shell, message bubble, composer, charts
   package.json
   .env.example
+evaluation/
+  run_eval.py                 The evaluation in one command (Getting started, section 5)
+  product.py                  Prepares a run of the agent and runs every stage
+  eval_harness/               Pinning, running, collecting and scoring
+  datasets/                   The diagnostic scenarios
+  evaluation-contracts/       Schemas, fixtures and the organisers' sources the harness pins
 docs/
   design.md                   The specification
   figures/                    Its figures: one Excalidraw source and the SVGs cut from it
@@ -162,6 +173,49 @@ python -m src.components.voice.fetch
 
 The recogniser, the end-of-turn detection, the cut-in threshold and the voice
 are chosen on the Admin page.
+
+### 5. Evaluation
+
+One place, one command. The evaluation lives in `evaluation/`: the
+scenarios (`datasets/output1-btc-diagnostic-v1`, five generated multi-call
+scenarios whose labels await QA), a grading contract per scenario, a schema
+check on every piece of evidence, the organisers' grader and checks of its
+own. It runs the agent in `backend/`, the same graph, agents and memory the
+API serves, once with memory and once without. Postgres must be up; the API
+need not be running.
+
+```sh
+backend/.venv/bin/python evaluation/run_eval.py evaluate
+```
+
+`--only SCENARIO_ID` runs one scenario (repeat it for more), and
+`--out <dir>` names the run directory. Without `--out` the run goes to
+`evaluation/runs/<date-time>/`, one folder per stage, none overwritten:
+
+| Folder | Stage | Read first |
+|---|---|---|
+| `inputs/` | the pinned scenarios, grading contracts, manifest and adapter | `preparation-report.json` |
+| `raw/` | the agent's hooks and every tool event, per configuration | `runner-report.json`, `full/adapter-0.log` |
+| `evidence/` | transcripts, extraction, memory, briefs, and the trace in the organisers' format | `full.jsonl`, `baseline.jsonl`, `validation.json` |
+| `scored/` | the organisers' grader and the harness's own checks | `scorer.stdout.txt` (the table), `official-report.json`, `supplemental-report.json`, `validation.json` |
+
+`execution-report.json` at the top of the run sums up every stage, and the
+command prints the table at the end. The exit code is 0 for a complete pass,
+1 when a check failed, 2 when evidence is incomplete, 3 when the run could
+not be carried out.
+
+How it reaches the agent: the harness's adapter (`evaluation/product_adapter.py`)
+starts `backend/src/pipeline/eval/bridge.py` in a process of its own. Every
+business tool the agent calls comes back to the harness's copy of the
+organisers' mock, which records the call and the state it changed; memory
+and knowledge stay on the agent's MCP servers, in a database of its own
+(`agentcore_eval`, emptied before each scenario). Nothing is retried. Each
+turn is labelled by `backend/src/pipeline/eval/extract_command.py` with the
+harness's prompt.
+
+Runs are not committed: a single scenario already writes about 3 MB, most of
+it copies of the organisers' data that each stage pins. Latency measured on a
+free Gemini key includes the waits its rate limit imposes.
 
 ## Configuration
 

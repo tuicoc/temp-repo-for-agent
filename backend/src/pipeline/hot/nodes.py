@@ -85,18 +85,24 @@ async def perceive(state: HotState, runtime: Runtime[HotContext]) -> dict[str, A
 async def load_context(state: HotState, runtime: Runtime[HotContext]) -> dict[str, Any]:
     """Section 4.2: who is speaking, and what the shop knows about them.
 
-    Works on the opening turn (keys from the connection), on a turn that
-    brings a new key, and on the answer to a confirming question. Every other
-    turn passes straight through. The Call Brief's latency runs from the
-    identification event to the brief being ready, ``refresh`` included.
+    Works on the first turn of a call (keys from the connection), whether the
+    agent opened it or the customer spoke first, as in the evaluation runner;
+    on a turn that brings a new key; and on the answer to a confirming
+    question. Every other turn passes straight through. The Call Brief's
+    latency runs from the identification event to the brief being ready,
+    ``refresh`` included.
     """
     context = runtime.context
     flags = state.get("flags") or {}
     opening = state.get("phase") == "opening"
+    # No key seen yet: the connection's keys (caller id, channel identity)
+    # have not been looked up. True on every turn of a web chat that has none,
+    # which is harmless: there is nothing to look up until the words bring one.
+    unidentified = opening or not state.get("keys_seen")
     tier = state.get("tier") or "UNKNOWN"
     answer = _last_customer_text(state)
 
-    if not opening and not flags.get("new_key"):
+    if not unidentified and not flags.get("new_key"):
         if tier == "PROBABLE" and state.get("awaiting") == "confirm" and answer:
             verdict = resolver.confirms(answer)
             if verdict is True:
@@ -116,7 +122,7 @@ async def load_context(state: HotState, runtime: Runtime[HotContext]) -> dict[st
         return {}
 
     started = time.perf_counter()
-    keys = _keys(state, context, opening=opening)
+    keys = _keys(state, context, connection=unidentified)
     if not keys:
         return {}
     keys_seen = list(state.get("keys_seen") or []) + [
@@ -156,22 +162,27 @@ async def load_context(state: HotState, runtime: Runtime[HotContext]) -> dict[st
     return update
 
 
-def _keys(state: HotState, context: HotContext, *, opening: bool) -> list[resolver.Key]:
+def _keys(state: HotState, context: HotContext, *, connection: bool) -> list[resolver.Key]:
+    """The connection's keys while none has been seen, then any number the words brought."""
     secret = context.identity_secret
-    if opening:
-        keys = []
+    keys = []
+    if connection:
         if context.caller_phone:
             keys.append(resolver.make_key("phone", context.caller_phone, secret, from_connection=True))
         if context.zalo_id:
             keys.append(resolver.make_key("zalo_id", context.zalo_id, secret, from_connection=True))
         if context.fb_id:
             keys.append(resolver.make_key("fb_id", context.fb_id, secret, from_connection=True))
-        return keys
-    tokens = (state.get("flags") or {}).get("new_phone_tokens") or []
-    return [
-        resolver.make_key("phone", context.vault.get(token) or "", secret, from_connection=False)
-        for token in tokens if context.vault.get(token)
-    ]
+    seen = {(k.kind, k.digest) for k in keys}
+    for token in (state.get("flags") or {}).get("new_phone_tokens") or []:
+        value = context.vault.get(token)
+        if not value:
+            continue
+        key = resolver.make_key("phone", value, secret, from_connection=False)
+        if (key.kind, key.digest) not in seen:
+            seen.add((key.kind, key.digest))
+            keys.append(key)
+    return keys
 
 
 async def _look_up(keys: list[resolver.Key], context: HotContext) -> tuple[list[resolver.Match], dict[str, dict]]:

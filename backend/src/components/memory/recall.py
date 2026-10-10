@@ -67,7 +67,9 @@ def advised(facts: Sequence[Mapping[str, Any]], orders: Sequence[Mapping[str, An
     products = []
     if "product_advised" in held:
         sku = str(held["product_advised"]["value"])
-        ids = [held[s]["fact_id"] for s in ("product_advised", "price_quoted_vnd", "quoted_on", "promo_code") if s in held]
+        # Slot -> fact id, so each brief line can cite only the facts it states.
+        ids = {s: held[s]["fact_id"] for s in ("product_advised", "price_quoted_vnd", "quoted_on", "promo_code", "promo_expiry")
+               if s in held}
         products.append({
             "sku": sku,
             "price_quoted_vnd": held.get("price_quoted_vnd", {}).get("value"),

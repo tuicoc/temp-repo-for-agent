@@ -82,6 +82,17 @@ agents:
       # is a parse failure and a wasted regeneration, not a shorter answer.
       max_tokens: 2048
 
+  # docs/design.md section 9.4 and Appendix C: the evaluation's extractor of
+  # questions, claims and fact use (src/pipeline/eval/extract_command.py, run
+  # by the harness in evaluation/). Not an agent of the product; named here so
+  # its model is one line of config like theirs. On the advisor's Gemini key;
+  # its thinking tokens share the same budget.
+  extractor:
+    provider: google_genai
+    model: gemini-3.5-flash-lite
+    generation:
+      max_tokens: 2048
+
 providers:
   google_genai:
     label: Google AI Studio
