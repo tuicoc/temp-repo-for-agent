@@ -17,6 +17,11 @@ def context_key(context):
     return "/".join(str(context[key]) for key in ("run_id", "config", "scenario_id", "call", "turn"))
 
 
+def expects_call_brief(context, result):
+    return (context["config"] == "full" and context["call"] != "call_1"
+            and result.get("customer_id") not in (None, "unidentified"))
+
+
 def status(issues):
     failed = any(i["classification"] == "agent_violation" for i in issues)
     incomplete = any(i["classification"] != "agent_violation" for i in issues)
@@ -314,6 +319,8 @@ def collect(run_dir, out, *, extractor_path=None, audit_seed=0):
                 result = result if isinstance(result, dict) else {}
                 brief = result.get("call_brief")
                 if brief is not None:
+                    if result.get("customer_id") in (None, "unidentified"):
+                        issue("BRIEF_UNVERIFIED_PROFILE", call_key, "agent_violation", raw_ref)
                     brief_ref = write(f"{context['config']}/briefs/{digest(call_key)}.json", brief)
                     errors = checker.errors("sources/btc/schemas/call_brief.schema.json", brief)
                     if errors:
@@ -327,7 +334,7 @@ def collect(run_dir, out, *, extractor_path=None, audit_seed=0):
                                         "reason_codes": ["BRIEF_INVALID"] if errors else []}))
                     except (ValueError, KeyError, TypeError) as exc:
                         issue("BRIEF_TIMING_MISSING", str(exc), ref=brief_ref)
-                elif context["config"] == "full" and context["call"] != "call_1":
+                elif expects_call_brief(context, result):
                     issue("BRIEF_MISSING", call_key, ref=raw_ref)
 
     # Handoff object is captured at invocation, never replaced with Call Brief.

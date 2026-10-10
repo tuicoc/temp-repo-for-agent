@@ -14,7 +14,7 @@ one folder per stage under ``--out`` and never overwrites one:
 not run: it implements level M1, and these scenarios are M2.
 
 :func:`prepare` calls no model. It writes into a new directory what ``run_fixed`` needs, each input pinned by
-hash in the manifest: the five scenarios of ``datasets/output1-btc-diagnostic-v1``
+hash in the manifest: the five scenarios of ``datasets/output1-btc-diagnostic-v2``
 (their provenance from ``output (1)`` checked against ``normalize_output1``),
 one grading contract per scenario from ``fixtures/grading.json``, the scope,
 the adapter (``product_adapter.py``) and the bundle naming the agent it
@@ -36,10 +36,11 @@ from eval_harness.runner import _output_path, _write, run_fixed
 from eval_harness.scoring import score
 from normalize_output1 import convert
 from product_adapter import tree_sha256
+from tool_expectations import labels_for
 
 PRODUCT = ROOT.parent.parent / "backend"
 PYTHON = PRODUCT / ".venv/bin/python"
-DATASET = ROOT.parent / "datasets/output1-btc-diagnostic-v1/scenarios"
+DATASET = ROOT.parent / "datasets/output1-btc-diagnostic-v2/scenarios"
 COMMAND = "src/pipeline/eval/extract_command.py"
 CAPABILITIES = ["business_tools", "memory_isolation", "memory_read_gate", "after_call_barrier",
                 "snapshots", "briefs", "timestamps", "usage"]
@@ -104,7 +105,8 @@ def prepare(out, *, only=None, extractor_calls=64):
     _write(out / "conversion-report.json", conversion)
     (out / "scenarios").mkdir()
     (out / "grading").mkdir()
-    scenario_refs, grading_refs, scenarios = [], [], []
+    (out / "expected-tools").mkdir()
+    scenario_refs, grading_refs, tool_refs, scenarios = [], [], [], []
     for path in paths:
         item = read_json(path)
         validate("Scenario", item)
@@ -119,6 +121,22 @@ def prepare(out, *, only=None, extractor_calls=64):
             template.update(call=call, official_success_if={**ref, "pointer": "/calls/" + call + "/success_if"},
                             ground_truth=[ref])
             template["suites"][0]["reason"] = "Generated diagnostic GT pending QA"
+            expected = labels_for(item["scenario_id"], call, item["calls"][call]["success_if"])
+            for config in ("full", "baseline_no_memory"):
+                label_path = f"expected-tools/{config}/{item['scenario_id']}/{call}.json"
+                (out / label_path).parent.mkdir(parents=True, exist_ok=True)
+                context = {"run_id": "PRODUCT-" + hashlib.sha256(str(out).encode()).hexdigest()[:16],
+                           "config": config, "scenario_id": item["scenario_id"], "call": call, "turn": 1}
+                _write(out / label_path, {"schema_version": "1.0.0",
+                       "artifact_id": "/".join((context["run_id"], config, item["scenario_id"], call, "tool-labels")),
+                       "run_id": context["run_id"], "evidence_refs": [ref], "context": context,
+                       "calls": expected, "allow_extra_read_only": True,
+                       "labelled_by": "output1-diagnostic-tool-labels-pending-independent-QA"})
+                label_ref = assets.ref(label_path)
+                tool_refs.append(label_ref)
+                template["checks"].append({"check_id": "tool_accuracy_" + config,
+                    "kind": "tool_accuracy", "params": {"expected_calls": label_ref},
+                    "required_evidence": []})
             grader["calls"].append(template)
         _write(out / "grading" / path.name, grader)
         grading_refs.append(assets.ref("grading/" + path.name))
@@ -168,7 +186,7 @@ def prepare(out, *, only=None, extractor_calls=64):
     _write(out / "extractor.json", extractor)
     manifest["configuration"]["extractor_version"] = extractor["version"]
 
-    manifest["sources"] = [assets.ref("fixtures/p1-scope.json"), *resources, assets.ref("adapter.json"),
+    manifest["sources"] = [assets.ref("fixtures/p1-scope.json"), *resources, *tool_refs, assets.ref("adapter.json"),
                            descriptor["code"], assets.ref("product-bundle.json"), assets.ref("metrics-policy.json"),
                            assets.ref("conversion-report.json"), assets.ref("extractor-prompt.txt"),
                            assets.ref("extract_command.py"), assets.ref("extractor.json")]

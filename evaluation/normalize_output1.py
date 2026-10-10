@@ -8,7 +8,7 @@ from eval_harness.contracts import validate
 
 ROOT = Path(__file__).resolve().parent
 SOURCE = ROOT / "output (1)" / "scenarios"
-TARGET = ROOT / "datasets" / "output1-btc-diagnostic-v1"
+TARGET = ROOT / "datasets" / "output1-btc-diagnostic-v2"
 
 # Human-authored diagnostic assertions; none is an approved official GT label.
 ASSERTIONS = {
@@ -23,17 +23,19 @@ ASSERTIONS = {
     "SCN-GEN-0003": {
         "call_1": {"tool_called": "inventory.check", "args_match": {"sku": "SKU-AP-Y"},
                    "must_not_call_tools": ["order.create"]},
-        "call_2": {"must_say_any": ["mã đơn", "thông tin đơn"], "must_not_call_tools": ["order.create"]},
-        "call_3": {"must_say_any": ["mã đơn", "thông tin đơn"], "must_not_call_tools": ["order.create"]},
+        "call_2": {"must_say_any": ["mã đơn", "thông tin đơn", "chưa ghi nhận đơn", "chưa có đơn"],
+                   "must_not_call_tools": ["order.create"]},
+        "call_3": {"must_say_any": ["mã đơn", "thông tin đơn", "chưa ghi nhận đơn", "chưa có đơn"],
+                   "must_not_call_tools": ["order.create"]},
     },
     "SCN-GEN-0004": {
-        "call_1": {"must_say_any": ["xác nhận", "cho em biết tên"], "must_not_call_tools": ["order.create", "order.status"]},
-        "call_2": {"must_say_any": ["xác nhận", "cho em biết tên"], "must_not_call_tools": ["order.create", "order.status"]},
-        "call_3": {"must_say_any": ["xác nhận", "cho em biết tên"], "must_not_call_tools": ["order.create", "order.status"]},
+        "call_1": {"must_say_any": ["xác nhận", "cho em biết tên", "cho em xin tên"], "must_not_call_tools": ["order.create", "order.status"]},
+        "call_2": {"must_say_any": ["xác nhận", "cho em biết tên", "cho em xin tên"], "must_not_call_tools": ["order.create", "order.status"]},
+        "call_3": {"must_say_any": ["xác nhận", "cho em biết tên", "cho em xin tên"], "must_not_call_tools": ["order.create", "order.status"]},
     },
     "SCN-GEN-0005": {
-        "call_1": {"must_say_any": ["xác nhận", "cho em biết tên"], "must_not_call_tools": ["order.create", "order.status"]},
-        "call_2": {"must_say_any": ["xác nhận", "cho em biết tên"], "must_not_call_tools": ["order.create", "order.status"]},
+        "call_1": {"must_say_any": ["xác nhận", "cho em biết tên", "cho em xin tên"], "must_not_call_tools": ["order.create", "order.status"]},
+        "call_2": {"must_say_any": ["xác nhận", "cho em biết tên", "cho em xin tên"], "must_not_call_tools": ["order.create", "order.status"]},
     },
 }
 
@@ -109,7 +111,7 @@ def main():
     for name, payload in prepared.items():
         (TARGET / "scenarios" / name).write_text(payload, encoding="utf-8")
     (TARGET / "conversion-report.json").write_text(json.dumps({
-        "schema_version": "output1-btc-diagnostic-v1", "official_gt_approved": False,
+        "schema_version": "output1-btc-diagnostic-v2", "official_gt_approved": False,
         "scope": "5 scenarios; JSON only; no ASR; no model run", "files": report,
     }, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
     print(f"Created {len(files)} scenario files / {sum(len(r['calls']) for r in report)} calls: {TARGET}")

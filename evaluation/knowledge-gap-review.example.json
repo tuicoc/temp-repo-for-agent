@@ -1,0 +1,11 @@
+{
+  "gap_id": "GAP-REPLACE_WITH_CANDIDATE_ID",
+  "reviewer": "consultant-or-qa-id",
+  "decision": "approve_faq",
+  "general_question": "Câu hỏi đã bỏ thông tin riêng của khách?",
+  "general_answer": "Câu trả lời chung đã đối chiếu nguồn đáng tin cậy.",
+  "evidence": "Nguồn sản phẩm/chính sách và câu trả lời consultant, kèm định danh nguồn",
+  "policy_checked": true,
+  "consultant_answer_verified": true,
+  "must_say_any": ["cụm thông tin bắt buộc có trong câu trả lời lần sau"]
+}

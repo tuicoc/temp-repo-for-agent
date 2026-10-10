@@ -10,7 +10,7 @@ READ_ONLY_TOOLS = frozenset({
 })
 
 
-def match_tool_calls(expectations, events):
+def match_tool_calls(expectations, events, *, call_scope=False):
     """Match one labelled context; inputs must be complete, not partial logs.
 
     Chronological events consume the earliest unmatched compatible label.
@@ -27,7 +27,9 @@ def match_tool_calls(expectations, events):
     seen = set()
     for event in events:
         validate("ToolEvent", event)
-        if event["context"] != expectations["context"] or event["run_id"] != expectations["run_id"]:
+        same_context = all(event["context"][key] == expectations["context"][key]
+                           for key in ("run_id", "config", "scenario_id", "call")) if call_scope else event["context"] == expectations["context"]
+        if not same_context or event["run_id"] != expectations["run_id"]:
             raise ValueError("Tool event does not belong to the labelled context")
         if event["event_id"] in seen:
             raise ValueError("Duplicate tool event_id")

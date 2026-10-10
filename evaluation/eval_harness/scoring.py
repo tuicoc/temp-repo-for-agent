@@ -10,6 +10,8 @@ import sys
 from referencing.exceptions import Unresolvable
 
 from .assets import Assets, parse_json, read_json
+from .adjudication import review_claims, review_tool_errors
+from .gaps import candidates as gap_candidates
 from .collector import context_key, locked_run, status
 from .contracts import ROOT, checker, validate
 from .extractor import digest
@@ -27,6 +29,22 @@ def new_order_verified(event, before, after):
             and isinstance(order, dict) and order.get("order_id") == oid
             and all(order.get(k) == args[k] for k in ("customer_phone", "sku", "payment", "address", "price_vnd") if k in args)
             and order.get("qty") == args.get("qty", 1) and order.get("total_vnd") == result.get("total_vnd"))
+
+
+def brief_matches_profile(brief, kind, scenario, spec):
+    """Call Brief may mask the phone; handoff must keep the BTC wire phone."""
+    phone = scenario["customer_phone"]
+    actual = brief.get("customer_phone")
+    if kind == "call_brief":
+        if actual not in (phone, "******" + phone[-4:]):
+            return False
+    elif actual != phone:
+        return False
+    expected_id = spec.get("ground_truth_facts", {}).get("customer_id")
+    actual_id = brief.get("customer_id")
+    if kind == "call_brief" and expected_id and actual_id != expected_id:
+        return False
+    return not (expected_id and actual_id and actual_id != expected_id)
 
 
 def score(run_dir, out):
@@ -249,7 +267,8 @@ def score(run_dir, out):
                 call_findings.append(issue("GRADING_MISSING", call_id))
             elif grader["mode"] != "assertion_only":
                 call_findings.append(issue("JUDGE_PENDING", call_id + "/" + grader["mode"]))
-            if grader and not any(c["kind"] == "tool_accuracy" for c in grader["checks"]):
+            if grader and not any(c["kind"] == "tool_accuracy" and c["check_id"] == "tool_accuracy_" + config
+                                  for c in grader["checks"]):
                 call_findings.append(issue("TOOL_EXPECTATIONS_NOT_LABELLED", call_id))
             for role in graders.get(sid, {}).get("required_evidence", []):
                 if not available_roles.get(role, False):
@@ -386,7 +405,7 @@ def score(run_dir, out):
                     call_findings.append(issue("BRIEF_INVALID", call_id, "agent_violation", ref(brief["object_ref"])))
                 if not isinstance(brief_object, dict):
                     continue
-                if brief_object.get("customer_phone") != scenarios[sid]["customer_phone"]:
+                if not brief_matches_profile(brief_object, brief["kind"], scenarios[sid], spec):
                     call_findings.append(issue("BRIEF_WRONG_PROFILE", call_id, "agent_violation", ref(brief["object_ref"])))
                 content = brief_object.get("profile_facts", {}) if brief["kind"] == "call_brief" else brief_object.get("facts_confirmed", {})
                 for field, value in content.items():
@@ -477,13 +496,15 @@ def score(run_dir, out):
                                 if errors:
                                     findings.append(issue("SCHEMA_ASSERTION", errors[0].message, "agent_violation"))
                         elif kind == "tool_accuracy":
+                            if assertion["check_id"] != "tool_accuracy_" + config:
+                                continue
                             labels = inputs.resolve(params["expected_calls"])
                             if any(labels["context"][k] != value for k, value in (("run_id", manifest["run_id"]), ("config", config), ("scenario_id", sid), ("call", call))):
                                 raise ValueError("Expected tool labels belong to another run/config/call; never relabel after execution")
-                            matched = match_tool_calls(labels, [e for e in ts if e["context"] == labels["context"]])
+                            matched = match_tool_calls(labels, ts, call_scope=True)
                             details.append({"check_id": call_id + "/" + assertion["check_id"], "matching": matched,
                                             "labels": input_ref(params["expected_calls"])})
-                            metric(call_id + "/tool_accuracy", "tool-accuracy.v2", [context_key(labels["context"])], matched["tp"], matched["tp"] + matched["fp"] + matched["fn"], call_refs, not complete)
+                            metric(call_id + "/tool_accuracy", "tool-accuracy.v2", [call_id], matched["tp"], matched["tp"] + matched["fp"] + matched["fn"], call_refs, not complete)
                             if matched["fp"] or matched["fn"]:
                                 findings.append(issue("TOOL_ACCURACY", call_id, "agent_violation" if complete else "missing_evidence"))
                             if matched["status"] == "UNDEFINED":
@@ -510,6 +531,9 @@ def score(run_dir, out):
                   "metrics": metrics, "coverage_refs": [coverage_ref], "official_report": official_ref}
         validate("SupplementalReport", report)
         write("supplemental-report.json", report)
+    write("claim-adjudication.json", review_claims(traces, scenarios))
+    write("tool-business-error-review.json", review_tool_errors(tools))
+    write("knowledge-gap-candidates.json", gap_candidates(traces, evidence))
     validation = {"schema_version": "1.0.0", "artifact_id": manifest["run_id"] + "/score-validation",
                   "run_id": manifest["run_id"], "status": status(issues), "issues": issues, "coverage_refs": [coverage_ref]}
     validate("ValidationReport", validation)

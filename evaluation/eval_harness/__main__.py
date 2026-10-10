@@ -17,6 +17,20 @@ def main(argv=None):
     product.add_argument("--out", type=Path, help="A new run directory (default: evaluation/runs/<date-time>)")
     product.add_argument("--only", action="append", default=[], metavar="SCENARIO_ID", help="Run one scenario; repeat for more")
     product.add_argument("--extractor-calls", type=int, default=64, help="Budget of extraction calls, 1-64")
+    commands.add_parser("history", help="Show every product evaluation run from evaluation/runs; no Agent/model")
+    gap = commands.add_parser("gap-publish", help="Publish a human-reviewed FAQ and growth-test candidate; never activates KB")
+    gap.add_argument("--candidates", required=True, type=Path)
+    gap.add_argument("--review", required=True, type=Path)
+    gap.add_argument("--out", required=True, type=Path)
+    scan = commands.add_parser("gap-scan", help="Extract gap review candidates from a closed evaluation evidence run")
+    scan.add_argument("--run", required=True, type=Path)
+    scan.add_argument("--out", required=True, type=Path)
+    growth = commands.add_parser("gap-check", help="Check all approved growth cases against supplied agent responses")
+    growth.add_argument("--growth-root", required=True, type=Path)
+    growth.add_argument("--responses", required=True, type=Path)
+    rag = commands.add_parser("rag-recall", help="Run product kb_search on all 60 BTC questions; retrieval only")
+    rag.add_argument("--out", required=True, type=Path, help="New output directory")
+    rag.add_argument("--on", default="2026-10-15", help="Call date for versioned policy (YYYY-MM-DD)")
     suite=commands.add_parser("suite-bundle",help="P8–P10 closed producer evidence adapters; no live inference/production activation")
     suite.add_argument("--inputs",required=True,type=Path)
     suite.add_argument("--out",required=True,type=Path)
@@ -77,6 +91,49 @@ def main(argv=None):
     scoring.add_argument("--run", required=True, type=Path)
     scoring.add_argument("--out", required=True, type=Path)
     args = parser.parse_args(argv)
+    if args.command == "rag-recall":
+        from datetime import date
+        from .rag_recall import run
+        try:
+            date.fromisoformat(args.on)
+            result = run(args.out, on=args.on)
+            print(json.dumps({key: value for key, value in result["metrics"].items() if key != "rows"},
+                             ensure_ascii=False, indent=2))
+            print("Report written to", (args.out / "report.json").resolve())
+            return 0
+        except (OSError, ValueError, TypeError, RuntimeError, AssertionError) as exc:
+            print("RAG Recall incomplete:", exc)
+            return 3
+    if args.command == "gap-check":
+        from .gaps import check
+        try:
+            report = check(args.growth_root, args.responses)
+            print(json.dumps(report, ensure_ascii=False, indent=2))
+            return 1 if report["counts"]["FAIL"] else 2 if report["counts"]["MISSING"] or not report["rows"] else 0
+        except (OSError, ValueError, KeyError, TypeError) as exc:
+            print("Growth check error:", exc)
+            return 3
+    if args.command == "gap-scan":
+        from .gaps import scan
+        try:
+            report = scan(args.run, args.out)
+            print(json.dumps({"candidates": len(report["candidates"]), "out": str(args.out.resolve())}, ensure_ascii=False))
+            return 0
+        except (OSError, ValueError, KeyError, TypeError) as exc:
+            print("Knowledge gap scan error:", exc)
+            return 3
+    if args.command == "gap-publish":
+        from .gaps import publish
+        try:
+            print(json.dumps(publish(args.candidates, args.review, args.out), ensure_ascii=False, indent=2))
+            return 0
+        except (OSError, ValueError, KeyError, TypeError) as exc:
+            print("Knowledge gap review error:", exc)
+            return 3
+    if args.command == "history":
+        from .history import render_history
+        print(render_history(Path(__file__).resolve().parents[1] / "runs"))
+        return 0
     if args.command == "evaluate":
         from datetime import datetime
         from product import evaluate  # beside run_eval.py; it drives the backend's agent
