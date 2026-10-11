@@ -183,15 +183,6 @@ def render_table(comparison, summary, asr=None):
     lines += ["", "## Checks", "", "| Check | Verdict | Completeness |", "| --- | --- | --- |"]
     for check in summary["checks"]:
         lines.append(f"| {check['check_id']} | {check['status']['verdict']} | {check['status']['completeness']} |")
-    lines += ["", "## ASR team — shared suite, not separate full/baseline measurements", ""]
-    if asr:
-        lines += ["| View | WER (%) | CER (%) | Entity accuracy (%) |", "| --- | ---: | ---: | ---: |"]
-        for view in ("raw", "normalized"):
-            metric = asr.get(view + "_metrics") or {}
-            lines.append(f"| {view} | {number(metric.get('WER'))} | {number(metric.get('CER'))} | {number(metric.get('entity_accuracy'))} |")
-        lines += ["", "Mode: " + asr["mode"] + "; timing: " + asr["timing_notice"] + "; quality acceptance: false."]
-    else:
-        lines += ["INCOMPLETE — no team ASR evidence supplied."]
     lines += ["", "Casebook qualifying real cases: " + str(summary["casebook"]["qualifying_real_cases"]) + "/10; analysis complete: " + str(summary["casebook"]["analysis_complete"]),
               "", "Deferred: " + json.dumps(summary["deferred"], ensure_ascii=False), ""]
     return "\n".join(lines)
@@ -207,7 +198,7 @@ def copy_run(source, target):
     return locked_run(target)[0]
 
 
-def report_metrics(run_dir, out, *, asr_run=None, usage_run=None, casebook_run=None):
+def report_metrics(run_dir, out, *, usage_run=None, casebook_run=None):
     source, _ = locked_run(run_dir)
     manifest = read_json(source.path("manifest.json"))
     validate("Manifest", manifest)
@@ -217,10 +208,6 @@ def report_metrics(run_dir, out, *, asr_run=None, usage_run=None, casebook_run=N
     for extra in (usage_run, casebook_run):
         if extra is not None and target.is_relative_to(locked_run(extra)[0].root):
             raise ValueError("Do not write inside optional source evidence")
-    if asr_run is not None:
-        asr_source, _ = locked_run(asr_run)
-        if target.is_relative_to(asr_source.root):
-            raise ValueError("Do not write inside source ASR evidence")
     target.mkdir(mode=0o700, parents=True, exist_ok=False)
     score = copy_run(source.root, target / "score")
     usage_assets = copy_run(usage_run, target / "usage") if usage_run is not None else None
@@ -407,29 +394,7 @@ def report_metrics(run_dir, out, *, asr_run=None, usage_run=None, casebook_run=N
                               timing_refs+[local.ref("metrics-policy.json")],n=charge,d=len(completed),incomplete=reason,currency=policy["currency"]))
         if arithmetic["status"]=="INCOMPLETE":issue("RUNTIME_COST_INCOMPLETE",config+": "+str(reason))
         all_metrics[config]=ms
-    asr=None
-    if asr_run is not None:
-        copied=copy_run(asr_run,target/"asr")
-        asr=read_json(copied.path("asr-suite-report.json"))
-        cv=read_json(copied.path("coverage.json"));validate("Coverage",cv)
-        if asr.get("report_kind")!="p5-asr-suite-v1" or asr["split"]!="eval":raise ValueError("Expected P5 team eval ASR evidence")
-        for key in ("coverage_ref","validation_ref","native_report_ref"):
-            if asr[key]:copied.resolve(asr[key])
-        asr_validation=copied.resolve(asr["validation_ref"])
-        validate("ValidationReport",asr_validation)
-        for item in asr_validation["issues"]:
-            copied.resolve(item["artifact"],json_content=False)
-            issues.append({**item,"artifact":{**item["artifact"],"path":"asr/"+item["artifact"]["path"]}})
-        if asr["status"]["verdict"]=="FAIL":issue("ASR_CONFIRMED_FAIL","P5 failure retained","agent_violation")
-        if asr["native_report_ref"]:
-            native=copied.resolve(asr["native_report_ref"])
-            if any(asr[k]!=native[k] for k in ("raw_metrics","normalized_metrics")):
-                raise ValueError("ASR metrics do not match pinned native report")
-        if asr["status"]["completeness"]!="COMPLETE":issue("ASR_INCOMPLETE","P5 suite evidence incomplete")
-        if asr["mode"]=="replay":issue("ASR_REPLAY_NOT_NEW_MEASUREMENT","Historical transcripts only")
-        if asr["provisional"] or not asr["benchmark_ready"]:issue("DATASET_PROVISIONAL","P5 Frozen/C.1 readiness incomplete")
-        if manifest["asr_ids"] and Counter(manifest["asr_ids"])!=Counter(cv["expected_ids"]):issue("ASR_REGISTERED_IDS_MISMATCH","Do not swap registered cohort")
-    else:issue("ASR_EVIDENCE_MISSING","M1 requires team audio evidence; BTC full audio remains deferred")
+    asr=None  # Historical report shape; text evaluation has no ASR measurement.
     if manifest["fixture"]:issue("FIXTURE_NOT_BENCHMARK","Fixture metrics cannot certify real M1")
     supplemental=read_json(score.path("supplemental-report.json")) if (score.root/"supplemental-report.json").is_file() else {"checks":[]}
     supplemental={**supplemental,"checks":[{**c,"evidence_refs":[{**r,"path":"score/"+r["path"]} for r in c["evidence_refs"]]} for c in supplemental["checks"]]}
@@ -498,7 +463,6 @@ def report_metrics(run_dir, out, *, asr_run=None, usage_run=None, casebook_run=N
     _write(target/"metrics-report.json",summary)
     with (target/"table.md").open("x") as stream:stream.write(render_table(comparison,summary,asr))
     locked_run(run_dir)
-    if asr_run is not None:locked_run(asr_run)
     for extra in (usage_run,casebook_run):
         if extra is not None:locked_run(extra)
     checker.verify_sources();close_output(target)

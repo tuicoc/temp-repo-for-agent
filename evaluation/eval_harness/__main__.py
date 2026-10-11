@@ -11,13 +11,26 @@ class Parser(argparse.ArgumentParser):
 
 
 def main(argv=None):
-    parser = Parser(description="P0 offline checks / P1 preflight / P2 execution / P3 replay / P4 scoring / P5 ASR / P6 metrics")
+    parser = Parser(description="Offline contracts, text evaluation, evidence replay and metrics")
     commands = parser.add_subparsers(dest="command", required=True, parser_class=Parser)
     product = commands.add_parser("evaluate", help="The team's agent through prepare, run, collect and score; output in --out")
     product.add_argument("--out", type=Path, help="A new run directory (default: evaluation/runs/<date-time>)")
     product.add_argument("--only", action="append", default=[], metavar="SCENARIO_ID", help="Run one scenario; repeat for more")
     product.add_argument("--extractor-calls", type=int, default=64, help="Budget of extraction calls, 1-64")
+    product.add_argument("--dataset-id", help="Approved dataset ID from evaluation/datasets/registry.json")
     commands.add_parser("history", help="Show every product evaluation run from evaluation/runs; no Agent/model")
+    data = commands.add_parser("data-check", help="Inspect the single team dataset registry without an Agent")
+    data.add_argument("--root", type=Path, default=Path(__file__).resolve().parents[1] / "datasets")
+    data.add_argument("--set", help="Inspect one registered dataset ID")
+    exemplar = commands.add_parser("exemplar-check", help="Check approved examples and their reported context use")
+    exemplar.add_argument("--bank", required=True, type=Path)
+    exemplar.add_argument("--usage", required=True, type=Path)
+    reflection = commands.add_parser("reflection-support", help="Check independent call support for a lesson candidate")
+    reflection.add_argument("--records", required=True, type=Path)
+    reflection.add_argument("--code", required=True)
+    improvement = commands.add_parser("improvement-compare", help="Compare closed text evaluation rounds, M1 or M2")
+    improvement.add_argument("--run", action="append", required=True, type=Path)
+    improvement.add_argument("--out", required=True, type=Path)
     gap = commands.add_parser("gap-publish", help="Publish a human-reviewed FAQ and growth-test candidate; never activates KB")
     gap.add_argument("--candidates", required=True, type=Path)
     gap.add_argument("--review", required=True, type=Path)
@@ -46,11 +59,10 @@ def main(argv=None):
     rounds.add_argument("--out", required=True, type=Path)
     metrics = commands.add_parser("report", help="P6 immutable M1 metric/comparison/table replay; no Agent/model")
     metrics.add_argument("--run", required=True, type=Path, help="Closed P4 score run")
-    metrics.add_argument("--asr-run", type=Path, help="Closed P5 team eval ASR run")
     metrics.add_argument("--usage-run", type=Path, help="Closed reconciled billing ledger; never fills missing usage with zero")
     metrics.add_argument("--casebook-run", type=Path, help="Closed casebook review with independent retest evidence")
     metrics.add_argument("--out", required=True, type=Path)
-    bench = commands.add_parser("benchmark", help="P6 one-command M1 using explicit paired execution and ASR settings")
+    bench = commands.add_parser("benchmark", help="P6 one-command text evaluation using paired execution")
     bench.add_argument("--settings", required=True, type=Path)
     bench.add_argument("--out", required=True, type=Path)
     pair = commands.add_parser("benchmark-rounds", help="Run pinned R0 and R1 through P2–P7; diagnostic hold")
@@ -58,14 +70,6 @@ def main(argv=None):
     pair.add_argument("--r1-settings", required=True, type=Path)
     pair.add_argument("--out", required=True, type=Path)
     pair.add_argument("--max-model-attempts", type=int, help="Required hard cap for runtime rounds; preflight counts both Agent configurations and extractor")
-    readiness = commands.add_parser("dataset-readiness", help="P5 pinned inventory; no inference or dataset generation")
-    readiness.add_argument("--settings", required=True, type=Path)
-    readiness.add_argument("--out", required=True, type=Path)
-    asr = commands.add_parser("asr-suite", help="P5 existing ASR adapter; replay by default, not a new speed benchmark")
-    asr.add_argument("--settings", required=True, type=Path)
-    asr.add_argument("--out", required=True, type=Path)
-    asr.add_argument("--split", choices=("dev", "eval"), default="eval")
-    asr.add_argument("--mode", choices=("replay", "infer"), default="replay")
     pre = commands.add_parser("preflight", help="Validate pinned planned inputs without running an Agent")
     pre.add_argument("--settings", required=True, type=Path)
     pre.add_argument("--scenarios", type=Path, help="Optional directory; must exactly match manifest")
@@ -91,6 +95,29 @@ def main(argv=None):
     scoring.add_argument("--run", required=True, type=Path)
     scoring.add_argument("--out", required=True, type=Path)
     args = parser.parse_args(argv)
+    if args.command == "improvement-compare":
+        from .improvement_compare import compare
+        try:
+            report = compare(args.run, args.out)
+            print(json.dumps(report, ensure_ascii=False, indent=2))
+            return 2 if any(row["issues"] for row in report["rounds"]) else 0
+        except (OSError, ValueError, KeyError, TypeError) as exc:
+            print("Improvement comparison error:", exc)
+            return 3
+    if args.command in {"data-check", "exemplar-check", "reflection-support"}:
+        from .assets import read_json
+        from .data_registry import inspect
+        from .exemplars import check
+        from .reflection import lesson_support
+        try:
+            report = (inspect(args.root, only=args.set) if args.command == "data-check" else
+                      check(args.bank, args.usage) if args.command == "exemplar-check" else
+                      lesson_support(read_json(args.records), args.code))
+            print(json.dumps(report, ensure_ascii=False, indent=2))
+            return 2 if report.get("issues") or report.get("status") in {"INCOMPLETE", "pending_evidence"} or report.get("execution_gate", {}).get("allowed") is False else 0
+        except (OSError, ValueError, KeyError, TypeError) as exc:
+            print("Offline improvement check error:", exc)
+            return 3
     if args.command == "rag-recall":
         from datetime import date
         from .rag_recall import run
@@ -138,7 +165,7 @@ def main(argv=None):
         from datetime import datetime
         from product import evaluate  # beside run_eval.py; it drives the backend's agent
         out = args.out or Path(__file__).resolve().parents[1] / "runs" / datetime.now().strftime("%Y%m%d-%H%M%S")
-        report = evaluate(out, only=set(args.only), extractor_calls=args.extractor_calls)
+        report = evaluate(out, only=set(args.only), extractor_calls=args.extractor_calls, dataset_id=args.dataset_id)
         print(json.dumps(report, ensure_ascii=False, allow_nan=False, indent=2))
         print("Run written to", out.resolve())
         table = out / "scored" / "scorer.stdout.txt"
@@ -184,24 +211,13 @@ def main(argv=None):
         from .benchmark import benchmark
         try:
             report = (benchmark(args.settings, args.out) if args.command == "benchmark"
-                      else report_metrics(args.run, args.out, asr_run=args.asr_run, usage_run=args.usage_run, casebook_run=args.casebook_run))
+                      else report_metrics(args.run, args.out, usage_run=args.usage_run, casebook_run=args.casebook_run))
             print(json.dumps(report, ensure_ascii=False, allow_nan=False, indent=2))
             if args.command == "benchmark" and report["table_ref"]:
                 print((args.out / report["table_ref"]["path"]).read_text())
             return 1 if report["status"]["verdict"] == "FAIL" else 2 if report["status"]["completeness"] == "INCOMPLETE" else 0
         except (OSError, ValueError, KeyError, TypeError, AssertionError) as exception:
             print(f"P6 config/integrity error: {exception}")
-            return 3
-    if args.command in ("dataset-readiness", "asr-suite"):
-        from .datasets import dataset_readiness
-        from .asr_suite import asr_suite
-        try:
-            report = (dataset_readiness(args.settings, args.out) if args.command == "dataset-readiness"
-                      else asr_suite(args.settings, args.out, split=args.split, mode=args.mode))
-            print(json.dumps(report, ensure_ascii=False, allow_nan=False, indent=2))
-            return 2 if report["status"]["completeness"] == "INCOMPLETE" else 0
-        except (OSError, ValueError, KeyError, TypeError, AssertionError) as exception:
-            print(f"P5 config/integrity error: {exception}")
             return 3
     if args.command == "score":
         from .scoring import score

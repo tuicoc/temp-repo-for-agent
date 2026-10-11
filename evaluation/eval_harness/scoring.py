@@ -533,7 +533,7 @@ def score(run_dir, out):
         write("supplemental-report.json", report)
     write("claim-adjudication.json", review_claims(traces, scenarios))
     write("tool-business-error-review.json", review_tool_errors(tools))
-    write("knowledge-gap-candidates.json", gap_candidates(traces, evidence))
+    write("knowledge-gap-candidates.json", gap_candidates(traces, evidence, source_split=manifest["split"]))
     validation = {"schema_version": "1.0.0", "artifact_id": manifest["run_id"] + "/score-validation",
                   "run_id": manifest["run_id"], "status": status(issues), "issues": issues, "coverage_refs": [coverage_ref]}
     validate("ValidationReport", validation)

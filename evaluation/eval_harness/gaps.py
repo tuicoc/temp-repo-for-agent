@@ -11,7 +11,7 @@ from .runner import _write
 UNKNOWN = re.compile(r"(?:chưa|không) (?:có|đủ) thông tin|không (?:biết|thể trả lời|thể xác nhận)", re.I)
 
 
-def candidates(traces, evidence: Path):
+def candidates(traces, evidence: Path, *, source_split="unknown"):
     transcripts = {}
     for config in traces:
         for path in (evidence / config / "transcripts").glob("*.json"):
@@ -33,6 +33,7 @@ def candidates(traces, evidence: Path):
             identity = f"{row['run_id']}/{config}/{sid}/{call}/{turn}"
             found.append({"gap_id": "GAP-" + hashlib.sha256(identity.encode()).hexdigest()[:16],
                           "source": identity, "customer_question": row["customer_text"],
+                          "source_split": source_split,
                           "consultant_answers": document.get("consultant_texts", []),
                           "status": "REVIEW_REQUIRED", "signals": {
                               "handoff_success": bool(handoffs), "agent_admitted_unknown": admitted_unknown},
@@ -44,7 +45,8 @@ def candidates(traces, evidence: Path):
 def scan(evidence: Path, out: Path):
     source, _ = locked_run(evidence)
     rows = [json.loads(line) for line in source.path("full.jsonl").read_text(encoding="utf-8").splitlines()]
-    report = candidates({"full": rows}, source.root)
+    report = candidates({"full": rows}, source.root,
+                        source_split=json.loads(source.path("manifest.json").read_text())["split"])
     _write(Path(out), report)
     return report
 
@@ -57,6 +59,8 @@ def publish(candidate_file: Path, review_file: Path, out: Path):
     matches = [item for item in source["candidates"] if item["gap_id"] == review.get("gap_id")]
     if len(matches) != 1:
         raise ValueError("Review must identify exactly one captured handoff")
+    if matches[0].get("source_split") not in ("development", "public"):
+        raise ValueError("FAQ learning requires a declared development/public source")
     required = ("reviewer", "general_question", "general_answer", "evidence", "decision")
     if any(not isinstance(review.get(key), str) or not review[key].strip() for key in required):
         raise ValueError("Human reviewer, generalized FAQ, evidence and decision required")

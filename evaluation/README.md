@@ -1,5 +1,9 @@
 # Evaluation — code đang dùng
 
+Data team có một điểm vào: `datasets/registry.json`. Đặt scenario theo revision dưới `datasets/`, đăng ký set/split/reviewer; chạy `../backend/.venv/bin/python run_eval.py data-check --set ID` trước `prepare` hoặc `evaluate`. Set `approved` cần `tool_labels` cho từng call và `gt_review` có nguồn, quyết định, người duyệt cho từng call. Chạy `evaluate --dataset-id ID` cho set được duyệt; mặc định vẫn dùng 5 case diagnostic cũ. BTC public sample là ví dụ phát triển; golden BTC sẽ nhập khi được công bố. [Skill làm data](datasets/ground-truth-review/SKILL.md) là hướng dẫn tạo, gán nhãn và duyệt duy nhất.
+
+Đường benchmark hiện hành chỉ đo text. `asr-suite` và `dataset-readiness` kiểu cũ không còn nằm trên CLI; schema/run lịch sử được giữ để đọc. `exemplar-check --bank ... --usage ...` và `reflection-support --records ... --code ...` là kiểm offline, chưa phải bằng chứng agent đã dùng cơ chế. File bàn giao product cho thầy được giữ local, không nằm trong repo.
+
 Kiến trúc sản phẩm hiện hành ở [docs/design.md](../docs/design.md); agent, hot/cold pipeline và MCP đang ở `../backend/src/`. Folder này chứa evaluator/contract/dataset, **không chứa một bản product architecture thứ hai**. Trước khi sửa code, đọc [guardrails](docs/CODING-INCIDENTS-AND-GUARDRAILS.md); khi sửa nhãn/dataset, đọc [skill duyệt GT](datasets/ground-truth-review/SKILL.md).
 
 Điểm vào: `run_eval.py` → `eval_harness/__main__.py`. Code chấm ở `eval_harness/`; [đề bài](requirements/project-brief.pdf) và contract/nguồn BTC pin ở `evaluation-contracts/`; dữ liệu JSON 5 scenario hiện dùng ở `datasets/output1-btc-diagnostic-v2/` (quyết định duyệt tại [review-decisions.md](datasets/output1-btc-diagnostic-v2/review-decisions.md)), nguồn bất biến ở `output (1)/` và revision v1 được giữ nguyên.

@@ -1,13 +1,12 @@
-"""P6 one-command M1 orchestration using existing P2/P3/P4/P5 stages."""
+"""P6 one-command text orchestration using existing P2/P3/P4 stages."""
 from pathlib import Path
 import shutil
 import hashlib
 
 from .assets import Assets, read_json
-from .asr_suite import asr_suite
 from .collector import collect, locked_run, status
 from .contracts import validate
-from .datasets import inspect_dataset, snapshot, close_output
+from .datasets import close_output
 from .preflight import preflight
 from .reporting import report_metrics, validate_policy
 from .runner import _output_path, _write, run_fixed
@@ -17,8 +16,8 @@ from .scoring import score
 def benchmark(settings, out):
     settings = Path(settings).resolve()
     config = read_json(settings)
-    if set(config) != {"asset_root", "execution_settings", "extractor", "asr"}:
-        raise ValueError("P6 settings require asset_root, pinned execution_settings, extractor path and explicit ASR plan")
+    if set(config) != {"asset_root", "execution_settings", "extractor"}:
+        raise ValueError("P6 text settings require asset_root, pinned execution_settings and extractor path")
     assets = Assets(settings.parent / config["asset_root"])
     execution_path = assets.resolve(config["execution_settings"], json_content=False)
     planned = preflight(execution_path)
@@ -38,24 +37,14 @@ def benchmark(settings, out):
     extractor = execution_assets.ref(config["extractor"])
     if extractor not in manifest["sources"]:
         raise ValueError("Extractor descriptor must be pinned in manifest.sources")
-    asr = config["asr"]
-    if set(asr) != {"settings", "split", "mode"} or asr["split"] != "eval" or asr["mode"] not in ("replay", "infer"):
-        raise ValueError("Explicit eval ASR settings/split/mode required; no implicit inference")
-    asr_settings = assets.resolve(asr["settings"], json_content=False)
-    asr_assets, registry, refs, readiness = inspect_dataset(asr_settings)
-    if not readiness["execution_gate"]["allowed"]:
-        raise ValueError("ASR readiness execution gate blocked")
     out = _output_path(out, execution_assets)
     out.mkdir(mode=0o700, parents=True, exist_ok=False)
-    snapshot(out, asr_assets, refs)
     _write(out / "benchmark-settings.json", config)
-    for name, source in {"execution-settings.json": execution_path, "asr-settings.json": asr_settings}.items():
+    for name, source in {"execution-settings.json": execution_path}.items():
         # Preserve exact pinned settings bytes, not a JSON reserialization.
         shutil.copyfile(source, out / name)
     _write(out / "benchmark-plan.json", {"execution_settings": config["execution_settings"], "manifest": planned["manifest"],
-        "asr": asr, "asr_ids": [a["id"] for a in registry["asr"]["cohorts"]["eval"]["audio"]],
-        "dataset_id": registry["dataset_id"], "dataset_version": registry["version"],
-        "notice": "Pinned separate team ASR cohort; main Agent manifest is not rewritten to attach historical ASR"})
+        "notice": "Text evaluation only; ASR evidence is outside this benchmark"})
     stages = []
     failure = None
     result = None
@@ -66,14 +55,9 @@ def benchmark(settings, out):
         stages.append({"stage": "collect", "status": collected["status"]})
         scored = score(out / "evidence", out / "scored")
         stages.append({"stage": "score", "status": scored["status"]})
-        # Inputs frozen before Agent execution must still match before invoking ASR.
+        # Inputs frozen before Agent execution must still match before reporting.
         assets.resolve(config["execution_settings"], json_content=False)
-        assets.resolve(asr["settings"], json_content=False)
-        for ref in refs:
-            asr_assets.resolve(ref, json_content=False)
-        asr_result = asr_suite(asr_settings, out / "asr", split="eval", mode=asr["mode"])
-        stages.append({"stage": "asr", "status": asr_result["status"], "mode": asr["mode"]})
-        result = report_metrics(out / "scored", out / "metrics", asr_run=out / "asr")
+        result = report_metrics(out / "scored", out / "metrics")
         stages.append({"stage": "metrics", "status": result["status"]})
     except (OSError, ValueError, KeyError, TypeError, AssertionError) as exc:
         failure = str(exc)
@@ -84,7 +68,7 @@ def benchmark(settings, out):
             issues.append({**item, "artifact": {**item["artifact"], "path": "metrics/" + item["artifact"]["path"]}})
     else:
         # A later stage failure must not erase confirmed failures already scored.
-        for folder in ("scored", "asr", "evidence", "raw"):
+        for folder in ("scored", "evidence", "raw"):
             path = out / folder / "validation.json"
             if path.is_file():
                 for item in read_json(path)["issues"]:
@@ -96,7 +80,7 @@ def benchmark(settings, out):
     if failure:
         issue("BENCHMARK_STAGE_ERROR", failure, "infra_error")
     for suite in manifest["suites"]:
-        if suite["applicable"] and suite["id"] not in ("fixed_turn", "asr", "latency_cost"):
+        if suite["applicable"] and suite["id"] not in ("fixed_turn", "latency_cost"):
             issue("APPLICABLE_SUITE_PENDING", suite["id"] + " not implemented by P6; applicability preserved")
     summary = {"report_kind": "p6-benchmark-v1", "run_id": manifest["run_id"], "fixture": manifest["fixture"],
         "status": status(issues), "quality_accepted": False, "stages": stages, "error": failure,
@@ -117,8 +101,8 @@ def round_model_attempt_envelope(round_inputs):
     extractor = inputs.resolve(inputs.ref(config["extractor"]))
     if adapter["kind"] == "test" and extractor["kind"] == "fixture_replay":
         return 0
-    if adapter["kind"] != "runtime" or extractor["kind"] != "command_model" or config["asr"]["mode"] != "replay":
-        raise ValueError("Live paired benchmark requires bounded runtime, command extractor and ASR replay")
+    if adapter["kind"] != "runtime" or extractor["kind"] != "command_model":
+        raise ValueError("Live paired benchmark requires bounded runtime and command extractor")
     bundles = [inputs.resolve(ref) for ref in manifest["sources"] if not ref["pointer"]
                and ref["path"].endswith("product-bundle.json")]
     if len(bundles) != 1 or bundles[0].get("schema_version") != "product-bundle-v1":
@@ -137,7 +121,7 @@ def benchmark_rounds(r0_settings, r1_settings, out, *, max_model_attempts=None):
     def planned(settings, round_number):
         settings = Path(settings).resolve()
         config = read_json(settings)
-        if set(config) != {"asset_root", "execution_settings", "extractor", "asr"}:
+        if set(config) != {"asset_root", "execution_settings", "extractor"}:
             raise ValueError("Both rounds require P6 benchmark settings")
         settings_assets = Assets(settings.parent / config["asset_root"])
         execution = settings_assets.resolve(config["execution_settings"], json_content=False)
@@ -160,8 +144,8 @@ def benchmark_rounds(r0_settings, r1_settings, out, *, max_model_attempts=None):
     r0, r1 = first[3], second[3]
     if r0["run_id"] == r1["run_id"] or any(r0[key] != r1[key] for key in ("fixture", "purpose", "split")):
         raise ValueError("Rounds require distinct run IDs and the same dataset purpose/split")
-    if first[4]["asr"] != second[4]["asr"] or first[4]["extractor"] != second[4]["extractor"]:
-        raise ValueError("ASR and extractor plans must match before model execution")
+    if first[4]["extractor"] != second[4]["extractor"]:
+        raise ValueError("Extractor plans must match before model execution")
     if cohort(first[2], r0, inputs=first[2]) != cohort(second[2], r1, inputs=second[2]):
         raise ValueError("Round cohort differs before model execution")
     for key in ("model", "parameters", "tools", "hardware", "extractor_version", "judge_version", "prompt"):

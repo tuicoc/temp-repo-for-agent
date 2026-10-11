@@ -216,9 +216,9 @@ def preflight(settings_path, scenarios_dir=None):
     if not applicability.get("fixed_turn"):
         issue("FIXED_TURN_SUITE", "Fixed-turn suite must be registered as applicable")
     if manifest["purpose"] == "official_eval":
-        required_suites = {"fixed_turn", "asr", "latency_cost"}
+        required_suites = {"fixed_turn", "latency_cost"}
         if manifest["level"] == "M2":
-            required_suites |= {"judge", "rag", "diarization", "simulator", "tool_accuracy", "voice"}
+            required_suites |= {"judge", "rag", "simulator", "tool_accuracy"}
         if any(not applicability.get(suite) for suite in required_suites):
             issue("OFFICIAL_SUITE_COVERAGE", "Required level suites cannot be omitted in official_eval", "missing_evidence")
     if applicability.get("simulator") and len(manifest["simulator_seeds"]) != 3:

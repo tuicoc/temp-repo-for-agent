@@ -17,7 +17,7 @@ class KnowledgeGapTest(unittest.TestCase):
             (root / "full/transcripts").mkdir(parents=True)
             (root / "full/transcripts/turn.json").write_text(json.dumps({"context": {"scenario_id": "SCN", "call": "call_1", "turn": 2},
                 "consultant_texts": ["Có, nếu dưới 30m2."]}))
-            report = candidates({"full": [row]}, root)
+            report = candidates({"full": [row]}, root, source_split="development")
             self.assertEqual(len(report["candidates"]), 1)
             gap = report["candidates"][0]
             self.assertEqual(gap["status"], "REVIEW_REQUIRED")
@@ -33,6 +33,10 @@ class KnowledgeGapTest(unittest.TestCase):
             review.write_text(json.dumps(approved))
             with self.assertRaises(ValueError):
                 publish(source, self._unapproved(root, approved), root / "no-review")
+            source.write_text(json.dumps(candidates({"full": [row]}, root, source_split="frozen")))
+            with self.assertRaises(ValueError):
+                publish(source, review, root / "frozen")
+            source.write_text(json.dumps(report))
             result = publish(source, review, root / "approved")
             self.assertEqual(result["status"], "CANDIDATE_READY")
             case = json.loads((root / "approved/growth-case.json").read_text())

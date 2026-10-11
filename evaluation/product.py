@@ -38,10 +38,12 @@ from eval_harness.scoring import score
 from normalize_output1 import convert
 from product_adapter import tree_sha256
 from tool_expectations import labels_for
+from eval_harness.data_registry import inspect as inspect_data_registry
 
 PRODUCT = ROOT.parent.parent / "backend"
 PYTHON = PRODUCT / ".venv/bin/python"
 DATASET = ROOT.parent / "datasets/output1-btc-diagnostic-v2/scenarios"
+DATASETS = ROOT.parent / "datasets"
 COMMAND = "src/pipeline/eval/extract_command.py"
 CAPABILITIES = ["business_tools", "memory_isolation", "memory_read_gate", "after_call_barrier",
                 "snapshots", "briefs", "timestamps", "usage"]
@@ -82,7 +84,7 @@ def scenarios_with_provenance(source, only):
     return report, chosen
 
 
-def prepare(out, *, only=None, extractor_calls=64):
+def prepare(out, *, only=None, extractor_calls=64, dataset_id=None):
     checker.verify_sources()
     out = _output_path(out, Assets(PRODUCT))
     out.mkdir(parents=True, mode=0o700)
@@ -102,8 +104,29 @@ def prepare(out, *, only=None, extractor_calls=64):
     _write(out / "adapter.json", descriptor)
 
     # Scenarios and their grading contracts, as the diagnostic revision defines them.
-    conversion, paths = scenarios_with_provenance(DATASET, only)
+    imported_labels = None
+    if dataset_id is None:
+        conversion, paths = scenarios_with_provenance(DATASET, only)
+    else:
+        inventory = inspect_data_registry(DATASETS, only=dataset_id)
+        if inventory["issues"]:
+            raise ValueError("Dataset registry has unresolved validation issues")
+        groups = [g for g in read_json(DATASETS / "registry.json")["sets"] if g["id"] == dataset_id]
+        if len(groups) != 1 or groups[0]["status"] != "approved":
+            raise ValueError("Choose one independently approved registered dataset")
+        group = groups[0]
+        paths = sorted((DATASETS / group["path"]).glob("*.json"))
+        if only:
+            paths = [p for p in paths if read_json(p)["scenario_id"] in only]
+        if not paths:
+            raise ValueError("No registered scenario matches")
+        imported_labels = read_json(DATASETS / group["tool_labels"])
+        conversion = {"report_kind": "registered-dataset-v1", "dataset_id": dataset_id,
+                      "split": group["split"], "reviewed_by": group["reviewed_by"],
+                      "files": [{"scenario_id": read_json(p)["scenario_id"], "sha256": hashlib.sha256(p.read_bytes()).hexdigest()} for p in paths]}
     _write(out / "conversion-report.json", conversion)
+    if imported_labels is not None:
+        (out / "registered-tool-labels.json").write_bytes((DATASETS / group["tool_labels"]).read_bytes())
     (out / "scenarios").mkdir()
     (out / "grading").mkdir()
     (out / "expected-tools").mkdir()
@@ -122,7 +145,8 @@ def prepare(out, *, only=None, extractor_calls=64):
             template.update(call=call, official_success_if={**ref, "pointer": "/calls/" + call + "/success_if"},
                             ground_truth=[ref])
             template["suites"][0]["reason"] = "Generated diagnostic GT pending QA"
-            expected = labels_for(item["scenario_id"], call, item["calls"][call]["success_if"])
+            expected = (labels_for(item["scenario_id"], call, item["calls"][call]["success_if"])
+                        if imported_labels is None else imported_labels[item["scenario_id"]][call])
             for config in ("full", "baseline_no_memory"):
                 label_path = f"expected-tools/{config}/{item['scenario_id']}/{call}.json"
                 (out / label_path).parent.mkdir(parents=True, exist_ok=True)
@@ -132,7 +156,7 @@ def prepare(out, *, only=None, extractor_calls=64):
                        "artifact_id": "/".join((context["run_id"], config, item["scenario_id"], call, "tool-labels")),
                        "run_id": context["run_id"], "evidence_refs": [ref], "context": context,
                        "calls": expected, "allow_extra_read_only": True,
-                       "labelled_by": "output1-diagnostic-tool-labels-pending-independent-QA"})
+                       "labelled_by": ("output1-diagnostic-tool-labels-pending-independent-QA" if imported_labels is None else group["reviewed_by"])})
                 label_ref = assets.ref(label_path)
                 tool_refs.append(label_ref)
                 template["checks"].append({"check_id": "tool_accuracy_" + config,
@@ -144,8 +168,13 @@ def prepare(out, *, only=None, extractor_calls=64):
 
     manifest = read_json(ROOT / "fixtures/p6-manifest.json")
     suffix = hashlib.sha256(str(out).encode()).hexdigest()[:16]
-    manifest.update(artifact_id="PRODUCT-Manifest", run_id="PRODUCT-" + suffix, level="M2", fixture=False,
+    levels = {item["level"] for item in scenarios}
+    if len(levels) != 1:
+        raise ValueError("One run requires scenarios at one level")
+    manifest.update(artifact_id="PRODUCT-Manifest", run_id="PRODUCT-" + suffix, level=levels.pop(), fixture=False,
                     scenarios=scenario_refs, grading_contracts=grading_refs)
+    if imported_labels is not None:
+        manifest["split"] = group["split"]
     manifest["configuration"].update(model=agent["model"], parameters=agent["parameters"],
                                      hardware="local backend, evaluation database")
     # A turn may wait on the provider's rate limit; the bridge starts five MCP servers.
@@ -163,8 +192,13 @@ def prepare(out, *, only=None, extractor_calls=64):
     scope["source_decisions"] = [
         {**scope["source_decisions"][0], "origin": ref, "run_id": manifest["run_id"],
          "artifact_id": manifest["run_id"] + "/source-decision/" + str(index),
-         "reason": "User-provided generated data; report-only diagnostic; GT not approved"}
+         "source_split": manifest["split"],
+         "reason": ("User-provided generated data; report-only diagnostic; GT not approved" if imported_labels is None
+                    else "Registered dataset reviewed by " + group["reviewed_by"] + "; report-only")}
         for index, ref in enumerate(scenario_refs)]
+    if imported_labels is not None:
+        scope["pii_review"] = {"status": "approved", "reviewed_by": group["reviewed_by"],
+                               "scope": "authorized_redacted"}
     (out / "fixtures").mkdir()
     _write(out / "fixtures/p1-scope.json", scope)
 
@@ -191,6 +225,8 @@ def prepare(out, *, only=None, extractor_calls=64):
                            descriptor["code"], assets.ref("product-bundle.json"), assets.ref("metrics-policy.json"),
                            assets.ref("conversion-report.json"), assets.ref("extractor-prompt.txt"),
                            assets.ref("extract_command.py"), assets.ref("extractor.json")]
+    if imported_labels is not None:
+        manifest["sources"].append(assets.ref("registered-tool-labels.json"))
     _write(out / "manifest.json", manifest)
     _write(out / "settings.json", {"asset_root": ".", "manifest": "manifest.json",
                                    "scope": "fixtures/p1-scope.json", "adapter": assets.ref("adapter.json")})
@@ -200,13 +236,13 @@ def prepare(out, *, only=None, extractor_calls=64):
             "execution_gate": report["execution_gate"], "planned_turns": len(report["coverage_plan"]["expected_trace_ids"])}
 
 
-def evaluate(out, *, only=None, extractor_calls=64):
+def evaluate(out, *, only=None, extractor_calls=64, dataset_id=None):
     """Prepare, run, collect and score; ``execution-report.json`` sums it up."""
     out = _output_path(out, Assets(PRODUCT))
     out.mkdir(parents=True, mode=0o700)
     stages, failure = [], None
     try:
-        prepared = prepare(out / "inputs", only=only, extractor_calls=extractor_calls)
+        prepared = prepare(out / "inputs", only=only, extractor_calls=extractor_calls, dataset_id=dataset_id)
         stages.append({"stage": "prepare", **prepared})
         if not prepared["execution_gate"]["allowed"]:
             raise ValueError("Prepared inputs did not pass the execution gate")
